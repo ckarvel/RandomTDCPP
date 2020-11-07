@@ -11,17 +11,47 @@
 
 #define GridTraceChannel ECC_GameTraceChannel1
 
+/////////////////////////////////////////////////////////////////////////////////////
+// SETUP FUNCTIONS
+/////////////////////////////////////////////////////////////////////////////////////
 ARandomTDPlayerController::ARandomTDPlayerController()
-	: CameraMovementSpeed(300.0)
-	, MysteryPropHalfHeight(-1.0)
-	, bPropActive(false)
+	: bMoveToMouseCursor(false)
+	, MysteryPropHeight(-1.0)
+	, CameraMovementSpeed(300.0)
+	
 {
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
 }
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPlayerController::SetupInputComponent()
+{
+	// set up gameplay key bindings
+	Super::SetupInputComponent();
 
+	// pawn movement
+	InputComponent->BindAction("SetDestination",
+		IE_Pressed, this, &ARandomTDPlayerController::OnSetDestinationPressed);
+	InputComponent->BindAction("SetDestination",
+		IE_Released, this, &ARandomTDPlayerController::OnSetDestinationReleased);
+
+	// player abilities
+	InputComponent->BindAction("CreateBasicTower",
+		IE_Pressed, this, &ARandomTDPlayerController::OnCreateBasicTowerPressed);
+
+	InputComponent->BindAction("PerformAction",
+		IE_Pressed, this, &ARandomTDPlayerController::OnPerformActionPressed);
+	InputComponent->BindAction("PerformAction",
+		IE_Released, this, &ARandomTDPlayerController::OnPerformActionReleased);
+
+	// camera movement
+	InputComponent->BindAxis("MoveForward", this, &ARandomTDPlayerController::MoveCameraForward);
+	InputComponent->BindAxis("MoveRight", this, &ARandomTDPlayerController::MoveCameraRight);
+	// TODO: zoom in/out
+}
+/////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::BeginPlay()
 {
 	// get ref to our player
@@ -50,6 +80,9 @@ void ARandomTDPlayerController::BeginPlay()
 		GetWorld(), AGridFactory::StaticClass());
 }
 
+/////////////////////////////////////////////////////////////////////////////////////
+// TICK FUNCTIONS
+/////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
@@ -61,57 +94,45 @@ void ARandomTDPlayerController::PlayerTick(float DeltaTime)
 		MoveToMouseCursor();
 	}
 
-	if (MysteryPropRef && bPropActive)
+	if (MysteryPropRef)
 	{
 		HighlightGrid();
 		MovePropToCursor();
 	}
 }
-
-void ARandomTDPlayerController::SetupInputComponent()
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPlayerController::MoveToMouseCursor()
 {
-	// set up gameplay key bindings
-	Super::SetupInputComponent();
+	// Trace to see what is under the mouse cursor
+	FHitResult Hit;
+	GetHitResultUnderCursor(ECC_Visibility, false, Hit);
 
-	// pawn movement
-	InputComponent->BindAction("SetDestination",
-		IE_Pressed, this, &ARandomTDPlayerController::OnSetDestinationPressed);
-	InputComponent->BindAction("SetDestination",
-		IE_Released, this, &ARandomTDPlayerController::OnSetDestinationReleased);
-
-	// player abilities
-	InputComponent->BindAction("CreateBasicTower",
-		IE_Pressed, this, &ARandomTDPlayerController::OnCreateBasicTowerPressed);
-	
-	InputComponent->BindAction("PerformAction",
-		IE_Pressed, this, &ARandomTDPlayerController::OnPerformActionPressed);
-	InputComponent->BindAction("PerformAction",
-		IE_Released, this, &ARandomTDPlayerController::OnPerformActionReleased);
-
-	// camera movement
-	InputComponent->BindAxis("MoveForward", this, &ARandomTDPlayerController::MoveCameraForward);
-	InputComponent->BindAxis("MoveRight", this, &ARandomTDPlayerController::MoveCameraRight);
-	// TODO: zoom in/out
-	//InputComponent->BindAxis("MoveRight", this, &ARandomTDPlayerController::MoveCameraRight);
+	if (PlayerRef && Hit.bBlockingHit)
+	{
+		// We hit something, move there
+		FVector DestLocation = Hit.ImpactPoint;
+		float const Distance = FVector::Dist(DestLocation, PlayerRef->GetActorLocation());
+		// We need to issue move command only if far enough
+		// in order for walk animation to play correctly
+		if (Distance > 120.0f)
+		{
+			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
+		}
+	}
 }
-
+/////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::HighlightGrid()
 {
-	FHitResult Hit;
-	EObjectTypeQuery ObjectType = UEngineTypes::ConvertToObjectType(GridTraceChannel);
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-	ObjectTypes.Push(ObjectType);
-	GetHitResultUnderCursorForObjects(ObjectTypes, false, Hit);
-
+	FHitResult Hit = GetCursorHitResultOnGrid();
 	if (Hit.bBlockingHit)
 	{
 #ifdef UE_BUILD_DEBUG
 		UE_LOG(LogRandomTD, Log, TEXT("PlayerController::HighlightGrid"));
 #endif
-		GridFactoryRef->HighlightGrid(Hit.GetActor());
+		GridFactoryRef->HighlightGrid((AGridBase*)Hit.GetActor());
 	}
 }
-
+/////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::MovePropToCursor()
 {
 	if (MysteryPropRef == nullptr)
@@ -121,76 +142,18 @@ void ARandomTDPlayerController::MovePropToCursor()
 #endif
 		return;
 	}
-	else if (MysteryPropHalfHeight < 0.0)
-	{
-		FVector Origin;
-		FVector BoxExtent; // how far from center box is in x,y,z axis
-		MysteryPropRef->GetActorBounds(false, Origin, BoxExtent);
-		MysteryPropHalfHeight = BoxExtent.Z;
-	}
 
-	bPropActive = true;
-
-	// Trace to see what is under the mouse cursor
-	FHitResult Hit;
-	EObjectTypeQuery ObjectType = UEngineTypes::ConvertToObjectType(GridTraceChannel);
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-	ObjectTypes.Push(ObjectType);
-	GetHitResultUnderCursorForObjects(ObjectTypes, false, Hit);
-
+	FHitResult Hit = GetCursorHitResultOnGrid();
 	// TODO: constrain cursor movement within grid so
 	// prop will move even when cursor is outside the grid
 	if (Hit.bBlockingHit) // TODO: if grid hit
 	{
 		// take into account the prop's height
-		Hit.ImpactPoint.Z += MysteryPropHalfHeight;
+		Hit.ImpactPoint.Z += GetPropHeight();
 		MysteryPropRef->SetActorLocation(Hit.ImpactPoint);
 	}
 }
-
-void ARandomTDPlayerController::OnPerformActionPressed()
-{
-	if (MysteryPropRef)
-	{
-		if (TowerFactoryRef)
-		{
-			//TowerFactoryRef->SpawnTower();
-		}
-
-		//MysteryPropRef->
-		bPropActive = false;
-	}
-}
-
-void ARandomTDPlayerController::OnPerformActionReleased()
-{
-
-}
-
-void ARandomTDPlayerController::OnCreateBasicTowerPressed()
-{
-	// avoid repeatedly creating mystery box if one is already active
-	if (MysteryPropRef != nullptr)
-		return;
-	// spawn new mystery prop
-	MysteryPropRef = GetWorld()->SpawnActor(MysteryPropClass);
-	MovePropToCursor();
-	bPropActive = true;
-}
-
-void ARandomTDPlayerController::OnSetDestinationPressed()
-{
-	// set flag to keep updating destination until released
-	bMoveToMouseCursor = true;
-}
-
-void ARandomTDPlayerController::OnSetDestinationReleased()
-{
-	// clear flag to indicate we should stop updating the destination
-	bMoveToMouseCursor = false;
-}
-
-// called every tick
+/////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::MoveCameraForward(float AxisValue)
 {
 	// get camera position
@@ -200,8 +163,7 @@ void ARandomTDPlayerController::MoveCameraForward(float AxisValue)
 	// set camera position to modified location
 	PlayerRef->GetPlayerCamera()->SetWorldLocation(Location, false, nullptr, ETeleportType::TeleportPhysics);
 }
-
-// called every tick
+/////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::MoveCameraRight(float AxisValue)
 {
 	// get camera position
@@ -212,31 +174,75 @@ void ARandomTDPlayerController::MoveCameraRight(float AxisValue)
 	PlayerRef->GetPlayerCamera()->SetWorldLocation(Location,false,nullptr, ETeleportType::TeleportPhysics);
 }
 
-void ARandomTDPlayerController::MoveToMouseCursor()
+//////////////////////////////////////////
+//
+void ARandomTDPlayerController::OnPerformActionPressed()
 {
-	// Trace to see what is under the mouse cursor
-	FHitResult Hit;
-	GetHitResultUnderCursor(ECC_Visibility, false, Hit);
-
-	if (Hit.bBlockingHit)
+	if (MysteryPropRef)
 	{
-		// We hit something, move there
-		SetNewMoveDestination(Hit.ImpactPoint);
-	}
-}
-
-void ARandomTDPlayerController::SetNewMoveDestination(const FVector DestLocation)
-{
-	if (PlayerRef)
-	{
-		float const Distance = FVector::Dist(DestLocation, PlayerRef->GetActorLocation());
-
-		// We need to issue move command only if far enough in order for walk animation to play correctly
-		if ((Distance > 120.0f))
+		if (TowerFactoryRef)
 		{
-			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
+			FHitResult Hit = GetCursorHitResultOnGrid();
+			if (Hit.bBlockingHit)
+			{
+#ifdef UE_BUILD_DEBUG
+				UE_LOG(LogRandomTD, Log, TEXT("PlayerController::OnPerformActionPressed"));
+#endif
+				// this will call BP_TowerFactory
+				TowerFactoryRef->SpawnTower((AGridBase*)Hit.GetActor());
+			}
 		}
+
+		MysteryPropHeight = -1.0;
+		MysteryPropRef->Destroy();
 	}
 }
 
+/////////////////////////////////////////////////////////////////////////////////////
+// ACTION FUNCTIONS
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPlayerController::OnPerformActionReleased()
+{
+}
 
+/////////////////////////////////////////////////////////////////////////////////////
+// SETTERS & GETTERS
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPlayerController::SetMoveToCursor(bool Value)
+{
+	bMoveToMouseCursor = Value;
+}
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPlayerController::SetTowerInProgress(AActor* Tower)
+{
+	MysteryPropRef = Tower;
+}
+/////////////////////////////////////////////////////////////////////////////////////
+bool ARandomTDPlayerController::IsTowerInProgress()
+{
+	return MysteryPropRef ? true : false;
+}
+/////////////////////////////////////////////////////////////////////////////////////
+float ARandomTDPlayerController::GetPropHeight()
+{
+	if (MysteryPropRef && MysteryPropHeight < 0.0)
+	{
+		FVector Origin;
+		FVector BoxExtent;
+		MysteryPropRef->GetActorBounds(false, Origin, BoxExtent);
+		// this is how far from center box is in x,y,z axis
+		// so its actually the prop's height divided in half
+		MysteryPropHeight = BoxExtent.Z;
+	}
+	return MysteryPropHeight;
+}
+/////////////////////////////////////////////////////////////////////////////////////
+FHitResult ARandomTDPlayerController::GetCursorHitResultOnGrid()
+{
+	FHitResult Hit;
+	EObjectTypeQuery ObjectType = UEngineTypes::ConvertToObjectType(GridTraceChannel);
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Push(ObjectType);
+	GetHitResultUnderCursorForObjects(ObjectTypes, false, Hit);
+	return Hit;
+}

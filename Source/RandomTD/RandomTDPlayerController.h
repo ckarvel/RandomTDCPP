@@ -8,68 +8,141 @@
 #include "GridFactory.h"
 #include "RandomTDPlayerController.generated.h"
 
+/// @class ARandomTDPlayerController
+/// @brief The PlayerController for Random TD
+/// 
+/// Handles player input
+///
+///	Notes:
+/// - In this game, the player doesn't interact with pawn.
+/// 
+/// Players abilities :
+/// - Object creation(tower / crop)
+/// - Tower / Crop placement
+/// - Item selection
+/// - Highlighting items(including enemies / towers)
+/// - Camera movement with mouse cursor
+/// - Hover and see info (?)
 UCLASS()
 class ARandomTDPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
+	///////////////////////////////////////////////////////////////////////////
+	// SETUP
+	///////////////////////////////////////////////////////////////////////////
 public:
+	/// @brief Set default mouse cursor settings.
 	ARandomTDPlayerController();
 
 protected:
-	/** True if the controlled character should navigate to the mouse cursor. */
-	uint32 bMoveToMouseCursor : 1;
-
-	// Begin PlayerController interface
-	virtual void PlayerTick(float DeltaTime) override;
+	/// @brief  Setup bind actions and axis mappings.
 	virtual void SetupInputComponent() override;
-	// End PlayerController interface
 
+	/// @brief Called when game starts or when spawned.
+	/// 
+	/// All actors in the level exist at this point so
+	/// it is safe to store references to other actors here.
 	void BeginPlay() override;
 
-	/*
-		For TD, the player won't really interact with pawn
-		Players abilities:
-		- Object creation (tower/crop)
-		- Tower/Crop placement
-		- Item selection
-		- Highlighting items (including enemies/towers)
-		- Camera movement with mouse cursor
-		- Hover and see info?
-	*/
+	/// @brief Handles elements of the game that requires
+	/// an update every tick, e.g character movement.
+	/// @param DeltaTime How much time has passed since the last tick
+	virtual void PlayerTick(float DeltaTime) override;
 
-	/*Player-abilities*/
-	/** Navigate player to the current mouse cursor location. */
+	///////////////////////////////////////////////////////////////////////////
+	// ON-TICK
+	///////////////////////////////////////////////////////////////////////////
+
+	/// @brief Navigate player to the current cursor location
 	void MoveToMouseCursor();
-	void MovePropToCursor();
-	void MoveCameraForward(float AxisValue);
-	void MoveCameraRight(float AxisValue);
-	void OnCreateBasicTowerPressed();
-	void OnPerformActionPressed();
-	void OnPerformActionReleased();
+
+	/// @brief Colors a grid in the world green (valid) or red (invalid)
+	/// 
+	/// This lets the player know where towers can be placed (the green grids).
 	void HighlightGrid();
 
-	/*Pawn-related abilities*/
-	/** Navigate player to the given world location. */
-	void SetNewMoveDestination(const FVector DestLocation);
+	/// @brief Navigate the mystery prop to current cursor location
+	void MovePropToCursor();
+
+	/// @brief Pans the camera forward or backwards based on AxisValue
+	/// 
+	/// Called every tick
+	/// @param AxisValue 1 Forward
+	/// -1 Backwards
+	/// 0 No movement
+	void MoveCameraForward(float AxisValue);
+
+	/// @brief Pans the camera right or left based on AxisValue
+	/// 
+	/// Called every tick
+	/// @param AxisValue 1 Right
+	/// -1 Left
+	/// 0 No movement
+	void MoveCameraRight(float AxisValue);
+
+	///////////////////////////////////////////////////////////////////////////
+	// ACTION FUNCTIONS
+	///////////////////////////////////////////////////////////////////////////
+
+	/// @brief Called when player presses the left mouse button
+	/// 
+	/// Multiple behaviors depending existing actors
+	/// @todo Figure out behaviors
+	void OnPerformActionPressed();
+
+	/// @brief Called when player releases the left mouse button
+	/// @todo Is this the right function for drag-selection?
+	void OnPerformActionReleased();
+
+	/// @brief Called when the player presses "Q" to create a basic tower.
+	/// 
+	/// This will spawn the mystery prop under the cursor
+	UFUNCTION(BlueprintImplementableEvent, Category = "TowerActions")
+	void OnCreateBasicTowerPressed();
+
+	/// @brief Called when right mouse button is pressed
+	/// 
+	/// Starts the character movement updates in Tick()
+	/// 
+	/// @remark This is implemented by blueprint
+	UFUNCTION(BlueprintImplementableEvent, Category = "CharacterMovement")
 	void OnSetDestinationPressed();
+
+	/// @brief Called when right mouse button is released
+	/// 
+	/// Ends the character movement updates in Tick()
+	/// This is good for performance because character movement is only
+	/// being updated when the player clicks the right mouse button, instead
+	/// of unnecessarily updating pawn movement when the pawn is not moving!
+	/// 
+	/// @remark This is implemented by blueprint
+	UFUNCTION(BlueprintImplementableEvent, Category = "CharacterMovement")
 	void OnSetDestinationReleased();
 
 public:
-	UPROPERTY(EditAnywhere, Category = Camera)
-	float CameraMovementSpeed;
+	///////////////////////////////////////////////////////////////////////////
+	// SETTERS & GETTERS
+	///////////////////////////////////////////////////////////////////////////
+	UFUNCTION(BlueprintCallable, Category = "CharacterMovement")
+	void SetMoveToCursor(bool Value);
+	UFUNCTION(BlueprintCallable, Category = "TowerActions")
+	void SetTowerInProgress(AActor* Tower);
+	UFUNCTION(BlueprintCallable, Category = "TowerActions")
+	bool IsTowerInProgress();
+	float GetPropHeight();
+	FHitResult GetCursorHitResultOnGrid();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Prop)
-	TSubclassOf<AActor> MysteryPropClass;
-
-private:
+protected:
+	bool bMoveToMouseCursor; ///< True to move character to cursor
 	class ARandomTDCharacter* PlayerRef;
 	class ATowerFactory* TowerFactoryRef;
 	class AGridFactory* GridFactoryRef;
-
 	class AActor* MysteryPropRef;
-	float MysteryPropHalfHeight;
-	bool bPropActive;
+	float MysteryPropHeight; ///< Used for spawning above ground
+public:
+	UPROPERTY(EditAnywhere, Category = Camera)
+	float CameraMovementSpeed; ///< How fast the camera pans
 };
 
 /*
