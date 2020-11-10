@@ -23,6 +23,18 @@
 /// - Highlighting items(including enemies / towers)
 /// - Camera movement with mouse cursor
 /// - Hover and see info (?)
+/// 
+/// @todo 
+/// - "Q"->Left-click on invalid grid: Do nothing
+/// - Left-click on tower: Highlight tower as "selected" (requires UI)
+/// - "Select tower"->"E": Destroy selected tower
+/// - "Select tower"->"Ctrl"->"Select duplicate tower"->"Q": Destroy the tower first-clicked ("Merge" step 1)
+/// - Rectangle selection of towers
+/// @todo
+/// Complete:
+/// - "Q": Spawn mystery prop 
+/// - "Q"->Mouse Hover: Grids highlight green for valid, red for invalid
+/// - "Q"->Left-click on valid grid: Spawn tower, destroy prop
 UCLASS()
 class ARandomTDPlayerController : public APlayerController
 {
@@ -57,11 +69,6 @@ protected:
 	/// @brief Navigate player to the current cursor location
 	void MoveToMouseCursor();
 
-	/// @brief Colors a grid in the world green (valid) or red (invalid)
-	/// 
-	/// This lets the player know where towers can be placed (the green grids).
-	void HighlightGrid();
-
 	/// @brief Navigate the mystery prop to current cursor location
 	void MovePropToCursor();
 
@@ -89,10 +96,12 @@ protected:
 	/// 
 	/// Multiple behaviors depending existing actors
 	/// @todo Figure out behaviors
+	UFUNCTION(BlueprintImplementableEvent, Category = "Action")
 	void OnPerformActionPressed();
 
 	/// @brief Called when player releases the left mouse button
 	/// @todo Is this the right function for drag-selection?
+	UFUNCTION(BlueprintImplementableEvent, Category = "Action")
 	void OnPerformActionReleased();
 
 	/// @brief Called when the player presses "Q" to create a basic tower.
@@ -120,6 +129,10 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "CharacterMovement")
 	void OnSetDestinationReleased();
 
+	/// @brief Remove mystery prop from the world
+	UFUNCTION(BlueprintCallable, Category = "TowerActions")
+	void DestroyProp();
+
 public:
 	///////////////////////////////////////////////////////////////////////////
 	// SETTERS & GETTERS
@@ -127,19 +140,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "CharacterMovement")
 	void SetMoveToCursor(bool Value);
 	UFUNCTION(BlueprintCallable, Category = "TowerActions")
-	void SetTowerInProgress(AActor* Tower);
+	void SetTowerInProgress(AActor* MysteryProp);
 	UFUNCTION(BlueprintCallable, Category = "TowerActions")
 	bool IsTowerInProgress();
-	float GetPropHeight();
-	FHitResult GetCursorHitResultOnGrid();
+	UFUNCTION(BlueprintCallable, Category = "Helper")
+	FHitResult GetCursorHitResultOnObjectType(ECollisionChannel Channel);
 
 protected:
 	bool bMoveToMouseCursor; ///< True to move character to cursor
 	class ARandomTDCharacter* PlayerRef;
+	UPROPERTY(Category = References, BlueprintReadWrite)
 	class ATowerFactory* TowerFactoryRef;
 	class AGridFactory* GridFactoryRef;
 	class AActor* MysteryPropRef;
-	float MysteryPropHeight; ///< Used for spawning above ground
 public:
 	UPROPERTY(EditAnywhere, Category = Camera)
 	float CameraMovementSpeed; ///< How fast the camera pans

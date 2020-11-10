@@ -5,12 +5,16 @@
 #include "GridBase.h"
 #include "TowerFactory.h"
 
+#define TowerTraceChannel ECC_GameTraceChannel2
+
 // Sets default values
 ATowerFactory::ATowerFactory()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+ 	// You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = false;
+#ifdef UE_BUILD_DEBUG
+	UE_LOG(LogRandomTD, Log, TEXT("ATowerFactory::Constructor"));
+#endif
 }
 
 // Called when the game starts or when spawned
@@ -26,13 +30,14 @@ void ATowerFactory::BeginPlay()
 void ATowerFactory::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-void ATowerFactory::SpawnTower(AGridBase* SpawnGrid)
+////////////////////////////////////////////////////////////////////////
+// BLUEPRINT-CALLABLE FUNCTIONS
+////////////////////////////////////////////////////////////////////////
+// Provides the tower and the grid its spawned on
+void ATowerFactory::AddNewTowerToList(AGridBase* Grid, ATowerBase* BP_TowerBase)
 {
-	FVector Location = SpawnGrid->GetActorLocation();
-	ATowerBase* NewTower = (ATowerBase*)GetWorld()->SpawnActor(ATowerBase::StaticClass(), &Location);
-	ListOfActiveTowerRefs.Add(SpawnGrid, NewTower);
+	ListOfActiveTowerRefs.Add(Grid, BP_TowerBase);
 }
 

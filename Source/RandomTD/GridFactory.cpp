@@ -11,8 +11,10 @@ AGridFactory::AGridFactory()
 	, GridSize(128)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bCanEverTick = false;
+#ifdef UE_BUILD_DEBUG
+	UE_LOG(LogRandomTD, Log, TEXT("AGridFactory::Constructor"));
+#endif
 }
 
 // Called when the game starts or when spawned
@@ -24,10 +26,18 @@ void AGridFactory::BeginPlay()
 #endif
 }
 
-// Called by BP_GridFactory
-void AGridFactory::SetupGridArray(TSubclassOf<AGridBase> BP)
+// Called every frame
+void AGridFactory::Tick(float DeltaTime)
 {
-	GridBaseClass = BP;
+	Super::Tick(DeltaTime);
+}
+
+////////////////////////////////////////////////////////////////////////
+// BLUEPRINT-CALLABLE FUNCTIONS
+////////////////////////////////////////////////////////////////////////
+void AGridFactory::SetupGridArray(TSubclassOf<AGridBase> BP_GridBaseClass)
+{
+	GridBaseClass = BP_GridBaseClass;
 	// our starting point is this actor's location (GridFactory)
 	FVector OriginPoint = GetActorLocation();
 	for (int row = 0; row < Grid_X; row++)
@@ -44,25 +54,4 @@ void AGridFactory::SetupGridArray(TSubclassOf<AGridBase> BP)
 			GridBaseList.Add(NewGrid);
 		}
 	}
-}
-
-// Called every frame
-void AGridFactory::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-void AGridFactory::HighlightGrid(AActor* Grid)
-{
-	UE_LOG(LogRandomTD, Log, TEXT("%s"), *Grid->GetName())
-#ifdef UE_BUILD_DEBUG
-		UE_LOG(LogRandomTD, Log, TEXT("AGridFactory::HighlightGrid"));
-#endif
-	if (LastTarget)
-	{
-		LastTarget->TurnOffGrid();
-	}
-	LastTarget = (AGridBase*)Grid;
-	LastTarget->HighlightGrid();
 }

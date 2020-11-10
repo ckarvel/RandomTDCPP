@@ -16,39 +16,43 @@ class RANDOMTD_API AGridBase : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
+	///@brief Setup box collision and static mesh components.
 	AGridBase();
 
 protected:
-	// Called when the game starts or when spawned
+	/// @brief Setup dynamic material which will allow us to change
+	/// colors during runtime.
+	/// @see ARandomTDPlayerController::BeginPlay()
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
+	/// @brief Not used.
 	virtual void Tick(float DeltaTime) override;
 
-	void HighlightGrid();
+	/////////////////////////////////////////////////////////////////////////////////////
+	//																	Variables
+	/////////////////////////////////////////////////////////////////////////////////////
 
-	void TurnOffGrid();
+protected:
+	UPROPERTY(Category = Grid, EditAnywhere, BlueprintReadWrite)
+	bool bIsValidGrid; ///< If true, a tower can be placed on top of this grid.
 
+	UPROPERTY(Category = Grid, EditAnywhere, BlueprintReadWrite)
+	FLinearColor ValidTileColor; ///< The color for a valid highlight. Default: green
+
+	UPROPERTY(Category = Grid, EditAnywhere, BlueprintReadWrite)
+	FLinearColor InvalidTileColor; ///< The color for an invalid highlight. Default: red
+
+	UPROPERTY(Category = Grid, EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* StaticMesh; ///< How the grid will look in the world.
+																		///< Is set to basic "Plane" shape.
+
+	UPROPERTY(Category = Grid, VisibleAnywhere, BlueprintReadWrite)
+	UMaterialInstanceDynamic* DynamicMaterial; ///< Material that can be changed during
+																						 ///< runtime. This is an instance based off
+																						 /// of @c ParentMaterial.
 	UPROPERTY(Category = Grid, VisibleAnywhere, BlueprintReadOnly)
-	UBoxComponent* BoxComponent;
-
-	UPROPERTY(Category = Grid, VisibleAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* StaticMesh;
-
-	UPROPERTY(Category = Grid, EditAnywhere)
-	UMaterialInterface* ParentMaterial;
-
-	UPROPERTY(Category = Grid, EditAnywhere)
-	FLinearColor ValidTileColor;
-
-	UPROPERTY(Category = Grid, EditAnywhere)
-	FLinearColor InvalidTileColor;
-
-	UPROPERTY(Category = Grid, EditAnywhere)
-	bool bIsValidGrid; // can tower be placed on this grid?
-
-private:
-	UMaterialInstanceDynamic* DynamicMaterial;
+	UBoxComponent* BoxComponent; ///< Collision component required to have
+															 ///< the grid act like part of the floor.
+															 ///< (Can character step on this? Yes)
 };

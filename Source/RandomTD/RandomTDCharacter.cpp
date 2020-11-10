@@ -9,6 +9,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
+#include "RandomTD.h"
 
 ARandomTDCharacter::ARandomTDCharacter()
 {
@@ -42,6 +43,10 @@ ARandomTDCharacter::ARandomTDCharacter()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+#ifdef UE_BUILD_DEBUG
+	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDCharacter::Constructor"));
+#endif
 }
 
 void ARandomTDCharacter::Tick(float DeltaSeconds)

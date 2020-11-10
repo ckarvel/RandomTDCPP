@@ -3,6 +3,7 @@
 #include "RandomTDGameMode.h"
 #include "RandomTDPlayerController.h"
 #include "RandomTDCharacter.h"
+#include "RandomTD.h"
 #include "Camera/CameraActor.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -17,6 +18,10 @@ ARandomTDGameMode::ARandomTDGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+
+#ifdef UE_BUILD_DEBUG
+	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGameMode::Constructor"));
+#endif
 }
 
 void ARandomTDGameMode::StartPlay()

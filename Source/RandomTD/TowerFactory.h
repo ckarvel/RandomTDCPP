@@ -9,25 +9,45 @@
 
 #include "TowerFactory.generated.h"
 
+/// @class ATowerFactory 
+/// @brief Handles spawning/despawning towers.
+/// 
+/// Used as an interface for PlayerController to
+/// gain access to specific towers.
 UCLASS()
 class RANDOMTD_API ATowerFactory : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
+	///@brief Sets default values
 	ATowerFactory();
 
 protected:
-	// Called when the game starts or when spawned
+	/// @see ARandomTDPlayerController::BeginPlay()
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
+	/// @brief Not used.
 	virtual void Tick(float DeltaTime) override;
 
-	void SpawnTower(AGridBase* SpawnGrid);
+	/// @brief This function gets implemented by BP_TowerFactory and
+	/// gets called from C++ implemented class.
+	/// 
+	/// BP_TowerFactory has easy access to a variety of BP implemented
+	/// towers that can be spawned.
+	/// @param Grid The location where the tower will be spawned.
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="Tower")
+	void SpawnTower(AGridBase* Grid);
 
-//public:
-	TMap<AGridBase*, ATowerBase*> ListOfActiveTowerRefs;
+	/// @brief Called by BP_TowerFactory so it can provide us with a reference
+	/// to the newly spawned tower.
+	UFUNCTION(BlueprintCallable, Category = "Tower")
+	void AddNewTowerToList(AGridBase* Grid, ATowerBase* TowerBase);
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	//																	Variables
+	/////////////////////////////////////////////////////////////////////////////////////
+protected:
+	TMap<AGridBase*, ATowerBase*> ListOfActiveTowerRefs; ///< List of tower actors in the world.
 };
