@@ -29,6 +29,7 @@ public:
 	/// @brief Not used.
 	virtual void Tick(float DeltaTime) override;
 	
+	AGridBase* GetSelected();
 	/// @brief BP-callable function to create an array of GridBase
 	/// actors.
 	/// 

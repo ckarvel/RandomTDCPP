@@ -23,18 +23,22 @@
 /// - Highlighting items(including enemies / towers)
 /// - Camera movement with mouse cursor
 /// - Hover and see info (?)
-/// 
+/// @bug
+/// - RANDOM crashes from PlayerTick (line 105) with "exception access violation"
+/// - IsTowerInProgress crashes with "assertion on index >=0"
 /// @todo 
-/// - "Q"->Left-click on invalid grid: Do nothing
-/// - Left-click on tower: Highlight tower as "selected" (requires UI)
-/// - "Select tower"->"E": Destroy selected tower
-/// - "Select tower"->"Ctrl"->"Select duplicate tower"->"Q": Destroy the tower first-clicked ("Merge" step 1)
-/// - Rectangle selection of towers
+/// * "Select tower"->"E": Destroy selected tower
+/// * Select multiple towers with ctrl
+/// * Rectangle selection of towers
+/// * make invalid grids
+/// * "Q"->Left-click on invalid grid: Do nothing
+/// * "Select tower"->"Ctrl"->"Select duplicate tower"->"Q": Destroy the tower first-clicked ("Merge" step 1)
 /// @todo
 /// Complete:
 /// - "Q": Spawn mystery prop 
 /// - "Q"->Mouse Hover: Grids highlight green for valid, red for invalid
 /// - "Q"->Left-click on valid grid: Spawn tower, destroy prop
+/// - Left Click / Mouse Hover: Select/Highlight tower
 UCLASS()
 class ARandomTDPlayerController : public APlayerController
 {
@@ -65,6 +69,8 @@ protected:
 	///////////////////////////////////////////////////////////////////////////
 	// ON-TICK
 	///////////////////////////////////////////////////////////////////////////
+
+	void HandleSelectedObjects();
 
 	/// @brief Navigate player to the current cursor location
 	void MoveToMouseCursor();
@@ -145,12 +151,11 @@ public:
 	bool IsTowerInProgress();
 	UFUNCTION(BlueprintCallable, Category = "Helper")
 	FHitResult GetCursorHitResultOnObjectType(ECollisionChannel Channel);
-
 protected:
 	bool bMoveToMouseCursor; ///< True to move character to cursor
+	bool bTowerRequested;
 	class ARandomTDCharacter* PlayerRef;
-	UPROPERTY(Category = References, BlueprintReadWrite)
-	class ATowerFactory* TowerFactoryRef;
+	class ATowerFactory* TowerFactoryRef; ///< Reference to TowerFactory that can be accessed by Blueprint
 	class AGridFactory* GridFactoryRef;
 	class AActor* MysteryPropRef;
 public:

@@ -32,6 +32,34 @@ void AGridFactory::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+AGridBase* AGridFactory::GetSelected()
+{
+	for (int idx = 0; idx < GridBaseList.Num(); idx++)
+	{
+		if (!GridBaseList[idx] || !GridBaseList[idx]->IsPendingKill())
+		{
+#ifdef UE_BUILD_DEBUG
+			UE_LOG(LogRandomTD, Warning, TEXT("AGridFactory::GetSelected. Grid not expected to be nullptr..." \
+				"but we'll just remove it from our list..."));
+#endif
+			GridBaseList.RemoveAt(idx);
+			idx--; // will this work...
+#ifdef UE_BUILD_DEBUG
+			UE_LOG(LogRandomTD, Warning, TEXT("Decrementing idx...Let's see what happens"));
+#endif
+			continue;
+		}
+
+		// Should only have 1 grid selected, so return the first found
+		if (GridBaseList[idx]->IsSelected())
+		{
+			return GridBaseList[idx];
+		}
+	}
+	
+	return nullptr;
+}
+
 ////////////////////////////////////////////////////////////////////////
 // BLUEPRINT-CALLABLE FUNCTIONS
 ////////////////////////////////////////////////////////////////////////

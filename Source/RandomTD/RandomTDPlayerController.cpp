@@ -17,8 +17,8 @@
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDPlayerController::ARandomTDPlayerController()
 	: bMoveToMouseCursor(false)
+	, bTowerRequested(false)
 	, CameraMovementSpeed(300.0)
-	
 {
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
@@ -77,7 +77,7 @@ void ARandomTDPlayerController::BeginPlay()
 	auto Rotation = FRotator(-70, -0, 0); // pitch yaw roll
 	PlayerRef->GetPlayerCamera()->SetWorldLocationAndRotation(Location, Rotation);
 
-	TowerFactoryRef = (ATowerFactory*)UGameplayStatics::GetActorOfClass(
+	TowerFactoryRef = (ATowerFactory*) UGameplayStatics::GetActorOfClass(
 		GetWorld(), ATowerFactory::StaticClass());
 
 	GridFactoryRef = (AGridFactory*)UGameplayStatics::GetActorOfClass(
@@ -91,6 +91,8 @@ void ARandomTDPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
+	HandleSelectedObjects();
+
 	// keep updating the destination every tick while desired
 	if (bMoveToMouseCursor)
 	{
@@ -103,6 +105,28 @@ void ARandomTDPlayerController::PlayerTick(float DeltaTime)
 
 		MovePropToCursor();
 }
+
+void ARandomTDPlayerController::HandleSelectedObjects()
+{
+	if (!GridFactoryRef && !TowerFactoryRef)
+	{
+#ifdef UE_BUILD_DEBUG
+		UE_LOG(LogRandomTD, Warning, TEXT("PlayerController::HandleSelectedObjects"));
+		UE_LOG(LogRandomTD, Warning, TEXT("GridFactory and TowerFactory shouldn't be null..."));
+#endif
+		return;
+	}
+		
+	AGridBase* Grid = GridFactoryRef->GetSelected();
+	if (Grid && bTowerRequested)
+	{
+		TowerFactoryRef->SpawnTower(Grid);
+	}
+
+	ATowerBase* Tower = TowerFactoryRef->GetSelected();
+
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::MoveToMouseCursor()
 {

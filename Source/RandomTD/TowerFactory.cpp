@@ -32,6 +32,25 @@ void ATowerFactory::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+ATowerBase* ATowerFactory::GetSelected()
+{
+	for (auto& GridTowerPair : ListOfActiveTowerRefs)
+	{
+		// do I even need to worry about this??
+		if (GridTowerPair.Value == nullptr || GridTowerPair.Value->IsPendingKill())
+		{
+#ifdef UE_BUILD_DEBUG
+			UE_LOG(LogRandomTD, Warning, TEXT("ATowerFactory::GetSelected. Tower is null..."));
+#endif
+		}
+		if (GridTowerPair.Value->IsSelected())
+		{
+			return GridTowerPair.Value;
+		}
+	}
+	return nullptr;
+}
+
 ////////////////////////////////////////////////////////////////////////
 // BLUEPRINT-CALLABLE FUNCTIONS
 ////////////////////////////////////////////////////////////////////////
