@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "RandomTDCharacter.h"
+#include "RandomTDPlayerCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
@@ -11,7 +11,7 @@
 #include "Engine/World.h"
 #include "RandomTD.h"
 
-ARandomTDCharacter::ARandomTDCharacter()
+ARandomTDPlayerCharacter::ARandomTDPlayerCharacter()
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -45,11 +45,11 @@ ARandomTDCharacter::ARandomTDCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 #ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDCharacter::Constructor"));
+	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPlayerCharacter::Constructor"));
 #endif
 }
 
-void ARandomTDCharacter::Tick(float DeltaSeconds)
+void ARandomTDPlayerCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 

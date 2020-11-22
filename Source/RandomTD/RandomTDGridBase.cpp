@@ -1,13 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "RandomTDGridBase.h"
 #include "RandomTD.h"
-#include "GridBase.h"
 
 #define GridTraceChannel ECC_GameTraceChannel1
 
-// Sets default values
-AGridBase::AGridBase()
+ARandomTDGridBase::ARandomTDGridBase()
 	: bIsValidGrid(true)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -27,23 +25,21 @@ AGridBase::AGridBase()
 	RootComponent = BoxComponent;
 
 #ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("AGridBase::Constructor"));
+	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridBase::Constructor"));
 #endif
 }
-
+/////////////////////////////////////////////////////////////////////////////////////
 // Called when the game starts or when spawned
-void AGridBase::BeginPlay()
+void ARandomTDGridBase::BeginPlay()
 {
 	Super::BeginPlay();
 
 #ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("AGridBase::BeginPlay"));
+	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridBase::BeginPlay"));
 #endif
 }
-
-void AGridBase::Tick(float DeltaTime)
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDGridBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
-

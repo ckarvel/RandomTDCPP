@@ -6,18 +6,16 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 
-#include "RandomTDCharacter.h"
+#include "RandomTDPlayerCharacter.h"
 #include "RandomTD.h"
 
 #define GridTraceChannel ECC_GameTraceChannel1
 #define TowerTraceChannel ECC_GameTraceChannel2
 
-/////////////////////////////////////////////////////////////////////////////////////
-// SETUP FUNCTIONS
-/////////////////////////////////////////////////////////////////////////////////////
 ARandomTDPlayerController::ARandomTDPlayerController()
 	: bMoveToMouseCursor(false)
 	, bTowerRequested(false)
+	, bCtrlPressed(false)
 	, CameraMovementSpeed(300.0)
 {
 	bShowMouseCursor = true;
@@ -28,6 +26,10 @@ ARandomTDPlayerController::ARandomTDPlayerController()
 #ifdef UE_BUILD_DEBUG
 	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPlayerController::Constructor"));
 #endif
+
+	// define our custom object types
+	m_CustomObjectTypes.Add(UEngineTypes::ConvertToObjectType(GridTraceChannel));
+	m_CustomObjectTypes.Add(UEngineTypes::ConvertToObjectType(TowerTraceChannel));
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::SetupInputComponent()
@@ -45,10 +47,15 @@ void ARandomTDPlayerController::SetupInputComponent()
 	InputComponent->BindAction("CreateBasicTower",
 		IE_Pressed, this, &ARandomTDPlayerController::OnCreateBasicTowerPressed);
 
-	InputComponent->BindAction("PerformAction",
-		IE_Pressed, this, &ARandomTDPlayerController::OnPerformActionPressed);
-	InputComponent->BindAction("PerformAction",
-		IE_Released, this, &ARandomTDPlayerController::OnPerformActionReleased);
+	InputComponent->BindAction("Interact",
+		IE_Pressed, this, &ARandomTDPlayerController::OnInteractPressed);
+	InputComponent->BindAction("Interact",
+		IE_Released, this, &ARandomTDPlayerController::OnInteractReleased);
+
+	InputComponent->BindAction("Multi-Select",
+		IE_Pressed, this, &ARandomTDPlayerController::OnMultiSelectPressed);
+	InputComponent->BindAction("Multi-Select",
+		IE_Released, this, &ARandomTDPlayerController::OnMultiSelectReleased);
 
 	// camera movement
 	InputComponent->BindAxis("MoveForward", this, &ARandomTDPlayerController::MoveCameraForward);
@@ -59,8 +66,9 @@ void ARandomTDPlayerController::SetupInputComponent()
 void ARandomTDPlayerController::BeginPlay()
 {
 	Super::BeginPlay(); // without this, beginplay in derived classes wont get called.
+
 	// get ref to our player
-	PlayerRef = (ARandomTDCharacter*)GetPawn();
+	PlayerRef = (ARandomTDPlayerCharacter*)GetPawn();
 #ifdef UE_BUILD_DEBUG
 	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPlayerController::BeginPlay"));
 #endif
@@ -73,25 +81,20 @@ void ARandomTDPlayerController::BeginPlay()
 	}
 
 	// set initial camera location
-	auto Location = FVector(-450, 0, 700);
-	auto Rotation = FRotator(-70, -0, 0); // pitch yaw roll
+	auto Location = FVector(-835.0, -10.0, 1610.0);
+	auto Rotation = FRotator(-70, 0, 0); // pitch yaw roll
 	PlayerRef->GetPlayerCamera()->SetWorldLocationAndRotation(Location, Rotation);
 
-	TowerFactoryRef = (ATowerFactory*) UGameplayStatics::GetActorOfClass(
-		GetWorld(), ATowerFactory::StaticClass());
+	TowerFactoryRef = (ARandomTDTowerFactory*) UGameplayStatics::GetActorOfClass(
+		GetWorld(), ARandomTDTowerFactory::StaticClass());
 
-	GridFactoryRef = (AGridFactory*)UGameplayStatics::GetActorOfClass(
-		GetWorld(), AGridFactory::StaticClass());
+	GridFactoryRef = (ARandomTDGridFactory*)UGameplayStatics::GetActorOfClass(
+		GetWorld(), ARandomTDGridFactory::StaticClass());
 }
-
-/////////////////////////////////////////////////////////////////////////////////////
-// TICK FUNCTIONS
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-
-	HandleSelectedObjects();
 
 	// keep updating the destination every tick while desired
 	if (bMoveToMouseCursor)
@@ -100,33 +103,91 @@ void ARandomTDPlayerController::PlayerTick(float DeltaTime)
 		MoveToMouseCursor();
 	}
 
-	if (!IsTowerInProgress())
+	if (!bTowerRequested)
 		return;
 
 		MovePropToCursor();
 }
-
-void ARandomTDPlayerController::HandleSelectedObjects()
+/////////////////////////////////////////////////////////////////////////////////////
+FHitResult ARandomTDPlayerController::GetHitOnCustomObjectTypes(bool UseChannel, ECollisionChannel Channel)
 {
-	if (!GridFactoryRef && !TowerFactoryRef)
+	FHitResult Hit;
+	if (UseChannel)
 	{
-#ifdef UE_BUILD_DEBUG
-		UE_LOG(LogRandomTD, Warning, TEXT("PlayerController::HandleSelectedObjects"));
-		UE_LOG(LogRandomTD, Warning, TEXT("GridFactory and TowerFactory shouldn't be null..."));
-#endif
+		TArray<TEnumAsByte<EObjectTypeQuery>> Objects;
+		Objects.Add(UEngineTypes::ConvertToObjectType(Channel));
+		GetHitResultUnderCursorForObjects(Objects, false, Hit);
+	}
+	else
+	{
+		GetHitResultUnderCursorForObjects(m_CustomObjectTypes, false, Hit);
+	}
+	return Hit;
+}
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPlayerController::OnInteractPressed()
+{
+	// find object that was clicked on
+	FHitResult Hit = GetHitOnCustomObjectTypes();
+	if (!Hit.bBlockingHit)
+	{
+		TowerFactoryRef->UnselectAll();
 		return;
 	}
-		
-	AGridBase* Grid = GridFactoryRef->GetSelected();
-	if (Grid && bTowerRequested)
+	ECollisionChannel ObjectType = Hit.Component->GetCollisionObjectType();
+	switch (ObjectType)
 	{
-		TowerFactoryRef->SpawnTower(Grid);
+	case GridTraceChannel:
+		// Grid clicked on:
+		if (bTowerRequested)
+		{
+			ARandomTDGridBase* Grid = (ARandomTDGridBase*)Hit.GetActor();
+			if (Grid->IsValid())
+			{
+				TowerFactoryRef->SpawnTower(Grid);
+				Grid->SetInvalid();
+				bTowerRequested = false;
+				DestroyProp();
+			}
+		}
+		else
+		{
+			TowerFactoryRef->UnselectAll();
+		}
+		break;
+	case TowerTraceChannel:
+		// Tower clicked on:
+		if (!bCtrlPressed)
+		{
+			// multi-select mode not activated so unselect all others before selecting the new one
+			TowerFactoryRef->UnselectAll();
+		}
+		TowerFactoryRef->Select((ARandomTDTowerBase*)Hit.GetActor());
+		break;
+	default:
+		// If something other than Tower or Grid was clicked on:
+		TowerFactoryRef->UnselectAll();
+		break;
 	}
-
-	ATowerBase* Tower = TowerFactoryRef->GetSelected();
-
 }
-
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPlayerController::OnCreateBasicTowerPressed()
+{
+	if (bTowerRequested)
+		return; // ignore request if a request is already active
+	bTowerRequested = true;
+	SpawnMystery(); // call blueprint to spawn specific asset
+}
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPlayerController::OnMultiSelectPressed()
+{
+	bCtrlPressed = true;
+}
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPlayerController::OnMultiSelectReleased()
+{
+	bCtrlPressed = false;
+}
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::MoveToMouseCursor()
 {
@@ -147,14 +208,10 @@ void ARandomTDPlayerController::MoveToMouseCursor()
 		}
 	}
 }
-
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::MovePropToCursor()
 {
-	if (!IsTowerInProgress()) // just in case...
-		return;
-
-	FHitResult Hit = GetCursorHitResultOnObjectType(GridTraceChannel);
+	FHitResult Hit = GetHitOnCustomObjectTypes(true, GridTraceChannel);
 	// TODO: constrain cursor movement within grid so
 	// prop will move even when cursor is outside the grid
 	if (Hit.bBlockingHit) // TODO: if grid hit
@@ -196,44 +253,13 @@ void ARandomTDPlayerController::MoveCameraRight(float AxisValue)
 	// set camera position to modified location
 	PlayerRef->GetPlayerCamera()->SetWorldLocation(Location,false,nullptr, ETeleportType::TeleportPhysics);
 }
-
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::DestroyProp()
 {
-	if (!IsTowerInProgress()) // just in case...
-		return;
 	MysteryPropRef->Destroy();
 }
-
-/////////////////////////////////////////////////////////////////////////////////////
-// SETTERS & GETTERS
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::SetMoveToCursor(bool Value)
 {
 	bMoveToMouseCursor = Value;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDPlayerController::SetTowerInProgress(AActor* MysteryProp)
-{
-	MysteryPropRef = MysteryProp;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-bool ARandomTDPlayerController::IsTowerInProgress()
-{
-	if (MysteryPropRef && !MysteryPropRef->IsPendingKill())
-		return true;
-	return false;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-FHitResult ARandomTDPlayerController::GetCursorHitResultOnObjectType(ECollisionChannel Channel)
-{
-	FHitResult Hit;
-	EObjectTypeQuery ObjectType = UEngineTypes::ConvertToObjectType(Channel);
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-	ObjectTypes.Push(ObjectType);
-	GetHitResultUnderCursorForObjects(ObjectTypes, false, Hit);
-	return Hit;
 }

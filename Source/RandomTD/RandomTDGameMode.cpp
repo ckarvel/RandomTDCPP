@@ -2,7 +2,7 @@
 
 #include "RandomTDGameMode.h"
 #include "RandomTDPlayerController.h"
-#include "RandomTDCharacter.h"
+#include "RandomTDPlayerCharacter.h"
 #include "RandomTD.h"
 #include "Camera/CameraActor.h"
 #include "UObject/ConstructorHelpers.h"

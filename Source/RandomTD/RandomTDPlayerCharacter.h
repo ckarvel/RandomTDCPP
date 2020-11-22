@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "RandomTDCharacter.generated.h"
+#include "RandomTDPlayerCharacter.generated.h"
 
 UCLASS(Blueprintable)
-class ARandomTDCharacter : public ACharacter
+class ARandomTDPlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	ARandomTDCharacter();
+	ARandomTDPlayerCharacter();
 
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;

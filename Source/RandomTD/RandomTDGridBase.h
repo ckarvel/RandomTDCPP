@@ -8,16 +8,16 @@
 #include "Components/StaticMeshComponent.h"
 #include "Materials/MaterialInterface.h"
 #include "Math/Color.h"
-#include "GridBase.generated.h"
+#include "RandomTDGridBase.generated.h"
 
 UCLASS()
-class RANDOMTD_API AGridBase : public AActor
+class RANDOMTD_API ARandomTDGridBase : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	///@brief Setup box collision and static mesh components.
-	AGridBase();
+	ARandomTDGridBase();
 
 protected:
 	/// @brief Setup dynamic material which will allow us to change
@@ -26,12 +26,15 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Not used.
 	virtual void Tick(float DeltaTime) override;
-
 	/////////////////////////////////////////////////////////////////////////////////////
-	//																	Variables
+	void SetValid() { bIsValidGrid = true;  }
 	/////////////////////////////////////////////////////////////////////////////////////
+	void SetInvalid() { bIsValidGrid = false; }
+	/////////////////////////////////////////////////////////////////////////////////////
+	bool IsValid() { return bIsValidGrid; }
 
 protected:
 	UPROPERTY(Category = Grid, EditAnywhere, BlueprintReadWrite)
