@@ -7,10 +7,10 @@
 
 #define TowerTraceChannel ECC_GameTraceChannel2
 
+/////////////////////////////////////////////////////////////////////////////////////
 ARandomTDTowerFactory::ARandomTDTowerFactory()
 {
- 	// You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = false; // no ticking
 #ifdef UE_BUILD_DEBUG
 	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDTowerFactory::Constructor"));
 #endif

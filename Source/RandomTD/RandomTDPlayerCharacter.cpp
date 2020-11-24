@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RandomTDPlayerCharacter.h"
 #include "UObject/ConstructorHelpers.h"
@@ -11,6 +11,7 @@
 #include "Engine/World.h"
 #include "RandomTD.h"
 
+/////////////////////////////////////////////////////////////////////////////////////
 ARandomTDPlayerCharacter::ARandomTDPlayerCharacter()
 {
 	// Set size for player capsule
@@ -32,11 +33,6 @@ ARandomTDPlayerCharacter::ARandomTDPlayerCharacter()
 	// Create a decal in the world to show the cursor's location
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/TopDownCPP/Blueprints/M_Cursor_Decal.M_Cursor_Decal'"));
-	if (DecalMaterialAsset.Succeeded())
-	{
-		CursorToWorld->SetDecalMaterial(DecalMaterialAsset.Object);
-	}
 	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
 	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 
@@ -48,7 +44,7 @@ ARandomTDPlayerCharacter::ARandomTDPlayerCharacter()
 	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPlayerCharacter::Constructor"));
 #endif
 }
-
+/////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);

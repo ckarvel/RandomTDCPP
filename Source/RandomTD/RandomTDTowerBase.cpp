@@ -8,8 +8,7 @@ FOnUIDeleteTowerEvent ARandomTDTowerBase::UIDeleteTowerEvent;
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDTowerBase::ARandomTDTowerBase()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = false; // no ticking
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDTowerBase::BeginPlay()
@@ -29,7 +28,6 @@ void ARandomTDTowerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
-
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDTowerBase::DestroyTower()
 {

@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -29,6 +29,7 @@
 /// - lerp highlighting of objects (clicking vs hovering looks a bit diff)
 /// - holding prop over tower ignores grid - make it so when prop is up, ignore tower
 /// @todo
+/// * Fix the enemy walk pathing... doesnt run completely in center.
 /// * Rectangle selection of towers
 /// * make invalid grids
 /// * "Select tower"->"Ctrl"->"Select duplicate tower"->"Q": Destroy the tower first-clicked ("Merge" step 1)
@@ -186,4 +187,6 @@ Notes
 		(ARandomTDTowerFactory*) UGameplayStatics::GetActorOfClass(GetWorld(), ARandomTDTowerFactory::StaticClass());
 
 	Blueprints do not support uint32/16... just use int if need to expose to blueprint
+
+	UE_LOG(LogRandomTD, Log, TEXT("Key: %d %s"), i, *BlackboardAsset->Keys[i].EntryName.ToString());
 */

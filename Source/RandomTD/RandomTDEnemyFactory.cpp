@@ -1,0 +1,22 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "RandomTDEnemyFactory.h"
+
+/////////////////////////////////////////////////////////////////////////////////////
+ARandomTDEnemyFactory::ARandomTDEnemyFactory()
+{
+	PrimaryActorTick.bCanEverTick = false;
+
+}
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDEnemyFactory::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDEnemyFactory::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}

@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RandomTDPlayerController.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
@@ -12,6 +12,7 @@
 #define GridTraceChannel ECC_GameTraceChannel1
 #define TowerTraceChannel ECC_GameTraceChannel2
 
+/////////////////////////////////////////////////////////////////////////////////////
 ARandomTDPlayerController::ARandomTDPlayerController()
 	: bMoveToMouseCursor(false)
 	, bTowerRequested(false)

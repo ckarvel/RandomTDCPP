@@ -3,18 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
-#include "RandomTDEnemyCharacter.generated.h"
+#include "GameFramework/Actor.h"
+#include "RandomTDEnemyFactory.generated.h"
 
 UCLASS()
-class RANDOMTD_API ARandomTDEnemyCharacter : public ACharacter
+class RANDOMTD_API ARandomTDEnemyFactory : public AActor
 {
 	GENERATED_BODY()
-
-public:
+	
+public:	
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief
-	ARandomTDEnemyCharacter();
+	ARandomTDEnemyFactory();
 
 protected:
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -25,9 +25,5 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief
 	virtual void Tick(float DeltaTime) override;
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

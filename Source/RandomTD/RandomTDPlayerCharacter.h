@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -14,22 +14,27 @@ class ARandomTDPlayerCharacter : public ACharacter
 public:
 	ARandomTDPlayerCharacter();
 
-	// Called every frame.
+	/////////////////////////////////////////////////////////////////////////////////////
+	///@brief
 	virtual void Tick(float DeltaSeconds) override;
 
-	/** Returns CursorToWorld subobject **/
+	/////////////////////////////////////////////////////////////////////////////////////
+	///@brief
 	FORCEINLINE class UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
 
-	/** Returns Camera subobject **/
+	/////////////////////////////////////////////////////////////////////////////////////
+	///@brief
 	FORCEINLINE class UCameraComponent* GetPlayerCamera() { return PlayerCamera; }
 
 private:
 
-	/** A decal that projects to the cursor location. */
+	/////////////////////////////////////////////////////////////////////////////////////
+	///@brief
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UDecalComponent* CursorToWorld;
 
-	/** Camera controlled by PlayerController */
+	/////////////////////////////////////////////////////////////////////////////////////
+	///@brief
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* PlayerCamera;
 };

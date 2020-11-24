@@ -5,11 +5,11 @@
 
 #define GridTraceChannel ECC_GameTraceChannel1
 
+/////////////////////////////////////////////////////////////////////////////////////
 ARandomTDGridBase::ARandomTDGridBase()
 	: bIsValidGrid(true)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = false; // no need for ticking
 
 	// setup grid's collision
 	auto BoxExtent = FVector(64.0, 64.0, 1.0);
@@ -29,7 +29,6 @@ ARandomTDGridBase::ARandomTDGridBase()
 #endif
 }
 /////////////////////////////////////////////////////////////////////////////////////
-// Called when the game starts or when spawned
 void ARandomTDGridBase::BeginPlay()
 {
 	Super::BeginPlay();
