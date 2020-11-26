@@ -24,18 +24,18 @@ ARandomTDGridBase::ARandomTDGridBase()
 	BoxComponent->bHiddenInGame = false;
 	RootComponent = BoxComponent;
 
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridBase::Constructor"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridBase::Constructor"));
+//#endif
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGridBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridBase::BeginPlay"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridBase::BeginPlay"));
+//#endif
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGridBase::Tick(float DeltaTime)

@@ -30,4 +30,5 @@ public:
 	/// @brief
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	int GetCurrentIdx() { return 0; }
 };
