@@ -10,18 +10,21 @@
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDEnemyCharacter::ARandomTDEnemyCharacter()
 	: CurrentWaypointIndex(0)
+	, MaxWalkSpeed(300.0)
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
-	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
-	GetCharacterMovement()->bConstrainToPlane = true;
-	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+}
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDEnemyCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	// configure character movement
+	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyCharacter::Tick(float DeltaTime)

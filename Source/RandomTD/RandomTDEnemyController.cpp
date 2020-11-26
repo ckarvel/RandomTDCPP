@@ -7,9 +7,9 @@
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDEnemyController::ARandomTDEnemyController()
 {
-#ifdef UE_BUILD_DEBUG
-UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyController::Constructor"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyController::Constructor"));
+//#endif
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyController::BeginPlay()

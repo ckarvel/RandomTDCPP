@@ -16,6 +16,7 @@ ARandomTDPathSpline::ARandomTDPathSpline()
 	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPathSpline::Constructor"));
 #endif
 	SplinePath = CreateDefaultSubobject<USplineComponent>("SplinePath");
+	RootComponent = SplinePath;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPathSpline::BeginPlay()
@@ -24,6 +25,11 @@ void ARandomTDPathSpline::BeginPlay()
 #ifdef UE_BUILD_DEBUG
 	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPathSpline::BeginPlay"));
 #endif
+}
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPathSpline::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 	// store all path waypoints
 	NumWaypoints = SplinePath->GetNumberOfSplinePoints();
 	for (int i = 0; i < NumWaypoints; i++)
