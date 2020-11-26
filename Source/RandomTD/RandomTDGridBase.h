@@ -4,10 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Components/BoxComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include "Materials/MaterialInterface.h"
-#include "Math/Color.h"
 #include "RandomTDGridBase.generated.h"
 
 UCLASS()
@@ -52,15 +48,15 @@ protected:
 	FLinearColor InvalidTileColor; ///< The color for an invalid highlight. Default: red
 
 	UPROPERTY(Category = Grid, EditAnywhere, BlueprintReadWrite)
-	UStaticMeshComponent* StaticMesh; ///< How the grid will look in the world.
+	class UStaticMeshComponent* StaticMesh; ///< How the grid will look in the world.
 																		///< Is set to basic "Plane" shape.
 
 	UPROPERTY(Category = Grid, VisibleAnywhere, BlueprintReadWrite)
-	UMaterialInstanceDynamic* DynamicMaterial; ///< Material that can be changed during
+	class UMaterialInstanceDynamic* DynamicMaterial; ///< Material that can be changed during
 																						 ///< runtime. This is an instance based off
 																						 /// of @c ParentMaterial.
 	UPROPERTY(Category = Grid, VisibleAnywhere, BlueprintReadOnly)
-	UBoxComponent* BoxComponent; ///< Collision component required to have
+	class UBoxComponent* BoxComponent; ///< Collision component required to have
 															 ///< the grid act like part of the floor.
 															 ///< (Can character step on this? Yes)
 };

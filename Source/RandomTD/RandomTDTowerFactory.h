@@ -4,9 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "RandomTDGridBase.h"
-#include "RandomTDTowerBase.h"
-
 #include "RandomTDTowerFactory.generated.h"
 
 /// @class ARandomTDTowerFactory 

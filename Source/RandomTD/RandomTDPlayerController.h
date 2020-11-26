@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "RandomTDTowerFactory.h"
-#include "RandomTDGridFactory.h"
 #include "RandomTDPlayerController.generated.h"
 
 /// @class ARandomTDPlayerController
@@ -174,19 +172,22 @@ public:
 /*
 Notes
 -------
-	SpawnActor:
+	1. SpawnActor:
 		(ACameraActor*)GetWorld()->SpawnActor(ACameraActor::StaticClass(), &Location, &Rotation);
 
-	Rotation order:
+	2. Rotation order:
 		Pitch, Yaw, Roll
 
-	UnrealEditor.exe crashes on startup
+	3. UnrealEditor.exe crashes on startup
 		If crash on start, debug by running VS in DevelopmentEditor
 
-	GetActorOfClass:
+	4. GetActorOfClass:
 		(ARandomTDTowerFactory*) UGameplayStatics::GetActorOfClass(GetWorld(), ARandomTDTowerFactory::StaticClass());
 
-	Blueprints do not support uint32/16... just use int if need to expose to blueprint
+	5. Blueprints do not support uint32/16... just use int if need to expose to blueprint
 
-	UE_LOG(LogRandomTD, Log, TEXT("Key: %d %s"), i, *BlackboardAsset->Keys[i].EntryName.ToString());
+	6. UE_LOG(LogRandomTD, Log, TEXT("Key: %d %s"), i, *BlackboardAsset->Keys[i].EntryName.ToString());
+
+	7. class is required in front of variable declarations is forward declaring!!! means that you didnt include header
+	so we gon forward declare so compiler knows.
 */

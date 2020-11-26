@@ -21,14 +21,17 @@ protected:
 	/// @brief
 	virtual void BeginPlay() override;
 
-public:	
+	int CurrentWaypoint;
+	class ARandomTDPathSpline* PathSplineRef;
+
+public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief
 	virtual void Tick(float DeltaTime) override;
-
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	int GetCurrentIdx() { return 0; }
+	/////////////////////////////////////////////////////////////////////////////////////
+	/// @brief
+	FVector GetNextWaypoint();
 };

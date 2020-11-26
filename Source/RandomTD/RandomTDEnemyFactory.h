@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "RandomTDEnemyCharacter.h"
 #include "RandomTDEnemyFactory.generated.h"
 
 UCLASS()

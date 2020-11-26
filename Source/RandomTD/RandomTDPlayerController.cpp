@@ -1,11 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RandomTDPlayerController.h"
+#include "Engine/World.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Engine/World.h"
-
+#include "RandomTDTowerBase.h"
+#include "RandomTDGridBase.h"
+#include "RandomTDTowerFactory.h"
+#include "RandomTDGridFactory.h"
 #include "RandomTDPlayerCharacter.h"
 #include "RandomTD.h"
 

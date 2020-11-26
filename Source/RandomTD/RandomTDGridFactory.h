@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "RandomTDGridBase.h"
 #include "RandomTDGridFactory.generated.h"
 
 /// @class ARandomTDGridFactory 

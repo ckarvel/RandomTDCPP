@@ -1,6 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RandomTDGridBase.h"
+#include "Components/BoxComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Materials/MaterialInterface.h"
+#include "Math/Color.h"
 #include "RandomTD.h"
 
 #define GridTraceChannel ECC_GameTraceChannel1

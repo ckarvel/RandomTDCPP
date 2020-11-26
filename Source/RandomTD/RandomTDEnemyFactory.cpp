@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RandomTDEnemyFactory.h"
+#include "RandomTDEnemyCharacter.h"
 #include "RandomTDGameMode.h"
 #include "RandomTD.h"
 

@@ -3,6 +3,7 @@
 #include "RandomTDTowerFactory.h"
 #include "Engine/World.h"
 #include "RandomTDGridBase.h"
+#include "RandomTDTowerBase.h"
 #include "RandomTD.h"
 
 #define TowerTraceChannel ECC_GameTraceChannel2
