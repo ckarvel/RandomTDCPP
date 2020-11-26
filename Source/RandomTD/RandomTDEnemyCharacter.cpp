@@ -9,7 +9,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDEnemyCharacter::ARandomTDEnemyCharacter()
-	: CurrentWaypoint(0)
+	: CurrentWaypointIndex(0)
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
 	// Configure character movement
@@ -22,8 +22,6 @@ ARandomTDEnemyCharacter::ARandomTDEnemyCharacter()
 void ARandomTDEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	PathSplineRef = (ARandomTDPathSpline*)UGameplayStatics::GetActorOfClass(
-		GetWorld(), ARandomTDPathSpline::StaticClass());
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyCharacter::Tick(float DeltaTime)
@@ -38,14 +36,16 @@ void ARandomTDEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 /////////////////////////////////////////////////////////////////////////////////////
 FVector ARandomTDEnemyCharacter::GetNextWaypoint()
 {
-	if (!PathSplineRef)
+	int Index = CurrentWaypointIndex;
+	
+	// if next waypoint is invalid, keep and return last waypoint
+	if (ARandomTDPathSpline::NumWaypoints <= ++Index)
 	{
-#ifdef UE_BUILD_DEBUG
-		UE_LOG(LogRandomTD, Warning, TEXT("EnemyChar: PathSpline Null??"));
-#endif
-		return FVector(); // this shouldn't happen
+		return ARandomTDPathSpline::GetWaypointAtIndex(CurrentWaypointIndex);
 	}
 
-	return PathSplineRef->GetWaypointAtIndex(++CurrentWaypoint);
+	// next waypoint is valid so increment index and return
+	CurrentWaypointIndex = Index;
+	return ARandomTDPathSpline::GetWaypointAtIndex(CurrentWaypointIndex);
 }
 /////////////////////////////////////////////////////////////////////////////////////

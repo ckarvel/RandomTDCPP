@@ -2,6 +2,7 @@
 
 #include "RandomTDEnemyFactory.h"
 #include "RandomTDEnemyCharacter.h"
+#include "RandomTDPathSpline.h"
 #include "RandomTDGameMode.h"
 #include "RandomTD.h"
 
@@ -9,6 +10,7 @@
 ARandomTDEnemyFactory::ARandomTDEnemyFactory()
 	: EnemiesSpawned(0)
 	, MaxEnemiesPerRound(10)
+	, SpawnLocation(FVector())
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
 #ifdef UE_BUILD_DEBUG
@@ -49,7 +51,7 @@ void ARandomTDEnemyFactory::StartSpawnTimer(int CurrentRound)
 void ARandomTDEnemyFactory::SpawnNewEnemy()
 {
 	// call BP to spawn specific enemy asset
-	SpawnEnemy();
+	SpawnEnemy(ARandomTDPathSpline::GetWaypointAtIndex(0)); // get first location
 	EnemiesSpawned++;
 
 	if (EnemiesSpawned == MaxEnemiesPerRound)

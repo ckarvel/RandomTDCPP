@@ -39,7 +39,7 @@ protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "EnemyBase")
-	void SpawnEnemy();
+	void SpawnEnemy(FVector Location);
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Unselect enemy if any selected
 	/// @todo
@@ -57,6 +57,7 @@ protected:
 	/// to valid... idk if this is the right place for that but it will do for now.
 	void DestroyEnemy(ARandomTDEnemyCharacter* Enemy);
 
+	FVector SpawnLocation;
 	FTimerHandle SpawnEnemyTimerHandle;
 	TArray<ARandomTDEnemyCharacter*> ListOfEnemies; ///< List of enemy actors in the world.
 

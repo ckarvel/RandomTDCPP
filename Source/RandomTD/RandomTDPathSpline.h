@@ -16,21 +16,20 @@ public:
 	ARandomTDPathSpline();
 
 protected:
-	// Called when the game starts or when spawned
+	/////////////////////////////////////////////////////////////////////////////////////
+	/// @brief
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, Category = Path)
-	TArray<FVector> ListOfWaypoints;
-
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	FVector GetWaypointAtIndex(int Index);
-
 	/////////////////////////////////////////////////////////////////////////////////////
-	UPROPERTY(EditAnywhere, Category = Path)
-	class USplineComponent* SplinePath;
+	/// @brief
+	virtual void Tick(float DeltaTime) override;
+	/////////////////////////////////////////////////////////////////////////////////////
+	/// @brief
+	static FVector GetWaypointAtIndex(int Index);
 
-	int NumWaypoints;
+	UPROPERTY(EditAnywhere, Category = "Spline")
+	class USplineComponent* SplinePath;
+	static int NumWaypoints;
+	static TArray<FVector> ListOfWaypoints;
 };

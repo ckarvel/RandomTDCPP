@@ -21,8 +21,7 @@ protected:
 	/// @brief
 	virtual void BeginPlay() override;
 
-	int CurrentWaypoint;
-	class ARandomTDPathSpline* PathSplineRef;
+	int CurrentWaypointIndex;
 
 public:
 	/////////////////////////////////////////////////////////////////////////////////////

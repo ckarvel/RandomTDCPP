@@ -5,9 +5,11 @@
 #include "Components/SplineComponent.h"
 #include "RandomTD.h"
 
+int ARandomTDPathSpline::NumWaypoints;
+TArray<FVector> ARandomTDPathSpline::ListOfWaypoints;
+
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDPathSpline::ARandomTDPathSpline()
-	: NumWaypoints(0)
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
 #ifdef UE_BUILD_DEBUG
