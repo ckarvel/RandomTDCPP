@@ -82,8 +82,8 @@ void ARandomTDGameMode::OnRoundSecondElapsed()
 	float TimeElapsed = GetWorldTimerManager().GetTimerElapsed(RoundCountTimerHandle);
 	int Seconds = FGenericPlatformMath::RoundToInt(TimeElapsed);
 	
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGameMode::OnRoundSecondElapsed %d"), Seconds);
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGameMode::OnRoundSecondElapsed %d"), Seconds);
+//#endif
 	RoundSecondElapsedEvent.Broadcast(Seconds);
 }

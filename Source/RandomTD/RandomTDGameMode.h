@@ -24,8 +24,8 @@ public:
 	virtual void StartPlay() override;
 
 	void StartPreRoundTimer();
-	void StartRoundTimer();
 	void StartElapsedTimer();
+	void StartRoundTimer();
 	void OnRoundChange();
 	void OnRoundSecondElapsed();
 

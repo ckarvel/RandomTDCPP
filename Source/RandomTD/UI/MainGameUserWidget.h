@@ -8,9 +8,9 @@
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "MainGameUserWidget.generated.h"
 
-/**
- * 
- */
+/////////////////////////////////////////////////////////////////////////////////////
+/// @remark Delegate binding happens in constructor. This can cause a crash if UI is
+/// constructed before dependencies.
 UCLASS()
 class RANDOMTD_API UMainGameUserWidget : public UUserWidget
 {
