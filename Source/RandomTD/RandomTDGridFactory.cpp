@@ -33,15 +33,16 @@ void ARandomTDGridFactory::Tick(float DeltaTime)
 void ARandomTDGridFactory::SetupGridArray(TSubclassOf<ARandomTDGridBase> BP_GridBaseClass)
 {
 	GridBaseClass = BP_GridBaseClass;
-	// our starting point is this actor's location (GridFactory)
-	FVector OriginPoint = GetActorLocation();
+	// static mesh is a little bit not the same size as the grids but.. its ok. + 11 on y axis would center
+	// but it looks weird
+	FVector OriginPoint =  FVector(GridSize / 2, GridSize / 2, 0); // To get grids centered on ground
 	for (int row = 0; row < Grid_X; row++)
 	{
-		float x = row * GridSize - float(Grid_X * GridSize); // 2.0;
+		float x = row * GridSize - float(Grid_X * GridSize) / 2.0;
 		for (int col = 0; col < Grid_Y; col++)
 		{
 			// find the row,column index for each box
-			float y = col * GridSize - float(Grid_Y * GridSize);// / 2.0;
+			float y = col * GridSize - float(Grid_Y * GridSize) / 2.0;
 			FVector NewLocation = OriginPoint + FVector(x, y, 0.0);
 
 			// spawn grid and add to our list

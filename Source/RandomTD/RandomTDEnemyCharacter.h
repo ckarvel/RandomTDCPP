@@ -21,7 +21,8 @@ protected:
 	/// @brief
 	virtual void BeginPlay() override;
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief Handles property changes in instances
+	/// @brief Character movement walk speed is set to MaxWalkSpeed in constructor. If MaxWalkSpeed
+	/// is changed in instance, without this call character movement won't get updated!
 	virtual void PostInitializeComponents() override;
 
 	int CurrentWaypointIndex;

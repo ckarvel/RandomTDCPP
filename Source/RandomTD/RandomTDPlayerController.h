@@ -27,6 +27,7 @@
 /// - lerp highlighting of objects (clicking vs hovering looks a bit diff)
 /// - holding prop over tower ignores grid - make it so when prop is up, ignore tower
 /// @todo
+/// * cancel prop with right-click
 /// * Fix the enemy walk pathing... doesnt run completely in center.
 /// * Rectangle selection of towers
 /// * make invalid grids

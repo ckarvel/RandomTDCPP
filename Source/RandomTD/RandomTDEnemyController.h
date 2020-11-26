@@ -30,5 +30,14 @@ protected:
 	/// @brief
 	virtual void Tick(float DeltaTime) override;
 
-	class ARandomTDEnemyController* EnemyRef;
+	UPROPERTY(EditAnywhere, Category = "Enemy")
+	class UBlackboardData* BlackboardAssetRef;
+	UPROPERTY(EditAnywhere, Category = "Enemy")
+	class UBlackboardComponent* BlackboardComponentRef;
+	UPROPERTY(EditAnywhere, Category = "Enemy")
+	class UBehaviorTree* BTAssetRef;
+	UPROPERTY(EditAnywhere, Category = "Enemy")
+	FName BBKey_EnemyActor;
+	UPROPERTY(EditAnywhere, Category = "Enemy")
+	FName BBKey_Waypoint;
 };
