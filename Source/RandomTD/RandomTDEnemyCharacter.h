@@ -26,6 +26,8 @@ protected:
 	virtual void PostInitializeComponents() override;
 
 	int CurrentWaypointIndex;
+	bool FinishedPath;
+	friend class ARandomTDEnemyController;
 
 public:
 	/////////////////////////////////////////////////////////////////////////////////////

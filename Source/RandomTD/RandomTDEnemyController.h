@@ -6,6 +6,9 @@
 #include "AIController.h"
 #include "RandomTDEnemyController.generated.h"
 
+class ARandomTDEnemyCharacter;
+DECLARE_DELEGATE_OneParam(FOnDestroyEnemy, ARandomTDEnemyCharacter*);
+
 /**
  * 
  */
@@ -18,6 +21,7 @@ public:
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief
 	ARandomTDEnemyController();
+	static FOnDestroyEnemy DestroyEnemyEvent;
 
 protected:
 	///////////////////////////////////////////////////////////////////////////
@@ -30,14 +34,20 @@ protected:
 	/// @brief
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere, Category = "Enemy")
+	UPROPERTY(EditAnywhere, Category = "EnemyBase")
 	class UBlackboardData* BlackboardAssetRef;
-	UPROPERTY(EditAnywhere, Category = "Enemy")
+	UPROPERTY(EditAnywhere, Category = "EnemyBase")
 	class UBlackboardComponent* BlackboardComponentRef;
-	UPROPERTY(EditAnywhere, Category = "Enemy")
+	UPROPERTY(EditAnywhere, Category = "EnemyBase")
 	class UBehaviorTree* BTAssetRef;
-	UPROPERTY(EditAnywhere, Category = "Enemy")
+	UPROPERTY(EditAnywhere, Category = "EnemyBase")
 	FName BBKey_EnemyActor;
-	UPROPERTY(EditAnywhere, Category = "Enemy")
+	UPROPERTY(EditAnywhere, Category = "EnemyBase")
 	FName BBKey_Waypoint;
+	UPROPERTY(EditAnywhere, Category = "EnemyBase")
+	FName BBKey_PendingKill;
+private:
+	void NotifyDespawn();
+
+	ARandomTDEnemyCharacter* EnemyRef;
 };

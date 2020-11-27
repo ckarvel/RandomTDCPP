@@ -69,6 +69,10 @@ void ARandomTDGameMode::StartElapsedTimer()
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGameMode::OnRoundChange()
 {
+	if (CurrentRound == 1)
+	{
+		return;
+	}
 	CurrentRound++;
 #ifdef UE_BUILD_DEBUG
 	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGameMode::OnRoundChange %d"), CurrentRound);

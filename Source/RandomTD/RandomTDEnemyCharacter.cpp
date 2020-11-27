@@ -11,6 +11,7 @@
 ARandomTDEnemyCharacter::ARandomTDEnemyCharacter()
 	: CurrentWaypointIndex(0)
 	, MaxWalkSpeed(300.0)
+	, FinishedPath(false)
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
 }
@@ -44,6 +45,7 @@ FVector ARandomTDEnemyCharacter::GetNextWaypoint()
 	// if next waypoint is invalid, keep and return last waypoint
 	if (ARandomTDPathSpline::NumWaypoints <= ++Index)
 	{
+		FinishedPath = true;
 		return ARandomTDPathSpline::GetWaypointAtIndex(CurrentWaypointIndex);
 	}
 

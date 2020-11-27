@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RandomTDEnemyFactory.h"
+#include "RandomTDEnemyController.h"
 #include "RandomTDEnemyCharacter.h"
 #include "RandomTDPathSpline.h"
 #include "RandomTDGameMode.h"
@@ -26,6 +27,7 @@ void ARandomTDEnemyFactory::BeginPlay()
 #endif
 
 	ARandomTDGameMode::RoundStartEvent.AddUObject(this, &ARandomTDEnemyFactory::StartSpawnTimer);
+	ARandomTDEnemyController::DestroyEnemyEvent.BindUObject(this, &ARandomTDEnemyFactory::DestroyEnemy);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyFactory::Tick(float DeltaTime)
@@ -89,3 +91,4 @@ void ARandomTDEnemyFactory::AddNewEnemyToList(ARandomTDEnemyCharacter* Enemy)
 {
 	ListOfEnemies.Add(Enemy);
 }
+/////////////////////////////////////////////////////////////////////////////////////
