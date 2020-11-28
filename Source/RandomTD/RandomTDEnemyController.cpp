@@ -7,8 +7,6 @@
 #include "RandomTDPathSpline.h"
 #include "RandomTD.h"
 
-FOnDestroyEnemy ARandomTDEnemyController::DestroyEnemyEvent;
-
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDEnemyController::ARandomTDEnemyController()
   : BBKey_EnemyActor(TEXT("EnemyActor"))
@@ -16,9 +14,6 @@ ARandomTDEnemyController::ARandomTDEnemyController()
   , BBKey_PendingKill(TEXT("IsPendingKill"))
 
 {
-//#ifdef UE_BUILD_DEBUG
-//UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyController::Constructor"));
-//#endif
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyController::BeginPlay()
@@ -27,6 +22,9 @@ void ARandomTDEnemyController::BeginPlay()
 
   // create blackboard data asset
   UseBlackboard(BlackboardAssetRef, BlackboardComponentRef);
+
+  // [state change == finished path] or [state change == dead] delegate
+  ARandomTDEnemyCharacter::OnStateChangeEvent.AddUObject(this, &ARandomTDEnemyController::OnEnemyStateChange);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyController::OnPossess(APawn* InPawn)
@@ -40,27 +38,23 @@ void ARandomTDEnemyController::OnPossess(APawn* InPawn)
   BlackboardComponentRef->SetValueAsVector(BBKey_Waypoint, FVector());
   BlackboardComponentRef->SetValueAsBool(BBKey_PendingKill, false);
 
-  // start
+  // start behavior tree
   RunBehaviorTree(BTAssetRef);
 }
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDEnemyController::NotifyDespawn()
+/// @todo could we also use do this pause the behavior tree when enemy is frozen??? maybe!!
+void ARandomTDEnemyController::OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy)
 {
-  DestroyEnemyEvent.Execute(EnemyRef);
+  if (EnemyRef != Enemy)
+    return; // not my pawn
+
+  // we got an update from our pawn, if pawn is finished path or dead
+  // tell blackboard to stop
+  BlackboardComponentRef->SetValueAsBool(BBKey_PendingKill, true);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyController::Tick(float DeltaTime)
 {
   // Necessary to get pawn to rotate
   Super::Tick(DeltaTime);
-
-  // check if actor reached the end of path
-  if (EnemyRef && EnemyRef->FinishedPath)
-  {
-    // stop enemy calls
-    BlackboardComponentRef->SetValueAsBool(BBKey_PendingKill, true);
-
-    // next tick call destroy
-    GetWorldTimerManager().SetTimerForNextTick(this, &ARandomTDEnemyController::NotifyDespawn);
-  }
 }

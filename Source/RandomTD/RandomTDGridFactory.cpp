@@ -47,6 +47,9 @@ void ARandomTDGridFactory::SetupGridArray(TSubclassOf<ARandomTDGridBase> BP_Grid
 
 			// spawn grid and add to our list
 			auto* NewGrid = (ARandomTDGridBase*)GetWorld()->SpawnActor(GridBaseClass, &NewLocation);
+#if WITH_EDITOR
+			NewGrid->SetFolderPath("Grid");
+#endif
 			SetGridValidity(NewGrid, NewLocation);
 			GridBaseList.Add(NewGrid);
 		}

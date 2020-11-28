@@ -10,12 +10,12 @@
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDEnemyFactory::ARandomTDEnemyFactory()
 	: EnemiesSpawned(0)
-	, MaxEnemiesPerRound(10)
 	, SpawnLocation(FVector())
+	, MaxEnemiesPerRound(10)
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
 #ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDTowerFactory::Constructor"));
+	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::Constructor"));
 #endif
 }
 /////////////////////////////////////////////////////////////////////////////////////
@@ -26,8 +26,11 @@ void ARandomTDEnemyFactory::BeginPlay()
 	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::BeginPlay"));
 #endif
 
+	// spawn enemy delegate
 	ARandomTDGameMode::RoundStartEvent.AddUObject(this, &ARandomTDEnemyFactory::StartSpawnTimer);
-	ARandomTDEnemyController::DestroyEnemyEvent.BindUObject(this, &ARandomTDEnemyFactory::DestroyEnemy);
+
+	// [state change == finished path] or [state change == dead] delegate
+	ARandomTDEnemyCharacter::OnStateChangeEvent.AddUObject(this, &ARandomTDEnemyFactory::DestroyEnemy);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyFactory::Tick(float DeltaTime)
@@ -35,6 +38,7 @@ void ARandomTDEnemyFactory::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 /////////////////////////////////////////////////////////////////////////////////////
+// Call from GameMode
 void ARandomTDEnemyFactory::StartSpawnTimer(int CurrentRound)
 {
 #ifdef UE_BUILD_DEBUG
@@ -78,6 +82,21 @@ void ARandomTDEnemyFactory::SpawnNewEnemy()
 //	Tower->Select();
 //}
 /////////////////////////////////////////////////////////////////////////////////////
+// Called from EnemyCharacter
+void ARandomTDEnemyFactory::OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy)
+{
+	// if state == dead or finished path
+	FTimerDelegate DespawnDelegate = FTimerDelegate::CreateUObject(this, &ARandomTDEnemyFactory::DestroyEnemy, Enemy);
+	// destroy enemy in the next tick
+	// I'm not sure if this is necessary... I added this so Behavior Tree has a chance to
+	// stop before deletion.
+	GetWorldTimerManager().SetTimerForNextTick(DespawnDelegate);
+#ifdef UE_BUILD_DEBUG
+	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::OnEnemyStateChange"));
+#endif
+}
+/////////////////////////////////////////////////////////////////////////////////////
+// Called from EnemyCharacter
 void ARandomTDEnemyFactory::DestroyEnemy(ARandomTDEnemyCharacter* Enemy)
 {
 #ifdef UE_BUILD_DEBUG
@@ -87,8 +106,12 @@ void ARandomTDEnemyFactory::DestroyEnemy(ARandomTDEnemyCharacter* Enemy)
 	Enemy->Destroy();
 }
 /////////////////////////////////////////////////////////////////////////////////////
+// Called from Blueprint Derived class
 void ARandomTDEnemyFactory::AddNewEnemyToList(ARandomTDEnemyCharacter* Enemy)
 {
+#if WITH_EDITOR
+	Enemy->SetFolderPath("Enemy");
+#endif
 	ListOfEnemies.Add(Enemy);
 }
 /////////////////////////////////////////////////////////////////////////////////////
