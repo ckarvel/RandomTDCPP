@@ -19,6 +19,7 @@ UBTTask_FindNextWaypoint::UBTTask_FindNextWaypoint(const FObjectInitializer& Obj
 	NextWaypointKey.AddVectorFilter(this, GET_MEMBER_NAME_CHECKED(UBTTask_FindNextWaypoint, NextWaypointKey));
 	EnemyActorKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(UBTTask_FindNextWaypoint, EnemyActorKey), AActor::StaticClass());
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 EBTNodeResult::Type UBTTask_FindNextWaypoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -37,4 +38,3 @@ EBTNodeResult::Type UBTTask_FindNextWaypoint::ExecuteTask(UBehaviorTreeComponent
 	
 	return EBTNodeResult::Succeeded;
 }
-/////////////////////////////////////////////////////////////////////////////////////

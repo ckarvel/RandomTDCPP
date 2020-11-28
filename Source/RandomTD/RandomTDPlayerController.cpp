@@ -27,14 +27,15 @@ ARandomTDPlayerController::ARandomTDPlayerController()
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
 
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPlayerController::Constructor"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPlayerController::Constructor"));
+//#endif
 
 	// define our custom object types
 	m_CustomObjectTypes.Add(UEngineTypes::ConvertToObjectType(GridTraceChannel));
 	m_CustomObjectTypes.Add(UEngineTypes::ConvertToObjectType(TowerTraceChannel));
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::SetupInputComponent()
 {
@@ -66,6 +67,7 @@ void ARandomTDPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("MoveRight", this, &ARandomTDPlayerController::MoveCameraRight);
 	// TODO: zoom in/out
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::BeginPlay()
 {
@@ -73,9 +75,9 @@ void ARandomTDPlayerController::BeginPlay()
 
 	// get ref to our player
 	PlayerRef = (ARandomTDPlayerCharacter*)GetPawn();
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPlayerController::BeginPlay"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPlayerController::BeginPlay"));
+//#endif
 	if (PlayerRef == nullptr)
 	{
 #ifdef UE_BUILD_DEBUG
@@ -95,6 +97,7 @@ void ARandomTDPlayerController::BeginPlay()
 	GridFactoryRef = (ARandomTDGridFactory*)UGameplayStatics::GetActorOfClass(
 		GetWorld(), ARandomTDGridFactory::StaticClass());
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::PlayerTick(float DeltaTime)
 {
@@ -112,6 +115,7 @@ void ARandomTDPlayerController::PlayerTick(float DeltaTime)
 
 		MovePropToCursor();
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 FHitResult ARandomTDPlayerController::GetHitOnCustomObjectTypes(bool UseChannel, ECollisionChannel Channel)
 {
@@ -128,6 +132,7 @@ FHitResult ARandomTDPlayerController::GetHitOnCustomObjectTypes(bool UseChannel,
 	}
 	return Hit;
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::OnInteractPressed()
 {
@@ -174,6 +179,7 @@ void ARandomTDPlayerController::OnInteractPressed()
 		break;
 	}
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::OnCreateBasicTowerPressed()
 {
@@ -182,16 +188,19 @@ void ARandomTDPlayerController::OnCreateBasicTowerPressed()
 	bTowerRequested = true;
 	SpawnMystery(); // call blueprint to spawn specific asset
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::OnMultiSelectPressed()
 {
 	bCtrlPressed = true;
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::OnMultiSelectReleased()
 {
 	bCtrlPressed = false;
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::MoveToMouseCursor()
 {
@@ -212,6 +221,7 @@ void ARandomTDPlayerController::MoveToMouseCursor()
 		}
 	}
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::MovePropToCursor()
 {
@@ -223,6 +233,7 @@ void ARandomTDPlayerController::MovePropToCursor()
 		MysteryPropRef->SetActorLocation(Hit.ImpactPoint);
 	}
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::MoveCameraForward(float AxisValue)
 {
@@ -240,6 +251,7 @@ void ARandomTDPlayerController::MoveCameraForward(float AxisValue)
 	// set camera position to modified location
 	PlayerRef->GetPlayerCamera()->SetWorldLocation(Location, false, nullptr, ETeleportType::TeleportPhysics);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::MoveCameraRight(float AxisValue)
 {
@@ -257,11 +269,13 @@ void ARandomTDPlayerController::MoveCameraRight(float AxisValue)
 	// set camera position to modified location
 	PlayerRef->GetPlayerCamera()->SetWorldLocation(Location,false,nullptr, ETeleportType::TeleportPhysics);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::DestroyProp()
 {
 	MysteryPropRef->Destroy();
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::SetMoveToCursor(bool Value)
 {

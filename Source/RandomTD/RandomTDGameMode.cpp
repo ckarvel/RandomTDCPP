@@ -13,15 +13,17 @@ const int ARandomTDGameMode::PreRoundSeconds = 3; // 30
 
 int ARandomTDGameMode::GetSecondsPerRound() { return SecondsPerRound; }
 int ARandomTDGameMode::GetPreRoundSeconds() { return PreRoundSeconds; }
+
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDGameMode::ARandomTDGameMode()
 {
 	PlayerControllerClass = ARandomTDPlayerController::StaticClass();
 
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGameMode::Constructor"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGameMode::Constructor"));
+//#endif
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGameMode::StartPlay()
 {
@@ -30,6 +32,7 @@ void ARandomTDGameMode::StartPlay()
 	StartPreRoundTimer(); // timer for the first round
 	StartElapsedTimer(); // timer to tell UI round time once a second
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGameMode::StartPreRoundTimer()
 {
@@ -42,6 +45,7 @@ void ARandomTDGameMode::StartPreRoundTimer()
 		false, // run once
 		PreRoundSeconds); // initial delay (used as countdown for preround)
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGameMode::StartRoundTimer()
 {
@@ -56,6 +60,7 @@ void ARandomTDGameMode::StartRoundTimer()
 	// reset elapsed timer
 	StartElapsedTimer();
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGameMode::StartElapsedTimer()
 {
@@ -66,6 +71,7 @@ void ARandomTDGameMode::StartElapsedTimer()
 		true,
 		0.0f);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGameMode::OnRoundChange()
 {
@@ -74,11 +80,12 @@ void ARandomTDGameMode::OnRoundChange()
 		return;
 	}
 	CurrentRound++;
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGameMode::OnRoundChange %d"), CurrentRound);
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGameMode::OnRoundChange %d"), CurrentRound);
+//#endif
 	RoundStartEvent.Broadcast(CurrentRound);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGameMode::OnRoundSecondElapsed()
 {

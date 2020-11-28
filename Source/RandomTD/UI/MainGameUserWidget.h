@@ -20,9 +20,11 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief
 	UMainGameUserWidget(const FObjectInitializer& ObjectInitializer);
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief
 	void SetCurrentRound(int Value) { CurrentRound = Value; }
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief
 	void SetRoundTime(int Value) { RoundElapsedTime = Value; }
@@ -36,12 +38,14 @@ protected:
 	{
 		return  FText::FromString(FString::FromInt(CurrentRound));
 	}
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	FText GetElapsedSeconds() const
 	{
 		return FText::FromString(FString::FromInt(RoundElapsedTime));
 	}
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	FText GetSecondsPerRound() const
@@ -49,6 +53,7 @@ protected:
 		int Seconds = CurrentRound ? kSecondsPerRound : kPreRoundSeconds;
 		return FText::FromString(FString::FromInt(Seconds));
 	}
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	float GetElapsedPercentage() const
@@ -61,9 +66,12 @@ protected:
 		float Percent = (float) RoundElapsedTime / (float) TotalSeconds;
 		return Percent;
 	}
-	/////////////////////////////////////////////////////////////////////////////////////
+
 	int CurrentRound;
+
 	int RoundElapsedTime;
+
 	int kSecondsPerRound;
+
 	int kPreRoundSeconds;
 };

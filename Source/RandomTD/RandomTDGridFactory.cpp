@@ -12,23 +12,26 @@ ARandomTDGridFactory::ARandomTDGridFactory()
 	, GridSize(128)
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridFactory::Constructor"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridFactory::Constructor"));
+//#endif
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGridFactory::BeginPlay()
 {
 	Super::BeginPlay();
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridFactory::BeginPlay"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridFactory::BeginPlay"));
+//#endif
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGridFactory::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGridFactory::SetupGridArray(TSubclassOf<ARandomTDGridBase> BP_GridBaseClass)
 {

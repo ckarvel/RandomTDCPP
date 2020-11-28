@@ -55,23 +55,28 @@ protected:
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief  Setup bind actions and axis mappings.
 	virtual void SetupInputComponent() override;
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Called when game starts or when spawned.
 	/// 
 	/// All actors in the level exist at this point so
 	/// it is safe to store references to other actors here.
 	void BeginPlay() override;
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Handles elements of the game that requires
 	/// an update every tick, e.g character movement.
 	/// @param DeltaTime How much time has passed since the last tick
 	virtual void PlayerTick(float DeltaTime) override;
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Navigate player to the current cursor location
 	void MoveToMouseCursor();
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Navigate the mystery prop to current cursor location
 	void MovePropToCursor();
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Pans the camera forward or backwards based on AxisValue
 	/// 
@@ -80,6 +85,7 @@ protected:
 	/// -1 Backwards
 	/// 0 No movement
 	void MoveCameraForward(float AxisValue);
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Pans the camera right or left based on AxisValue
 	/// 
@@ -88,6 +94,7 @@ protected:
 	/// -1 Left
 	/// 0 No movement
 	void MoveCameraRight(float AxisValue);
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Called when player presses the left mouse button
 	/// 
@@ -95,24 +102,29 @@ protected:
 	/// @todo Figure out behaviors
 	//UFUNCTION(BlueprintImplementableEvent, Category = "Action")
 	void OnInteractPressed();
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Called when player releases the left mouse button
 	/// @todo Is this the right function for drag-selection?
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action")
 	void OnInteractReleased();
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Called when player presses Ctrl
 	///
 	///  Enables user to select multiple towers to perform some action
 	void OnMultiSelectPressed();
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Called when player releases Ctrl
 	void OnMultiSelectReleased();
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Called when the player presses "Q" to create a basic tower.
 	/// 
 	/// This will spawn the mystery prop under the cursor
 	void OnCreateBasicTowerPressed();
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Called when right mouse button is pressed
 	/// 
@@ -121,6 +133,7 @@ protected:
 	/// @remark This is implemented by blueprint
 	UFUNCTION(BlueprintImplementableEvent, Category = "CharacterMovement")
 	void OnSetDestinationPressed();
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Called when right mouse button is released
 	/// 
@@ -132,10 +145,12 @@ protected:
 	/// @remark This is implemented by blueprint
 	UFUNCTION(BlueprintImplementableEvent, Category = "CharacterMovement")
 	void OnSetDestinationReleased();
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Remove mystery prop from the world
 	UFUNCTION(BlueprintCallable, Category = "TowerActions")
 	void DestroyProp();
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Spawn mystery prop. This is implemented in BP and called from here (C++)
 	/// @see OnCreateBasicTowerPressed()
@@ -143,11 +158,17 @@ protected:
 	void SpawnMystery();
 
 	bool bMoveToMouseCursor; ///< True to move character to cursor
+
 	bool bTowerRequested; ///< User pressed Q
+
 	bool bCtrlPressed; ///< User pressed Ctrl (Multi-select)
+
 	class ARandomTDPlayerCharacter* PlayerRef;
+
 	class ARandomTDTowerFactory* TowerFactoryRef; ///< Reference to TowerFactory that can be accessed by Blueprint
+
 	class ARandomTDGridFactory* GridFactoryRef;
+
 	UPROPERTY(BlueprintReadWrite, Category = "Tower")
 	class AActor* MysteryPropRef; ///< Reference is set by BP. This allows us to easily change prop asset
 																///< for cosmetic purposes in the future.
@@ -158,6 +179,7 @@ public:
 	/// set to true.
 	UFUNCTION(BlueprintCallable, Category = "CharacterMovement")
 	void SetMoveToCursor(bool Value);
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Gets Mouse cursor hit on custom object types, Grid and Tower
 	/// @param UseChannel If True, Only get the Mouse cursor hit on object type of Channel
@@ -166,10 +188,11 @@ public:
 	FHitResult GetHitOnCustomObjectTypes(bool UseChannel=false, ECollisionChannel Channel=ECC_WorldStatic);
 
 	UPROPERTY(EditAnywhere, Category = Camera)
+
 	float CameraMovementSpeed; ///< How fast the camera pans
+
 	TArray<TEnumAsByte<EObjectTypeQuery>> m_CustomObjectTypes; ///< The object types we created, Grid and Tower
 };
-
 /*
 Notes
 -------

@@ -11,10 +11,8 @@
 ARandomTDEnemyController::ARandomTDEnemyController()
   : BBKey_EnemyActor(TEXT("EnemyActor"))
   , BBKey_Waypoint(TEXT("NextWaypoint"))
-  , BBKey_PendingKill(TEXT("IsPendingKill"))
+  , BBKey_PendingKill(TEXT("IsPendingKill")) {}
 
-{
-}
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyController::BeginPlay()
 {
@@ -26,6 +24,7 @@ void ARandomTDEnemyController::BeginPlay()
   // [state change == finished path] or [state change == dead] delegate
   ARandomTDEnemyCharacter::OnStateChangeEvent.AddUObject(this, &ARandomTDEnemyController::OnEnemyStateChange);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyController::OnPossess(APawn* InPawn)
 {
@@ -41,6 +40,7 @@ void ARandomTDEnemyController::OnPossess(APawn* InPawn)
   // start behavior tree
   RunBehaviorTree(BTAssetRef);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 /// @todo could we also use do this pause the behavior tree when enemy is frozen??? maybe!!
 void ARandomTDEnemyController::OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy)
@@ -52,6 +52,7 @@ void ARandomTDEnemyController::OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy
   // tell blackboard to stop
   BlackboardComponentRef->SetValueAsBool(BBKey_PendingKill, true);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyController::Tick(float DeltaTime)
 {

@@ -12,16 +12,20 @@ class RANDOMTD_API UBTTask_FindNextWaypoint : public UBTTaskNode
 	GENERATED_UCLASS_BODY()
 
 public:
-	/** get name of selected blackboard key */
+	//////////////////////////////////////////////////////////////////////////
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
+	//////////////////////////////////////////////////////////////////////////
 	FName GetSelectedNextWaypointKey() const;
+
+	//////////////////////////////////////////////////////////////////////////
 	FName GetSelectedEnemyActorKey() const;
 
 	UPROPERTY(EditAnywhere, Category = Blackboard)
 	struct FBlackboardKeySelector NextWaypointKey;
+	
 	UPROPERTY(EditAnywhere, Category = Blackboard)
 	struct FBlackboardKeySelector EnemyActorKey;
-
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };
 //////////////////////////////////////////////////////////////////////////
 FORCEINLINE FName UBTTask_FindNextWaypoint::GetSelectedNextWaypointKey() const

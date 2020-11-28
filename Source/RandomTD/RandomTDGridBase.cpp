@@ -32,6 +32,7 @@ ARandomTDGridBase::ARandomTDGridBase()
 //	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridBase::Constructor"));
 //#endif
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGridBase::BeginPlay()
 {
@@ -41,6 +42,7 @@ void ARandomTDGridBase::BeginPlay()
 //	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridBase::BeginPlay"));
 //#endif
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGridBase::Tick(float DeltaTime)
 {

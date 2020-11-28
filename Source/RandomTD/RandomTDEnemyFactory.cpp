@@ -14,17 +14,18 @@ ARandomTDEnemyFactory::ARandomTDEnemyFactory()
 	, MaxEnemiesPerRound(10)
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::Constructor"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::Constructor"));
+//#endif
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyFactory::BeginPlay()
 {
 	Super::BeginPlay();
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::BeginPlay"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::BeginPlay"));
+//#endif
 
 	// spawn enemy delegate
 	ARandomTDGameMode::RoundStartEvent.AddUObject(this, &ARandomTDEnemyFactory::StartSpawnTimer);
@@ -32,18 +33,20 @@ void ARandomTDEnemyFactory::BeginPlay()
 	// [state change == finished path] or [state change == dead] delegate
 	ARandomTDEnemyCharacter::OnStateChangeEvent.AddUObject(this, &ARandomTDEnemyFactory::DestroyEnemy);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyFactory::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 // Call from GameMode
 void ARandomTDEnemyFactory::StartSpawnTimer(int CurrentRound)
 {
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("StartSpawnTimer:Round %d"), CurrentRound);
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("StartSpawnTimer:Round %d"), CurrentRound);
+//#endif
 	// reset enemy counter
 	EnemiesSpawned = 0;
 	GetWorldTimerManager().SetTimer(SpawnEnemyTimerHandle,
@@ -53,6 +56,7 @@ void ARandomTDEnemyFactory::StartSpawnTimer(int CurrentRound)
 		true,
 		0.0f);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyFactory::SpawnNewEnemy()
 {
@@ -62,13 +66,14 @@ void ARandomTDEnemyFactory::SpawnNewEnemy()
 
 	if (EnemiesSpawned == MaxEnemiesPerRound)
 	{
-#ifdef UE_BUILD_DEBUG
-		UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::EnemiesSpawned"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//		UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::EnemiesSpawned"));
+//#endif
 		// we're done spawning enemies for this round
 		GetWorldTimerManager().ClearTimer(SpawnEnemyTimerHandle);
 	}
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 //void ARandomTDEnemyFactory::UnselectAll()
 //{
@@ -81,6 +86,7 @@ void ARandomTDEnemyFactory::SpawnNewEnemy()
 //{
 //	Tower->Select();
 //}
+
 /////////////////////////////////////////////////////////////////////////////////////
 // Called from EnemyCharacter
 void ARandomTDEnemyFactory::OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy)
@@ -95,6 +101,7 @@ void ARandomTDEnemyFactory::OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy)
 	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::OnEnemyStateChange"));
 #endif
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 // Called from EnemyCharacter
 void ARandomTDEnemyFactory::DestroyEnemy(ARandomTDEnemyCharacter* Enemy)
@@ -105,6 +112,7 @@ void ARandomTDEnemyFactory::DestroyEnemy(ARandomTDEnemyCharacter* Enemy)
 	ListOfEnemies.Remove(Enemy);
 	Enemy->Destroy();
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 // Called from Blueprint Derived class
 void ARandomTDEnemyFactory::AddNewEnemyToList(ARandomTDEnemyCharacter* Enemy)
@@ -114,4 +122,3 @@ void ARandomTDEnemyFactory::AddNewEnemyToList(ARandomTDEnemyCharacter* Enemy)
 #endif
 	ListOfEnemies.Add(Enemy);
 }
-/////////////////////////////////////////////////////////////////////////////////////

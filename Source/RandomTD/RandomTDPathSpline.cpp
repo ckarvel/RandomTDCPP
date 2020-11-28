@@ -12,20 +12,22 @@ TArray<FVector> ARandomTDPathSpline::ListOfWaypoints;
 ARandomTDPathSpline::ARandomTDPathSpline()
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPathSpline::Constructor"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPathSpline::Constructor"));
+//#endif
 	SplinePath = CreateDefaultSubobject<USplineComponent>("SplinePath");
 	RootComponent = SplinePath;
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPathSpline::BeginPlay()
 {
 	Super::BeginPlay();
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPathSpline::BeginPlay"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPathSpline::BeginPlay"));
+//#endif
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPathSpline::PostInitializeComponents()
 {
@@ -38,11 +40,13 @@ void ARandomTDPathSpline::PostInitializeComponents()
 		ListOfWaypoints.Add(Location);
 	}
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPathSpline::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 FVector ARandomTDPathSpline::GetWaypointAtIndex(int Index)
 {

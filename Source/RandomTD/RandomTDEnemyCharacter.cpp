@@ -22,11 +22,13 @@ ARandomTDEnemyCharacter::ARandomTDEnemyCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyCharacter::PostInitializeComponents()
 {
@@ -37,16 +39,19 @@ void ARandomTDEnemyCharacter::PostInitializeComponents()
 	// set health to max
 	Health = MaxHealth;
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 FVector ARandomTDEnemyCharacter::GetNextWaypoint()
 {
@@ -64,6 +69,7 @@ FVector ARandomTDEnemyCharacter::GetNextWaypoint()
 	CurrentWaypointIndex = Index;
 	return ARandomTDPathSpline::GetWaypointAtIndex(CurrentWaypointIndex);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyCharacter::TowerDamage(int Damage)
 {
@@ -80,4 +86,3 @@ void ARandomTDEnemyCharacter::TowerDamage(int Damage)
 	Health -= Damage;
 	OnHealthChangeEvent.Broadcast(this, Health);
 }
-/////////////////////////////////////////////////////////////////////////////////////

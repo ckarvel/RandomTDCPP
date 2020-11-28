@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "RandomTDGridFactory.generated.h"
 
+///////////////////////////////////////////////////////////////////////////
 /// @class ARandomTDGridFactory 
 /// @brief Handles spawning/despawning grids.
 /// 
@@ -30,6 +31,7 @@ public:
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Not used.
 	virtual void Tick(float DeltaTime) override;
+
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief BP-callable function to create an array of GridBase
 	/// actors.
@@ -43,20 +45,24 @@ public:
 	/// @param BP_GridBaseClass BP_GridBase class type needed to spawn the actor.
 	UFUNCTION(BlueprintCallable, Category = Grid)
 	void SetupGridArray(TSubclassOf<ARandomTDGridBase> BP_GridBaseClass);
+
 	UFUNCTION(BlueprintImplementableEvent, Category = Grid)
 	void SetGridValidity(ARandomTDGridBase* Grid, FVector Location);
+
 public:
-	///////////////////////////////////////////////////////////////////////////
 	UPROPERTY(Category = GridSetup, EditAnywhere)
 	int Grid_X; ///< The number of rows in the grid array
+
 	UPROPERTY(Category = GridSetup, EditAnywhere)
 	int Grid_Y; ///< The number of columns in the grid array
+
 	UPROPERTY(Category = GridSetup, VisibleAnywhere, BlueprintReadOnly)
 	int GridSize; ///< The width/height (its a square) of each grid
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerController)
 	TSubclassOf<ARandomTDGridBase> GridBaseClass; ///< Class type for the blueprint derived class
 																			  ///< of ARandomTDGridBase. Used to spawn the grid actors.
+
 protected:
-	///////////////////////////////////////////////////////////////////////////
 	TArray<ARandomTDGridBase*> GridBaseList; ///< List of grid actors in the world.
 };

@@ -40,15 +40,17 @@ ARandomTDPlayerCharacter::ARandomTDPlayerCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPlayerCharacter::Constructor"));
-#endif
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPlayerCharacter::Constructor"));
+//#endif
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerCharacter::Tick(float DeltaSeconds)
 {
@@ -67,4 +69,3 @@ void ARandomTDPlayerCharacter::Tick(float DeltaSeconds)
 		}
 	}
 }
-/////////////////////////////////////////////////////////////////////////////////////
