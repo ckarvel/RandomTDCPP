@@ -31,7 +31,7 @@ void ARandomTDEnemyFactory::BeginPlay()
 	ARandomTDGameMode::RoundStartEvent.AddUObject(this, &ARandomTDEnemyFactory::StartSpawnTimer);
 
 	// [state change == finished path] or [state change == dead] delegate
-	ARandomTDEnemyCharacter::OnStateChangeEvent.AddUObject(this, &ARandomTDEnemyFactory::DestroyEnemy);
+	ARandomTDEnemyCharacter::OnStateChangeEvent.AddUObject(this, &ARandomTDEnemyFactory::OnEnemyStateChange);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -75,19 +75,6 @@ void ARandomTDEnemyFactory::SpawnNewEnemy()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-//void ARandomTDEnemyFactory::UnselectAll()
-//{
-//	for (auto& pair : ListOfActiveTowerRefs)
-//	{
-//		pair.Key->Unselect();
-//	}
-//}
-//void ARandomTDEnemyFactory::Select(ARandomTDTowerBase* Tower)
-//{
-//	Tower->Select();
-//}
-
-/////////////////////////////////////////////////////////////////////////////////////
 // Called from EnemyCharacter
 void ARandomTDEnemyFactory::OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy)
 {
@@ -112,6 +99,19 @@ void ARandomTDEnemyFactory::DestroyEnemy(ARandomTDEnemyCharacter* Enemy)
 	ListOfEnemies.Remove(Enemy);
 	Enemy->Destroy();
 }
+
+/////////////////////////////////////////////////////////////////////////////////////
+//void ARandomTDEnemyFactory::UnselectAll()
+//{
+//	for (auto& pair : ListOfActiveTowerRefs)
+//	{
+//		pair.Key->Unselect();
+//	}
+//}
+//void ARandomTDEnemyFactory::Select(ARandomTDTowerBase* Tower)
+//{
+//	Tower->Select();
+//}
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Called from Blueprint Derived class
