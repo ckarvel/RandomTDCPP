@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RandomTDEnemyCharacter.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHealthChange, ARandomTDEnemyCharacter*, int);
+DECLARE_DELEGATE_OneParam(FOnHealthChange, int);
 // frozen, slowed, hexed??, but importantly -> death & despawn // figure out how to do enum...
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnStateChange, ARandomTDEnemyCharacter*);
 
@@ -36,14 +36,14 @@ public:
 	/// @brief
 	void TowerDamage(int Damage);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBase")
 	float MaxWalkSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBase")
 	int MaxHealth;
 	
 	// delegates
-	static FOnHealthChange OnHealthChangeEvent;
+	FOnHealthChange OnHealthChangeEvent;
 	static FOnStateChange OnStateChangeEvent;
 
 protected:
@@ -56,12 +56,15 @@ protected:
 	/// is changed in instance, without this call character movement won't get updated!
 	virtual void PostInitializeComponents() override;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Enemy")
+	UPROPERTY(EditAnywhere, Category = "EnemyBase")
+	class UWidgetComponent* HealthWidgetComponent;
+
+	class UEnemyHealthWidget* HealthWidget;
+
+	UPROPERTY(BlueprintReadWrite, Category = "EnemyBase")
 	int Health;
 	
 	int CurrentWaypointIndex;
-	
-	bool FinishedPath;
 	
 	// give access to variables ^ to controller v
 	friend class ARandomTDEnemyController;

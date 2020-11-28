@@ -4,35 +4,58 @@
 #include "RandomTDEnemyCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/WidgetComponent.h"
+#include "UI/EnemyHealthWidget.h"
 #include "RandomTDPathSpline.h"
 #include "RandomTD.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Define static fields
-FOnHealthChange ARandomTDEnemyCharacter::OnHealthChangeEvent;
 FOnStateChange ARandomTDEnemyCharacter::OnStateChangeEvent;
 
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDEnemyCharacter::ARandomTDEnemyCharacter()
-	: CurrentWaypointIndex(0)
-	, MaxWalkSpeed(300.0)
-	, FinishedPath(false)
-	, Health(100)
+	: MaxWalkSpeed(300.0)
 	, MaxHealth(100)
+	, Health(100)
+	, CurrentWaypointIndex(0)
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
+
+	HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("HealthWidget");
+	HealthWidgetComponent->SetupAttachment(RootComponent);
+	HealthWidgetComponent->SetDrawAtDesiredSize(true);
+	HealthWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// get reference to UI health component
+	HealthWidget = Cast<UEnemyHealthWidget>(HealthWidgetComponent->GetUserWidgetObject());
+	if (!HealthWidget)
+	{
+#ifdef UE_BUILD_DEBUG
+		UE_LOG(LogRandomTD, Error, TEXT("ARandomTDEnemyCharacter::HealthWidget NULL!"));
+#endif
+		return;
+	}
+
+	// initialize UI health values
+	HealthWidget->SetHealth(Health);
+	HealthWidget->SetMaxHealth(MaxHealth);
+
+	// add a dispatcher for updating our UI when health changes (thats why its not static)
+	OnHealthChangeEvent.BindUObject(HealthWidget, &UEnemyHealthWidget::SetHealth);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
 	// configure character movement
 	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
 	
@@ -56,33 +79,37 @@ void ARandomTDEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 FVector ARandomTDEnemyCharacter::GetNextWaypoint()
 {
 	int Index = CurrentWaypointIndex;
-	
-	// if next waypoint is invalid, keep and return last waypoint
+
 	if (ARandomTDPathSpline::NumWaypoints <= ++Index)
 	{
+		// next waypoint is INVALID so don't save index
+		// return LAST waypoint
 		OnStateChangeEvent.Broadcast(this); // notify despawn
-		FinishedPath = true;
-		return ARandomTDPathSpline::GetWaypointAtIndex(CurrentWaypointIndex);
 	}
-
-	// next waypoint is valid so increment index and return
-	CurrentWaypointIndex = Index;
+	else
+	{
+		// next waypoint is VALID so save the index
+		// return NEXT waypoint
+		CurrentWaypointIndex = Index;
+	}
 	return ARandomTDPathSpline::GetWaypointAtIndex(CurrentWaypointIndex);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyCharacter::TowerDamage(int Damage)
 {
-	// if this attack kills us, notify health (just in case..?) & state change 
 	if (Damage > Health)
 	{
+		// damage kills us, notify state change
 		Health = 0;
-		OnHealthChangeEvent.Broadcast(this, Health);
 		OnStateChangeEvent.Broadcast(this);
-		return;
+	}
+	else
+	{
+		// otherwise, subtract our health by damage taken
+		Health -= Damage;
 	}
 	
-	// otherwise, subtract our health by damage taken & notify health
-	Health -= Damage;
-	OnHealthChangeEvent.Broadcast(this, Health);
+	// notify health change either way... just in case
+	OnHealthChangeEvent.Execute(Health);
 }
