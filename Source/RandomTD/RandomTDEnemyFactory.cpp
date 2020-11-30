@@ -14,18 +14,12 @@ ARandomTDEnemyFactory::ARandomTDEnemyFactory()
 	, MaxEnemiesPerRound(10)
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::Constructor"));
-//#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyFactory::BeginPlay()
 {
 	Super::BeginPlay();
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::BeginPlay"));
-//#endif
 
 	// spawn enemy delegate
 	ARandomTDGameMode::RoundStartEvent.AddUObject(this, &ARandomTDEnemyFactory::StartSpawnTimer);
@@ -41,12 +35,8 @@ void ARandomTDEnemyFactory::Tick(float DeltaTime)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-// Call from GameMode
 void ARandomTDEnemyFactory::StartSpawnTimer(int CurrentRound)
 {
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("StartSpawnTimer:Round %d"), CurrentRound);
-//#endif
 	// reset enemy counter
 	EnemiesSpawned = 0;
 	GetWorldTimerManager().SetTimer(SpawnEnemyTimerHandle,
@@ -66,16 +56,12 @@ void ARandomTDEnemyFactory::SpawnNewEnemy()
 
 	if (EnemiesSpawned == MaxEnemiesPerRound)
 	{
-//#ifdef UE_BUILD_DEBUG
-//		UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::EnemiesSpawned"));
-//#endif
 		// we're done spawning enemies for this round
 		GetWorldTimerManager().ClearTimer(SpawnEnemyTimerHandle);
 	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-// Called from EnemyCharacter
 void ARandomTDEnemyFactory::OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy)
 {
 	// if state == dead or finished path
@@ -90,7 +76,6 @@ void ARandomTDEnemyFactory::OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-// Called from EnemyCharacter
 void ARandomTDEnemyFactory::DestroyEnemy(ARandomTDEnemyCharacter* Enemy)
 {
 #ifdef UE_BUILD_DEBUG
@@ -114,7 +99,6 @@ void ARandomTDEnemyFactory::DestroyEnemy(ARandomTDEnemyCharacter* Enemy)
 //}
 
 /////////////////////////////////////////////////////////////////////////////////////
-// Called from Blueprint Derived class
 void ARandomTDEnemyFactory::AddNewEnemyToList(ARandomTDEnemyCharacter* Enemy)
 {
 #if WITH_EDITOR

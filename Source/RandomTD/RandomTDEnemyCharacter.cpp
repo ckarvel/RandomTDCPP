@@ -10,7 +10,7 @@
 #include "RandomTD.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
-// Define static fields
+// Define static delegates
 FOnStateChange ARandomTDEnemyCharacter::OnStateChangeEvent;
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -22,6 +22,7 @@ ARandomTDEnemyCharacter::ARandomTDEnemyCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
 
+	SetCanBeDamaged(true);
 	HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("HealthWidget");
 	HealthWidgetComponent->SetupAttachment(RootComponent);
 	HealthWidgetComponent->SetDrawAtDesiredSize(true);
@@ -96,9 +97,12 @@ FVector ARandomTDEnemyCharacter::GetNextWaypoint()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDEnemyCharacter::TowerDamage(int Damage)
+void ARandomTDEnemyCharacter::ReceiveAnyDamage(float Damage,
+																							 const UDamageType* DamageType, 
+																							 AController* InstigatedBy,
+																							 AActor* DamageCauser)
 {
-	if (Damage > Health)
+	if (int(Damage) > Health)
 	{
 		// damage kills us, notify state change
 		Health = 0;
@@ -107,9 +111,9 @@ void ARandomTDEnemyCharacter::TowerDamage(int Damage)
 	else
 	{
 		// otherwise, subtract our health by damage taken
-		Health -= Damage;
+		Health -= int(Damage);
 	}
-	
+
 	// notify health change either way... just in case
 	OnHealthChangeEvent.Execute(Health);
 }

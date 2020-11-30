@@ -18,6 +18,8 @@ public:
 	///@brief Sets default values
 	ARandomTDTowerBase();
 
+	void Attack();
+
 protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @see ARandomTDPlayerController::BeginPlay()
@@ -48,4 +50,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Tower")
 	bool bIsSelected;
 	static FOnUIDeleteTowerEvent UIDeleteTowerEvent;
+
+	AActor* EnemyToAttack;
 };

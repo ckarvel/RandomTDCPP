@@ -10,6 +10,11 @@ DECLARE_DELEGATE_OneParam(FOnHealthChange, int);
 // frozen, slowed, hexed??, but importantly -> death & despawn // figure out how to do enum...
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnStateChange, ARandomTDEnemyCharacter*);
 
+/////////////////////////////////////////////////////////////////////////////////////
+/// @class ARandomTDEnemyCharacter
+/// @brief Enemy base character class.
+/// @details Contains a master list of all spawned Enemies which is updated when they
+/// are despawned.
 UCLASS()
 class RANDOMTD_API ARandomTDEnemyCharacter : public ACharacter
 {
@@ -17,55 +22,64 @@ class RANDOMTD_API ARandomTDEnemyCharacter : public ACharacter
 
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
 	ARandomTDEnemyCharacter();
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
 	virtual void Tick(float DeltaTime) override;
 	
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	/// @brief Returns the next or last waypoint in the Spline Path depending on where the
+	/// Enemy actor is on the Path.
+	/// @details Compares @ref CurrentWaypointIndex to the number of points in the Spline
+	/// Path to determine if the actor is at the end. If so, the last waypoint is returned
+	/// and a OnStateChange is broadcast with "Finished Path" state. Otherwise,
+	/// CurrentWaypointIndex is incremented and returned.
+	/// @see CurrentWaypointIndex
 	FVector GetNextWaypoint();
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
-	void TowerDamage(int Damage);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBase")
-	float MaxWalkSpeed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBase")
-	int MaxHealth;
 	
-	// delegates
-	FOnHealthChange OnHealthChangeEvent;
-	static FOnStateChange OnStateChangeEvent;
+	/////////////////////////////////////////////////////////////////////////////////////
+	/// @brief Called when this Enemy actor receives damage.
+	/// @details Compares @c Damage to @ref Health to see if Enemy is dead. If so, OnStateChange
+	/// is broadcast with "Dead" state. Otherwise, @c Health is subtracted by @c Damage.
+	/// @details In both cases, OnHealthChange is executed to notify that health value has changed.
+	/// @see UEnemyHealthWidget
+	void ReceiveAnyDamage(float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBase")
+	float MaxWalkSpeed; ///< Base walking speed for an Enemy.
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBase")
+	int MaxHealth; ///< Max Base Health for Enemy.
+	
+	FOnHealthChange OnHealthChangeEvent; ///< Delegate called when @ref Health changes.
+
+	static FOnStateChange OnStateChangeEvent; ///< Delegate called when Enemy is dead or
+																						///< at the end of Spline Path.
 
 protected:
-	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	////////////////////////////////////////////////////////////////////////////////////
+	/// @brief Bind @ref UEnemyHealthWidget::SetHealth to @ref OnHealthChangeEvent
 	virtual void BeginPlay() override;
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief Character movement walk speed is set to MaxWalkSpeed in constructor. If MaxWalkSpeed
-	/// is changed in instance, without this call character movement won't get updated!
+	/// @brief Set properties here that rely on instance-editable values.
+	/// @details @c GetCharacterMovement()->MaxWalkSpeed is set by @ref MaxWalkSpeed.
+	/// If we were to set this in constructor and @c MaxWalkSpeed is changed in an instance,
+	/// GetCharacterMovement()->MaxWalkSpeed would not be updated.
 	virtual void PostInitializeComponents() override;
 
 	UPROPERTY(EditAnywhere, Category = "EnemyBase")
-	class UWidgetComponent* HealthWidgetComponent;
+	class UWidgetComponent* HealthWidgetComponent; ///< UI widget component that contains
+																								 ///< @ref HealthWidget
 
-	class UEnemyHealthWidget* HealthWidget;
+	class UEnemyHealthWidget* HealthWidget; ///< Base class for the UI widget that shows
+																		      ///< the Enemy's Health bar.
 
 	UPROPERTY(BlueprintReadWrite, Category = "EnemyBase")
-	int Health;
+	int Health; ///< Enemy health. When == 0, actor will be destroyed.
 	
-	int CurrentWaypointIndex;
-	
-	// give access to variables ^ to controller v
-	friend class ARandomTDEnemyController;
+	int CurrentWaypointIndex; ///< The Enemy's current location relative to Spline Path.
 };

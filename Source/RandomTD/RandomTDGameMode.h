@@ -9,6 +9,10 @@
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnRoundStart, int);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnRoundSecondElapsed, int);
 
+///////////////////////////////////////////////////////////////////////////
+/// @class ARandomTDGameMode 
+/// @brief Handles game rules.
+/// @details Manages game rounds.
 UCLASS(minimalapi)
 class ARandomTDGameMode : public AGameModeBase
 {
@@ -16,53 +20,61 @@ class ARandomTDGameMode : public AGameModeBase
 
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
 	ARandomTDGameMode();
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	/// @brief Starts round timers
+	/// @see StartPreRoundTimer
+	/// @see StartElapsedTimer
 	virtual void StartPlay() override;
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	/// @brief Starts timer for the initial round before the game actually starts (pre-round).
+	/// @remark Reference stored @ref RoundCountTimerHandle
 	void StartPreRoundTimer();
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	/// @brief Starts timer that broadcasts every second how much time has elapsed since
+	/// the start of the current round.
+	/// @remark Reference stored @ref RoundElapsedTimerHandle
 	void StartElapsedTimer();
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	/// @brief This starts the @a real game timer that manages round changes.
+	/// @details Every @ref SecondsPerRound a new round starts and @ref OnRoundChange is called.
 	void StartRoundTimer();
 	
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	/// @brief Broadcasts RoundStartEvent with the new @ref CurrentRound value.
 	void OnRoundChange();
 	
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief	
+	/// @brief Broadcasts RoundSecondElapsedEvent with how many seconds have elapsed since
+	/// current round start.
 	void OnRoundSecondElapsed();
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	/// @brief Returns the length of time for each round in seconds.
 	static int GetSecondsPerRound();
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	/// @brief Returns the length of time for the pre-round in seconds.
 	static int GetPreRoundSeconds();
 
-	static FOnRoundStart RoundStartEvent;
+	static FOnRoundStart RoundStartEvent; ///< Delegate that broadcasts every round change
 	
-	static FOnRoundSecondElapsed RoundSecondElapsedEvent;
+	static FOnRoundSecondElapsed RoundSecondElapsedEvent; ///< Delegate that broadcasts every
+																												///< second during the round
 
-	static const int SecondsPerRound;
+	static const int SecondsPerRound; ///< Defines round time length in seconds.
 	
-	static const int PreRoundSeconds;
+	static const int PreRoundSeconds; ///< Defines pre-round time length in seconds.
 
 protected:
-	int CurrentRound;
+	int CurrentRound; ///< The current round in the game.
 
-	FTimerHandle RoundCountTimerHandle;
+	FTimerHandle RoundCountTimerHandle; ///< Timer handle used for managing rounds
 
-	FTimerHandle RoundElapsedTimerHandle;
+	FTimerHandle RoundElapsedTimerHandle; ///< Timer handle used for round time
+																				///< notification.
 };

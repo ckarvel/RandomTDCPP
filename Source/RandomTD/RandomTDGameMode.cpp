@@ -18,10 +18,6 @@ int ARandomTDGameMode::GetPreRoundSeconds() { return PreRoundSeconds; }
 ARandomTDGameMode::ARandomTDGameMode()
 {
 	PlayerControllerClass = ARandomTDPlayerController::StaticClass();
-
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGameMode::Constructor"));
-//#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -75,14 +71,14 @@ void ARandomTDGameMode::StartElapsedTimer()
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGameMode::OnRoundChange()
 {
+	// debug code
 	if (CurrentRound == 1)
 	{
 		return;
 	}
+	//debug code end
+
 	CurrentRound++;
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGameMode::OnRoundChange %d"), CurrentRound);
-//#endif
 	RoundStartEvent.Broadcast(CurrentRound);
 }
 
@@ -92,9 +88,6 @@ void ARandomTDGameMode::OnRoundSecondElapsed()
 	// query the round count timer for how long until round changes
 	float TimeElapsed = GetWorldTimerManager().GetTimerElapsed(RoundCountTimerHandle);
 	int Seconds = FGenericPlatformMath::RoundToInt(TimeElapsed);
-	
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGameMode::OnRoundSecondElapsed %d"), Seconds);
-//#endif
+
 	RoundSecondElapsedEvent.Broadcast(Seconds);
 }

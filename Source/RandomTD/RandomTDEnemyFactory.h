@@ -6,6 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "RandomTDEnemyFactory.generated.h"
 
+/////////////////////////////////////////////////////////////////////////////////////
+/// @class ARandomTDEnemyFactory
+/// @brief Manages lifecycle of @c ARandomTDEnemyCharacter actors.
+/// @details Contains a master list of all spawned Enemies which is updated when they
+/// are despawned.
 UCLASS()
 class RANDOMTD_API ARandomTDEnemyFactory : public AActor
 {
@@ -13,71 +18,76 @@ class RANDOMTD_API ARandomTDEnemyFactory : public AActor
 	
 public:	
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
 	ARandomTDEnemyFactory();
 
 protected:
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	/// @brief Bind functions to delegates.
+	/// @remark @ref StartSpawnTimer() is bound to @ref ARandomTDGameMode::RoundStartEvent.
+	/// @remark @ref OnEnemyStateChange() is bound to @ref ARandomTDEnemyCharacter::OnStateChangeEvent.
 	virtual void BeginPlay() override;
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief Called by BP_TowerFactory so it can provide us with a reference
-	/// to the newly spawned tower.
+	/// @brief Gives reference to newly spawned Enemy actor.
+	/// @remark Called from Blueprint when a new Enemy has spawned.
 	UFUNCTION(BlueprintCallable, Category = "EnemyBase")
 	void AddNewEnemyToList(ARandomTDEnemyCharacter* Enemy);
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	/// @brief At the start of every round, this timer will indefinitely call
+	/// @ref SpawnNewEnemy() once per second.
+	/// @remark Is bound to @ref ARandomTDGameMode::RoundStartEvent.
+	/// @remark Only cleared by @c SpawnNewEnemy().
+	/// @remark Clears @ref EnemiesSpawned counter.
 	void StartSpawnTimer(int CurrentRound);
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief Calls SpawnEnemy in BP.
-	/// Handles clearing timer when called [@a kMaxEnemiesPerRound] number of times
-	/// Only want BP to spawn enemy.
+	/// @brief Calls @ref SpawnEnemy() and clears @ref SpawnEnemyTimerHandle.
+	/// @details Keeps track of how many Enemies are spawned each round. Once that number
+	/// reaches [@ref MaxEnemiesPerRound], the @c SpawnEnemyTimerHandle is cleared.
+	/// @see StartSpawnTimer()
 	void SpawnNewEnemy();
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	/// @brief Spawns Enemy actor at @c Location.
+	/// @remark This is a Blueprint implementable function (event).
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "EnemyBase")
 	void SpawnEnemy(FVector Location);
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Unselect enemy if any selected
-	/// @todo
+	/// @todo Unselect()
 	void Unselect() {};
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief Selects an Enemy to see info
-	/// @todo
+	/// @brief Select enemy
+	/// @todo Select()
 	void Select(ARandomTDEnemyCharacter* Enemy) {};
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief Destroys a tower.
-	/// @remark This function is bound to the TowerBase's delegate function. That means
-	/// this function is called when TowerBase calls its delegate. This is not directly called.
-	/// @param Tower Tower to be deleted.
-	/// @todo This function also deletes the tower/grid key/value from the map and it sets the grid
-	/// to valid... idk if this is the right place for that but it will do for now.
+	/// @brief Destroys an Enemy actor.
+	/// @remark Only called from @ref OnEnemyStateChange().
 	void DestroyEnemy(ARandomTDEnemyCharacter* Enemy);
 
-	int EnemiesSpawned; // num enemies spawned in 1 round
+	int EnemiesSpawned; ///< Counter used to track number of spawned Enemy actors at the start
+											///< of each round.
 
-	FVector SpawnLocation;
+	FVector SpawnLocation; ///< Location to spawn Enemy actors. This value is the starting
+												 ///< point of the Spline Path
 
-	FTimerHandle SpawnEnemyTimerHandle;
+	FTimerHandle SpawnEnemyTimerHandle; ///< Timer handle used to spawn Enemy actors.
 
 	TArray<ARandomTDEnemyCharacter*> ListOfEnemies; ///< List of enemy actors in the world.
 
 public:	
-	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
 	virtual void Tick(float DeltaTime) override;
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	/// @brief Destroys Enemy if Enemy State == Dead or EnemyState == Finished Spline Path
+	/// @details This sets a timer to Destroy the Enemy actor in the next tick.
+	/// @remark Not sure if next tick is necessary...
 	void OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy);
 
 	UPROPERTY(EditAnywhere, Category = "EnemyBase")
-	int MaxEnemiesPerRound;
+	int MaxEnemiesPerRound; ///< The number of Enemies to spawn each round.
 };
