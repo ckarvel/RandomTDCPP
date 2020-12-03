@@ -41,12 +41,12 @@ public:
 	FVector GetNextWaypoint();
 	
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief Called when this Enemy actor receives damage.
+	/// @brief Called when this Enemy actor receives damage. (specifically ApplyDamage)
 	/// @details Compares @c Damage to @ref Health to see if Enemy is dead. If so, OnStateChange
 	/// is broadcast with "Dead" state. Otherwise, @c Health is subtracted by @c Damage.
 	/// @details In both cases, OnHealthChange is executed to notify that health value has changed.
 	/// @see UEnemyHealthWidget
-	void ReceiveAnyDamage(float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+	float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBase")
 	float MaxWalkSpeed; ///< Base walking speed for an Enemy.

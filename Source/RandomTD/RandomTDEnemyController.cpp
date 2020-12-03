@@ -11,15 +11,18 @@
 ARandomTDEnemyController::ARandomTDEnemyController()
   : BBKey_EnemyActor(TEXT("EnemyActor"))
   , BBKey_Waypoint(TEXT("NextWaypoint"))
-  , BBKey_PendingKill(TEXT("IsPendingKill")) {}
+  , BBKey_PendingKill(TEXT("IsPendingKill"))
+{
+  SetGenericTeamId(FGenericTeamId(2)); // if actors have two different ids, they are "hostile"
+
+  // create blackboard data asset
+  Blackboard = CreateDefaultSubobject<UBlackboardComponent>("Blackboard");
+}
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyController::BeginPlay()
 {
   Super::BeginPlay();
-
-  // create blackboard data asset
-  UseBlackboard(BlackboardAssetRef, BlackboardComponentRef);
 
   // [state change == finished path] or [state change == dead] delegate
   ARandomTDEnemyCharacter::OnStateChangeEvent.AddUObject(this, &ARandomTDEnemyController::OnEnemyStateChange);
@@ -32,10 +35,14 @@ void ARandomTDEnemyController::OnPossess(APawn* InPawn)
   Super::OnPossess(InPawn);
 
   EnemyRef = (ARandomTDEnemyCharacter*)InPawn;
+
+  // cannot do this in constructor! this requires BP input
+  Blackboard->InitializeBlackboard(*BlackboardData);
+
   // initialize values in blackboard
-  BlackboardComponentRef->SetValueAsObject(BBKey_EnemyActor, InPawn);
-  BlackboardComponentRef->SetValueAsVector(BBKey_Waypoint, FVector());
-  BlackboardComponentRef->SetValueAsBool(BBKey_PendingKill, false);
+  Blackboard->SetValueAsObject(BBKey_EnemyActor, InPawn);
+  Blackboard->SetValueAsVector(BBKey_Waypoint, FVector());
+  Blackboard->SetValueAsBool(BBKey_PendingKill, false);
 
   // start behavior tree
   RunBehaviorTree(BTAssetRef);
@@ -50,7 +57,7 @@ void ARandomTDEnemyController::OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy
 
   // we got an update from our pawn, if pawn is finished path or dead
   // tell blackboard to stop
-  BlackboardComponentRef->SetValueAsBool(BBKey_PendingKill, true);
+  Blackboard->SetValueAsBool(BBKey_PendingKill, true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

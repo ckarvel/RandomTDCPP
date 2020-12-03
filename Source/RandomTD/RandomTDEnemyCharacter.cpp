@@ -97,10 +97,10 @@ FVector ARandomTDEnemyCharacter::GetNextWaypoint()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDEnemyCharacter::ReceiveAnyDamage(float Damage,
-																							 const UDamageType* DamageType, 
-																							 AController* InstigatedBy,
-																							 AActor* DamageCauser)
+float ARandomTDEnemyCharacter::TakeDamage(float Damage,
+																					FDamageEvent const& DamageEvent,
+																					AController* EventInstigator,
+																					AActor* DamageCauser)
 {
 	if (int(Damage) > Health)
 	{
@@ -116,4 +116,6 @@ void ARandomTDEnemyCharacter::ReceiveAnyDamage(float Damage,
 
 	// notify health change either way... just in case
 	OnHealthChangeEvent.Execute(Health);
+
+	return (float)Health;
 }

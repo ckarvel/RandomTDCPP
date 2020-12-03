@@ -3,7 +3,7 @@
 #include "RandomTDTowerFactory.h"
 #include "Engine/World.h"
 #include "RandomTDGridBase.h"
-#include "RandomTDTowerBase.h"
+#include "RandomTDTowerCharacter.h"
 #include "RandomTD.h"
 
 #define TowerTraceChannel ECC_GameTraceChannel2
@@ -25,7 +25,7 @@ void ARandomTDTowerFactory::BeginPlay()
 //#endif
 
 	// delegate binding should happen here not in constructor!
-	ARandomTDTowerBase::UIDeleteTowerEvent.BindUObject(this, &ARandomTDTowerFactory::DestroyTower);
+	//ARandomTDTowerCharacter::UIDeleteTowerEvent.BindUObject(this, &ARandomTDTowerFactory::DestroyTower);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDTowerFactory::Tick(float DeltaTime)
@@ -41,12 +41,12 @@ void ARandomTDTowerFactory::UnselectAll()
 	}
 }
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDTowerFactory::Select(ARandomTDTowerBase* Tower)
+void ARandomTDTowerFactory::Select(ARandomTDTowerCharacter* Tower)
 {
 	Tower->Select();
 }
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDTowerFactory::DestroyTower(ARandomTDTowerBase* Tower)
+void ARandomTDTowerFactory::DestroyTower(ARandomTDTowerCharacter* Tower)
 {
 //#ifdef UE_BUILD_DEBUG
 //	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDTowerFactory::DestroyTower"));
@@ -56,8 +56,9 @@ void ARandomTDTowerFactory::DestroyTower(ARandomTDTowerBase* Tower)
 	Grid->SetValid();
 }
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDTowerFactory::AddNewTowerToList(ARandomTDGridBase* Grid, ARandomTDTowerBase* BP_TowerBase)
+void ARandomTDTowerFactory::AddNewTowerToList(ARandomTDGridBase* Grid, ARandomTDTowerCharacter* BP_Tower)
 {
-	ListOfActiveTowerRefs.Add(BP_TowerBase, Grid);
+	//BP_Tower->OnDestroyed()
+	ListOfActiveTowerRefs.Add(BP_Tower, Grid);
 }
 

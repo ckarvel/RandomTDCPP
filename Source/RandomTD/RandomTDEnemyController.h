@@ -37,10 +37,7 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, Category = "EnemyBase")
-	class UBlackboardData* BlackboardAssetRef;
-	
-	UPROPERTY(EditAnywhere, Category = "EnemyBase")
-	class UBlackboardComponent* BlackboardComponentRef;
+	class UBlackboardData* BlackboardData;
 	
 	UPROPERTY(EditAnywhere, Category = "EnemyBase")
 	class UBehaviorTree* BTAssetRef;

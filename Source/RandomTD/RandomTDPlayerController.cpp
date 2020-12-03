@@ -5,7 +5,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "RandomTDTowerBase.h"
+#include "RandomTDTowerCharacter.h"
 #include "RandomTDGridBase.h"
 #include "RandomTDTowerFactory.h"
 #include "RandomTDGridFactory.h"
@@ -171,7 +171,7 @@ void ARandomTDPlayerController::OnInteractPressed()
 			// multi-select mode not activated so unselect all others before selecting the new one
 			TowerFactoryRef->UnselectAll();
 		}
-		TowerFactoryRef->Select((ARandomTDTowerBase*)Hit.GetActor());
+		TowerFactoryRef->Select((ARandomTDTowerCharacter*)Hit.GetActor());
 		break;
 	default:
 		// If something other than Tower or Grid was clicked on:

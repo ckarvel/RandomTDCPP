@@ -93,7 +93,7 @@ void ARandomTDEnemyFactory::DestroyEnemy(ARandomTDEnemyCharacter* Enemy)
 //		pair.Key->Unselect();
 //	}
 //}
-//void ARandomTDEnemyFactory::Select(ARandomTDTowerBase* Tower)
+//void ARandomTDEnemyFactory::Select(ARandomTDTowerCharacter* Tower)
 //{
 //	Tower->Select();
 //}

@@ -29,9 +29,9 @@ protected:
 	/// @brief Called by BP_TowerFactory so it can provide us with a reference
 	/// to the newly spawned tower.
 	UFUNCTION(BlueprintCallable, Category = "Tower")
-	void AddNewTowerToList(ARandomTDGridBase* Grid, ARandomTDTowerBase* TowerBase);
+	void AddNewTowerToList(ARandomTDGridBase* Grid, ARandomTDTowerCharacter* TowerBase);
 
-	TMap<ARandomTDTowerBase*, ARandomTDGridBase*> ListOfActiveTowerRefs; ///< List of tower actors in the world.
+	TMap<ARandomTDTowerCharacter*, ARandomTDGridBase*> ListOfActiveTowerRefs; ///< List of tower actors in the world.
 
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ public:
 	void UnselectAll();
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Selects a Tower to start listening to "right-clicks"
-	void Select(ARandomTDTowerBase* Tower);
+	void Select(ARandomTDTowerCharacter* Tower);
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Destroys a tower.
 	/// @remark This function is bound to the TowerBase's delegate function. That means
@@ -59,5 +59,5 @@ public:
 	/// @param Tower Tower to be deleted.
 	/// @todo This function also deletes the tower/grid key/value from the map and it sets the grid
 	/// to valid... idk if this is the right place for that but it will do for now.
-	void DestroyTower(ARandomTDTowerBase* Tower);
+	void DestroyTower(ARandomTDTowerCharacter* Tower);
 };
