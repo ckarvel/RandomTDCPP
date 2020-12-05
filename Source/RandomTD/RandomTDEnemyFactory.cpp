@@ -25,7 +25,7 @@ void ARandomTDEnemyFactory::BeginPlay()
 	ARandomTDGameMode::RoundStartEvent.AddUObject(this, &ARandomTDEnemyFactory::StartSpawnTimer);
 
 	// [state change == finished path] or [state change == dead] delegate
-	ARandomTDEnemyCharacter::OnStateChangeEvent.AddUObject(this, &ARandomTDEnemyFactory::OnEnemyStateChange);
+	//ARandomTDEnemyCharacter::OnStateChangeEvent.AddUObject(this, &ARandomTDEnemyFactory::OnEnemyStateChange);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -61,29 +61,19 @@ void ARandomTDEnemyFactory::SpawnNewEnemy()
 	}
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDEnemyFactory::OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy)
-{
-	// if state == dead or finished path
-	FTimerDelegate DespawnDelegate = FTimerDelegate::CreateUObject(this, &ARandomTDEnemyFactory::DestroyEnemy, Enemy);
-	// destroy enemy in the next tick
-	// I'm not sure if this is necessary... I added this so Behavior Tree has a chance to
-	// stop before deletion.
-	GetWorldTimerManager().SetTimerForNextTick(DespawnDelegate);
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::OnEnemyStateChange"));
-#endif
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDEnemyFactory::DestroyEnemy(ARandomTDEnemyCharacter* Enemy)
-{
-#ifdef UE_BUILD_DEBUG
-	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::DestroyEnemy"));
-#endif	
-	ListOfEnemies.Remove(Enemy);
-	Enemy->Destroy();
-}
+///////////////////////////////////////////////////////////////////////////////////////
+//void ARandomTDEnemyFactory::OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy)
+//{
+//	// if state == dead or finished path
+//	FTimerDelegate DespawnDelegate = FTimerDelegate::CreateUObject(this, &ARandomTDEnemyFactory::DestroyEnemy, Enemy);
+//	// destroy enemy in the next tick
+//	// I'm not sure if this is necessary... I added this so Behavior Tree has a chance to
+//	// stop before deletion.
+//	GetWorldTimerManager().SetTimerForNextTick(DespawnDelegate);
+//#ifdef UE_BUILD_DEBUG
+//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDEnemyFactory::OnEnemyStateChange"));
+//#endif
+//}
 
 /////////////////////////////////////////////////////////////////////////////////////
 //void ARandomTDEnemyFactory::UnselectAll()
@@ -99,10 +89,20 @@ void ARandomTDEnemyFactory::DestroyEnemy(ARandomTDEnemyCharacter* Enemy)
 //}
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDEnemyFactory::AddNewEnemyToList(ARandomTDEnemyCharacter* Enemy)
+void ARandomTDEnemyFactory::AddNewEnemyToList(ARandomTDEnemyCharacter* BP_Enemy)
 {
 #if WITH_EDITOR
-	Enemy->SetFolderPath("Enemy");
+	BP_Enemy->SetFolderPath("Enemy");
 #endif
-	ListOfEnemies.Add(Enemy);
+	ListOfEnemies.Add(BP_Enemy);
+
+	// notify us when tower is removed
+	BP_Enemy->OnDestroyed.AddDynamic(this, &ARandomTDEnemyFactory::OnEnemyDestroyed);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDEnemyFactory::OnEnemyDestroyed(AActor* Enemy)
+{
+	int Index = ListOfEnemies.Find(Cast<ARandomTDEnemyCharacter>(Enemy));
+	ListOfEnemies.RemoveAt(Index);
 }

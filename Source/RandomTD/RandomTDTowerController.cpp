@@ -6,6 +6,7 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "RandomTDTowerCharacter.h"
+#include "RandomTDEnemyCharacter.h"
 #include "RandomTD.h"
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorPerceptionUpdatedDelegate, AActor*, Actor, FAIStimulus, Stimulus);
@@ -28,6 +29,12 @@ ARandomTDTowerController::ARandomTDTowerController()
   Sight->DetectionByAffiliation.bDetectNeutrals = false;
   Sight->DetectionByAffiliation.bDetectFriendlies = false;
 
+  // set sight radius
+  Sight->SightRadius = 500.0;
+  // maximum radius where we lose enemies
+  Sight->LoseSightRadius = 501.0;
+  // angle character can see relative to forward vector not whole range
+  Sight->PeripheralVisionAngleDegrees = 180.0;
   PerceptionComponent->ConfigureSense(*Sight);
 }
 
@@ -50,7 +57,7 @@ void ARandomTDTowerController::BeginPlay()
   Super::BeginPlay();
 
   // bind functions to delegates
-  PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ARandomTDTowerController::TargetUpdated);
+  PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ARandomTDTowerController::PerceptionUpdated);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -59,6 +66,7 @@ void ARandomTDTowerController::OnPossess(APawn* InPawn)
   // necessary to allow BP to run behavior tree
   Super::OnPossess(InPawn);
 
+  // @todo save so I don't need to be dynamic casting later on. benefits??
   TowerRef = (ARandomTDTowerCharacter*)InPawn;
 
   // start behavior tree
@@ -68,20 +76,70 @@ void ARandomTDTowerController::OnPossess(APawn* InPawn)
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDTowerController::Tick(float DeltaTime)
 {
-  // Necessary to get pawn to rotate
+  // necessary to get pawn to rotate
   Super::Tick(DeltaTime);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDTowerController::TargetUpdated(AActor* Actor, FAIStimulus Stimulus)
+void ARandomTDTowerController::PerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
-  if (!Stimulus.WasSuccessfullySensed())
-    return; // if actor not sensed, return
+  if (EnemyRef == nullptr)
+    return; // this will get set by BTTask_FindEnemy
 
-  UObject* Target = Blackboard->GetValueAsObject(BBKey_AttackTarget);
-  if (Target != nullptr)
-    return; // if we're already attacking, return
-  
-  // set our new enemy target
-  Blackboard->SetValueAsObject(BBKey_AttackTarget, Actor);
+  if (EnemyRef != Actor)
+    return; // this isn't our target
+ 
+  if (!Stimulus.WasSuccessfullySensed()) // is our target out of range?
+  {
+    OnEnemyDestroyed(nullptr); // out of range so remove
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDTowerController::OnTargetUpdate(AActor* Enemy)
+{
+  if (Enemy == nullptr)
+    return; // just in case...
+
+  // store reference
+  EnemyRef = Enemy;
+
+  // set focus so that tower can rotate and face the enemy at the same time.
+  SetFocus(EnemyRef, EAIFocusPriority::Gameplay);
+
+  // set blackboard enemy key
+  Blackboard->SetValueAsObject(BBKey_EnemyActor, EnemyRef);
+
+  // bind to enemy delegates
+  // has to be unique here because this function could be bound multiple times due to enemies getting
+  // in and out of range.
+  EnemyRef->OnDestroyed.AddUniqueDynamic(this, &ARandomTDTowerController::OnEnemyDestroyed);
+
+  ARandomTDEnemyCharacter* DerivedEnemy = Cast<ARandomTDEnemyCharacter>(EnemyRef);
+  if (DerivedEnemy == nullptr)
+  {
+    UE_LOG(LogRandomTD, Error, TEXT("ARandomTDTowerController::OnTargetUpdate: Casting Actor failed!"));
+    return;
+  }
+  // get notified when enemy's health changes
+  DerivedEnemy->OnHealthChangeEvent.AddUObject(this, &ARandomTDTowerController::OnEnemyHealthUpdate);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDTowerController::OnEnemyHealthUpdate(int RemainingEnemyHealth)
+{
+  // do something fancy
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDTowerController::OnEnemyDestroyed(AActor* Actor)
+{
+  // reset our data
+  EnemyRef = nullptr;
+
+  // I think ai does this on its own but... just in case
+  ClearFocus(EAIFocusPriority::Gameplay);
+
+  // notify blackboard that our target is dead
+  Blackboard->SetValueAsObject(BBKey_EnemyActor, nullptr);
 }

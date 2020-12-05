@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RandomTDEnemyCharacter.generated.h"
 
-DECLARE_DELEGATE_OneParam(FOnHealthChange, int);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChange, int);
 // frozen, slowed, hexed??, but importantly -> death & despawn // figure out how to do enum...
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnStateChange, ARandomTDEnemyCharacter*);
 
@@ -71,7 +71,11 @@ protected:
 	/// GetCharacterMovement()->MaxWalkSpeed would not be updated.
 	virtual void PostInitializeComponents() override;
 
-	UPROPERTY(EditAnywhere, Category = "EnemyBase")
+	/////////////////////////////////////////////////////////////////////////////////////
+	/// @brief This will be called when health = 0 or if reached end of path
+	void DestroyActorEvent();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBase")
 	class UWidgetComponent* HealthWidgetComponent; ///< UI widget component that contains
 																								 ///< @ref HealthWidget
 

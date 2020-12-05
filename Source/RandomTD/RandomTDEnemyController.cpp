@@ -23,9 +23,6 @@ ARandomTDEnemyController::ARandomTDEnemyController()
 void ARandomTDEnemyController::BeginPlay()
 {
   Super::BeginPlay();
-
-  // [state change == finished path] or [state change == dead] delegate
-  ARandomTDEnemyCharacter::OnStateChangeEvent.AddUObject(this, &ARandomTDEnemyController::OnEnemyStateChange);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -49,16 +46,13 @@ void ARandomTDEnemyController::OnPossess(APawn* InPawn)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-/// @todo could we also use do this pause the behavior tree when enemy is frozen??? maybe!!
-void ARandomTDEnemyController::OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy)
-{
-  if (EnemyRef != Enemy)
-    return; // not my pawn
-
-  // we got an update from our pawn, if pawn is finished path or dead
-  // tell blackboard to stop
-  Blackboard->SetValueAsBool(BBKey_PendingKill, true);
-}
+/// @todo I don't know if I need to do things before being destroyed
+//void ARandomTDEnemyController::OnEnemyDestroyed()
+//{
+//  // we got an update from our pawn, if pawn is finished path or dead
+//  // tell blackboard to stop
+//  Blackboard->SetValueAsBool(BBKey_PendingKill, true);
+//}
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDEnemyController::Tick(float DeltaTime)

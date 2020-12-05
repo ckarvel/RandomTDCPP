@@ -49,7 +49,7 @@ void ARandomTDEnemyCharacter::BeginPlay()
 	HealthWidget->SetMaxHealth(MaxHealth);
 
 	// add a dispatcher for updating our UI when health changes (thats why its not static)
-	OnHealthChangeEvent.BindUObject(HealthWidget, &UEnemyHealthWidget::SetHealth);
+	OnHealthChangeEvent.AddUObject(HealthWidget, &UEnemyHealthWidget::SetHealth);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,8 @@ FVector ARandomTDEnemyCharacter::GetNextWaypoint()
 	{
 		// next waypoint is INVALID so don't save index
 		// return LAST waypoint
-		OnStateChangeEvent.Broadcast(this); // notify despawn
+		//OnStateChangeEvent.Broadcast(this); // notify despawn
+		GetWorldTimerManager().SetTimerForNextTick(this, &ARandomTDEnemyCharacter::DestroyActorEvent);
 	}
 	else
 	{
@@ -104,9 +105,10 @@ float ARandomTDEnemyCharacter::TakeDamage(float Damage,
 {
 	if (int(Damage) > Health)
 	{
-		// damage kills us, notify state change
+		// damage kills us
 		Health = 0;
-		OnStateChangeEvent.Broadcast(this);
+		// in next tick, destroy this actor
+		GetWorldTimerManager().SetTimerForNextTick(this, &ARandomTDEnemyCharacter::DestroyActorEvent);
 	}
 	else
 	{
@@ -114,8 +116,16 @@ float ARandomTDEnemyCharacter::TakeDamage(float Damage,
 		Health -= int(Damage);
 	}
 
-	// notify health change either way... just in case
-	OnHealthChangeEvent.Execute(Health);
+	// notify health change. attacker may need this value.
+	// For ex: if damage increases based on how much health enemy has
+	// dunno effects of doing this when health == 0...
+	OnHealthChangeEvent.Broadcast(Health);
 
 	return (float)Health;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDEnemyCharacter::DestroyActorEvent()
+{
+	Destroy();
 }

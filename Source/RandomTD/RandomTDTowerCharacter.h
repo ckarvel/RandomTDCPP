@@ -23,7 +23,7 @@ protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	void OnSellTower();
 
-	UPROPERTY(EditAnywhere, Category = "Base")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
 	class UWidgetComponent* TowerWidgetComponent; ///< UI widget component that contains
 																								 ///< @ref TowerInteractWidget
 

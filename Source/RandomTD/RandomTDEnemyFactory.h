@@ -31,7 +31,7 @@ protected:
 	/// @brief Gives reference to newly spawned Enemy actor.
 	/// @remark Called from Blueprint when a new Enemy has spawned.
 	UFUNCTION(BlueprintCallable, Category = "EnemyBase")
-	void AddNewEnemyToList(ARandomTDEnemyCharacter* Enemy);
+	void AddNewEnemyToList(ARandomTDEnemyCharacter* BP_Enemy);
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief At the start of every round, this timer will indefinitely call
@@ -67,7 +67,8 @@ protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Destroys an Enemy actor.
 	/// @remark Only called from @ref OnEnemyStateChange().
-	void DestroyEnemy(ARandomTDEnemyCharacter* Enemy);
+	UFUNCTION()
+	void OnEnemyDestroyed(AActor* Enemy);
 
 	int EnemiesSpawned; ///< Counter used to track number of spawned Enemy actors at the start
 											///< of each round.
@@ -86,7 +87,7 @@ public:
 	/// @brief Destroys Enemy if Enemy State == Dead or EnemyState == Finished Spline Path
 	/// @details This sets a timer to Destroy the Enemy actor in the next tick.
 	/// @remark Not sure if next tick is necessary...
-	void OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy);
+	//void OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy);
 
 	UPROPERTY(EditAnywhere, Category = "EnemyBase")
 	int MaxEnemiesPerRound; ///< The number of Enemies to spawn each round.

@@ -8,3 +8,9 @@
 UTowerInteractWidget::UTowerInteractWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void UTowerInteractWidget::OnSell()
+{
+	OnSellEvent.ExecuteIfBound();
+}

@@ -24,12 +24,12 @@ UBTTask_FindNextWaypoint::UBTTask_FindNextWaypoint(const FObjectInitializer& Obj
 EBTNodeResult::Type UBTTask_FindNextWaypoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();
-	if (AIController == NULL || AIController->GetPawn() == NULL)
+	if (AIController == nullptr || AIController->GetPawn() == nullptr)
 	{
 		return EBTNodeResult::Failed;
 	}
 	ARandomTDEnemyCharacter* Enemy = (ARandomTDEnemyCharacter*)AIController->GetPawn();
-	if (Enemy == NULL)
+	if (Enemy == nullptr)
 	{
 		return EBTNodeResult::Failed;
 	}

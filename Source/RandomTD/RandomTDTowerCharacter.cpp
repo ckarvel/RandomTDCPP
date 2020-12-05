@@ -11,7 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDTowerCharacter::ARandomTDTowerCharacter()
 {
-	PrimaryActorTick.bCanEverTick = false; // no ticking
+	PrimaryActorTick.bCanEverTick = true;
 
 	SetCanBeDamaged(false);
 	TowerWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("TowerWidget");
@@ -57,7 +57,7 @@ void ARandomTDTowerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDTowerCharacter::OnSellTower()
 {
-	// do something
+	Destroy();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

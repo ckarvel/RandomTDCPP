@@ -21,6 +21,9 @@ public:
 	///////////////////////////////////////////////////////////////////////////
 	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 
+	///////////////////////////////////////////////////////////////////////////
+	void OnTargetUpdate(AActor* Actor);
+
 protected:
 	///////////////////////////////////////////////////////////////////////////
 	void BeginPlay() override;
@@ -32,8 +35,18 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 	///////////////////////////////////////////////////////////////////////////
+	/// @brief we dont need to worry about force updating targets here, that will
+	/// be someone else's job... i think. Something involving PlayerController
 	UFUNCTION()
-	void TargetUpdated(AActor* Actor, FAIStimulus Stimulus);
+	void PerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+
+	///////////////////////////////////////////////////////////////////////////
+	// @warning I think this needs to be unbound when enemy dies
+	void OnEnemyHealthUpdate(int RemainingEnemyHealth);
+
+	///////////////////////////////////////////////////////////////////////////
+	UFUNCTION()
+	void OnEnemyDestroyed(AActor* Actor);
 
 	UPROPERTY(EditAnywhere, Category = "TowerBase")
 	class UBlackboardData* BlackboardData;
@@ -42,7 +55,8 @@ protected:
 	class UBehaviorTree* BTAssetRef;
 
 	UPROPERTY(EditAnywhere, Category = "TowerBase")
-	FName BBKey_AttackTarget;
+	FName BBKey_EnemyActor;
 
 	class ARandomTDTowerCharacter* TowerRef;
+	AActor* EnemyRef;
 };

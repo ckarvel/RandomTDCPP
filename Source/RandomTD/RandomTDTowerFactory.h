@@ -6,25 +6,29 @@
 #include "GameFramework/Actor.h"
 #include "RandomTDTowerFactory.generated.h"
 
+/////////////////////////////////////////////////////////////////////////////////////
 /// @class ARandomTDTowerFactory 
 /// @brief Handles spawning/despawning towers.
 /// 
 /// Used as an interface for PlayerController to
 /// gain access to specific towers.
-
 UCLASS()
 class RANDOMTD_API ARandomTDTowerFactory : public AActor
 {
 	GENERATED_BODY()
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
-	///@brief Sets default values
 	ARandomTDTowerFactory();
 
 protected:
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @see ARandomTDPlayerController::BeginPlay()
 	virtual void BeginPlay() override;
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	/// @brief Removes tower from our list and validates the associated grid
+	UFUNCTION()
+	void OnSellTower(AActor* Tower);
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Called by BP_TowerFactory so it can provide us with a reference
 	/// to the newly spawned tower.
@@ -35,8 +39,8 @@ protected:
 
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief Not used.
 	virtual void Tick(float DeltaTime) override;
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief This function gets implemented by BP_TowerFactory and
 	/// gets called from PC C++ class.
@@ -46,18 +50,12 @@ public:
 	/// @param Grid The location where the tower will be spawned.
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="Tower")
 	void SpawnTower(ARandomTDGridBase* Grid);
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Unselects all Towers so that none are highlighted & will not respond to "right-clicks"
 	void UnselectAll();
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Selects a Tower to start listening to "right-clicks"
 	void Select(ARandomTDTowerCharacter* Tower);
-	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief Destroys a tower.
-	/// @remark This function is bound to the TowerBase's delegate function. That means
-	/// this function is called when TowerBase calls its delegate. This is not directly called.
-	/// @param Tower Tower to be deleted.
-	/// @todo This function also deletes the tower/grid key/value from the map and it sets the grid
-	/// to valid... idk if this is the right place for that but it will do for now.
-	void DestroyTower(ARandomTDTowerCharacter* Tower);
 };

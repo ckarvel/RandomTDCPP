@@ -12,26 +12,20 @@
 ARandomTDTowerFactory::ARandomTDTowerFactory()
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDTowerFactory::Constructor"));
-//#endif
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDTowerFactory::BeginPlay()
 {
 	Super::BeginPlay();
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDTowerFactory::BeginPlay"));
-//#endif
-
-	// delegate binding should happen here not in constructor!
-	//ARandomTDTowerCharacter::UIDeleteTowerEvent.BindUObject(this, &ARandomTDTowerFactory::DestroyTower);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDTowerFactory::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDTowerFactory::UnselectAll()
 {
@@ -40,25 +34,28 @@ void ARandomTDTowerFactory::UnselectAll()
 		pair.Key->Unselect();
 	}
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDTowerFactory::Select(ARandomTDTowerCharacter* Tower)
 {
 	Tower->Select();
 }
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDTowerFactory::DestroyTower(ARandomTDTowerCharacter* Tower)
-{
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDTowerFactory::DestroyTower"));
-//#endif	
-	ARandomTDGridBase * Grid = ListOfActiveTowerRefs.FindAndRemoveChecked(Tower);
-	Tower->Destroy();
-	Grid->SetValid();
-}
+
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDTowerFactory::AddNewTowerToList(ARandomTDGridBase* Grid, ARandomTDTowerCharacter* BP_Tower)
 {
-	//BP_Tower->OnDestroyed()
+#if WITH_EDITOR
+	BP_Tower->SetFolderPath("Tower");
+#endif
 	ListOfActiveTowerRefs.Add(BP_Tower, Grid);
+
+	// notify us when tower is removed
+	BP_Tower->OnDestroyed.AddDynamic(this, &ARandomTDTowerFactory::OnSellTower);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDTowerFactory::OnSellTower(AActor* Tower)
+{
+	ARandomTDGridBase* Grid = ListOfActiveTowerRefs.FindAndRemoveChecked(Cast<ARandomTDTowerCharacter>(Tower));
+	Grid->SetValid();
+}
