@@ -10,6 +10,16 @@ UTowerInteractWidget::UTowerInteractWidget(const FObjectInitializer& ObjectIniti
 {}
 
 /////////////////////////////////////////////////////////////////////////////////////
+void UTowerInteractWidget::SetSelectedTowerRef(class ARandomTDTowerCharacter* TowerActor)
+{
+	OnSellEvent.Unbind();
+	SelectedTowerRef = TowerActor;
+	if (!SelectedTowerRef)
+		return;
+	OnSellEvent.BindUObject(SelectedTowerRef, &ARandomTDTowerCharacter::OnSellTower);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
 void UTowerInteractWidget::OnSell()
 {
 	OnSellEvent.ExecuteIfBound();

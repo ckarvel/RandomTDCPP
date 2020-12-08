@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "RandomTDTowerCharacter.generated.h"
 
+DECLARE_DELEGATE_OneParam(FTowerOnClickedEvent, ARandomTDTowerCharacter*);
+
 /////////////////////////////////////////////////////////////////////////////////////
 UCLASS()
 class RANDOMTD_API ARandomTDTowerCharacter : public ACharacter
@@ -16,12 +18,12 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	ARandomTDTowerCharacter();
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	void OnSellTower();
+
 protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	virtual void BeginPlay() override;
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	void OnSellTower();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
 	class UWidgetComponent* TowerWidgetComponent; ///< UI widget component that contains
@@ -38,9 +40,14 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	UFUNCTION(BlueprintImplementableEvent, Category = "Base")
-		void Select();
+	UFUNCTION()
+	void OnUserClicked(AActor* TouchedActor, FKey ButtonPressed);
+
 	/////////////////////////////////////////////////////////////////////////////////////
-	UFUNCTION(BlueprintImplementableEvent, Category = "Base")
-		void Unselect();
+	/// @todo PC is the only one that can know this right?
+	void OnUserUnclicked();
+
+	static FTowerOnClickedEvent OnTowerClicked;
+
+	bool bSelected;
 };

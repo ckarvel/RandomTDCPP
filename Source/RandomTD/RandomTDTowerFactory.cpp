@@ -27,21 +27,6 @@ void ARandomTDTowerFactory::Tick(float DeltaTime)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDTowerFactory::UnselectAll()
-{
-	for (auto& pair : ListOfActiveTowerRefs)
-	{
-		pair.Key->Unselect();
-	}
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDTowerFactory::Select(ARandomTDTowerCharacter* Tower)
-{
-	Tower->Select();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDTowerFactory::AddNewTowerToList(ARandomTDGridBase* Grid, ARandomTDTowerCharacter* BP_Tower)
 {
 #if WITH_EDITOR

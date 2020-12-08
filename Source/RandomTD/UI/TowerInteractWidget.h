@@ -20,10 +20,16 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	UTowerInteractWidget(const FObjectInitializer& ObjectInitializer);
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	UFUNCTION(BlueprintCallable, Category = "Base")
+	void SetSelectedTowerRef(class ARandomTDTowerCharacter* TowerActor);
+
 	FOnSell OnSellEvent; ///< Delegate called when @ref user wants to sell tower.
 
 protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Base")
 	void OnSell();
+
+	ARandomTDTowerCharacter* SelectedTowerRef;
 };

@@ -9,15 +9,16 @@
 #include "RandomTD.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
+/// define static fields
+FTowerOnClickedEvent ARandomTDTowerCharacter::OnTowerClicked;
+
+/////////////////////////////////////////////////////////////////////////////////////
 ARandomTDTowerCharacter::ARandomTDTowerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetCanBeDamaged(false);
-	TowerWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("TowerWidget");
-	TowerWidgetComponent->SetupAttachment(RootComponent);
-	TowerWidgetComponent->SetDrawAtDesiredSize(true);
-	TowerWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	GetMesh()->SetRenderCustomDepth(false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -26,20 +27,22 @@ void ARandomTDTowerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// get reference to UI tower component
-	TowerWidget = Cast<UTowerInteractWidget>(TowerWidgetComponent->GetUserWidgetObject());
-	if (!TowerWidget)
-	{
-#ifdef UE_BUILD_DEBUG
-		UE_LOG(LogRandomTD, Error, TEXT("ARandomTDTowerCharacter::TowerWidget NULL!"));
-#endif
-		return;
-	}
+//	TowerWidget = Cast<UTowerInteractWidget>(TowerWidgetComponent->GetUserWidgetObject());
+//	if (!TowerWidget)
+//	{
+//#ifdef UE_BUILD_DEBUG
+//		UE_LOG(LogRandomTD, Error, TEXT("ARandomTDTowerCharacter::TowerWidget NULL!"));
+//#endif
+//		return;
+//	}
+
+	OnClicked.AddDynamic(this, &ARandomTDTowerCharacter::OnUserClicked);
 
 	// initialize UI tower values
 	// attack speed / defense / etc.
 	
 	// add a dispatcher for updating our UI when health changes (thats why its not static)
-	TowerWidget->OnSellEvent.BindUObject(this, &ARandomTDTowerCharacter::OnSellTower);
+	//TowerWidget->OnSellEvent.BindUObject(this, &ARandomTDTowerCharacter::OnSellTower);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -61,9 +64,17 @@ void ARandomTDTowerCharacter::OnSellTower()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-//void ARandomTDTowerCharacter::Attack()
-//{
-//	UGameplayStatics::ApplyDamage(EnemyToAttack, 5.0, NULL, NULL, NULL);
-//}
+void ARandomTDTowerCharacter::OnUserClicked(AActor* TouchedActor, FKey ButtonPressed)
+{
+	bSelected = true; // why?
+	GetMesh()->SetRenderCustomDepth(true);
+	OnTowerClicked.ExecuteIfBound(this);
+}
 
-//static float ApplyDamage(AActor* DamagedActor, float BaseDamage, AController* EventInstigator, AActor* DamageCauser, TSubclassOf<class UDamageType> DamageTypeClass);
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDTowerCharacter::OnUserUnclicked()
+{
+	bSelected = false; // why?
+	GetMesh()->SetRenderCustomDepth(false);
+}
+

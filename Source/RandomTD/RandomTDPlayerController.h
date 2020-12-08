@@ -157,6 +157,8 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Mystery")
 	void SpawnMystery();
 
+	void OnTowerSelected(class ARandomTDTowerCharacter* SelectedTower);
+
 	bool bMoveToMouseCursor; ///< True to move character to cursor
 
 	bool bTowerRequested; ///< User pressed Q
@@ -173,6 +175,8 @@ protected:
 	class AActor* MysteryPropRef; ///< Reference is set by BP. This allows us to easily change prop asset
 																///< for cosmetic purposes in the future.
 
+	TArray<class ARandomTDTowerCharacter*> TowersSelectedList;
+
 public:
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief PlayerController will set character's position every tick when Value is
@@ -188,10 +192,12 @@ public:
 	FHitResult GetHitOnCustomObjectTypes(bool UseChannel=false, ECollisionChannel Channel=ECC_WorldStatic);
 
 	UPROPERTY(EditAnywhere, Category = Camera)
-
 	float CameraMovementSpeed; ///< How fast the camera pans
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> m_CustomObjectTypes; ///< The object types we created, Grid and Tower
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
+	class UMainGameUserWidget* MainGameUI;
 };
 /*
 Notes

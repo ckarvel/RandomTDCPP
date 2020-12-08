@@ -5,10 +5,11 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "RandomTDTowerCharacter.h"
+#include "UI/MainGameUserWidget.h"
 #include "RandomTDGridBase.h"
-#include "RandomTDTowerFactory.h"
 #include "RandomTDGridFactory.h"
+#include "RandomTDTowerFactory.h"
+#include "RandomTDTowerCharacter.h"
 #include "RandomTDPlayerCharacter.h"
 #include "RandomTD.h"
 
@@ -26,10 +27,6 @@ ARandomTDPlayerController::ARandomTDPlayerController()
 	DefaultMouseCursor = EMouseCursor::Default;
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
-
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPlayerController::Constructor"));
-//#endif
 
 	// define our custom object types
 	m_CustomObjectTypes.Add(UEngineTypes::ConvertToObjectType(GridTraceChannel));
@@ -75,9 +72,6 @@ void ARandomTDPlayerController::BeginPlay()
 
 	// get ref to our player
 	PlayerRef = (ARandomTDPlayerCharacter*)GetPawn();
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPlayerController::BeginPlay"));
-//#endif
 	if (PlayerRef == nullptr)
 	{
 #ifdef UE_BUILD_DEBUG
@@ -91,11 +85,55 @@ void ARandomTDPlayerController::BeginPlay()
 	auto Rotation = FRotator(-70, 0, 0); // pitch yaw roll
 	PlayerRef->GetPlayerCamera()->SetWorldLocationAndRotation(Location, Rotation);
 
+	// get reference to factories
 	TowerFactoryRef = (ARandomTDTowerFactory*) UGameplayStatics::GetActorOfClass(
 		GetWorld(), ARandomTDTowerFactory::StaticClass());
-
 	GridFactoryRef = (ARandomTDGridFactory*)UGameplayStatics::GetActorOfClass(
 		GetWorld(), ARandomTDGridFactory::StaticClass());
+
+	// bind to tower clicked. PC needs to know when towers are selected
+	ARandomTDTowerCharacter::OnTowerClicked.BindUObject(this, &ARandomTDPlayerController::OnTowerSelected);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPlayerController::OnTowerSelected(ARandomTDTowerCharacter* SelectedTower)
+{
+	// check if multi-select is on
+	if (bCtrlPressed)
+	{
+		// turn off all overlays
+		for (int i = 0; i < TowersSelectedList.Num(); i++)
+		{
+			ARandomTDTowerCharacter* Tower = TowersSelectedList[i];
+			if (!Tower)
+			{
+				UE_LOG(LogRandomTD, Error, TEXT("PlayerController::OnTowerSelected Tower NULL?"));
+				continue;
+			}
+		}
+
+		// turn off
+		MainGameUI->SetupTowerUI(nullptr);
+	}
+	else
+	{
+		// unselect others
+		for (int i = 0; i < TowersSelectedList.Num(); i++)
+		{
+			ARandomTDTowerCharacter* Tower = TowersSelectedList[i];
+			if (!Tower)
+			{
+				UE_LOG(LogRandomTD, Error, TEXT("PlayerController::OnTowerSelected Tower NULL?"));
+				continue;
+			}
+			Tower->OnUserUnclicked();
+		}
+		
+		// tell tower it can show its overlay now
+		MainGameUI->SetupTowerUI(SelectedTower);
+	}
+
+	TowersSelectedList.AddUnique(SelectedTower);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -140,7 +178,7 @@ void ARandomTDPlayerController::OnInteractPressed()
 	FHitResult Hit = GetHitOnCustomObjectTypes();
 	if (!Hit.bBlockingHit)
 	{
-		TowerFactoryRef->UnselectAll();
+		//TowerFactoryRef->UnselectAll();
 		return;
 	}
 	ECollisionChannel ObjectType = Hit.Component->GetCollisionObjectType();
@@ -161,21 +199,12 @@ void ARandomTDPlayerController::OnInteractPressed()
 		}
 		else
 		{
-			TowerFactoryRef->UnselectAll();
+			//TowerFactoryRef->UnselectAll();
 		}
-		break;
-	case TowerTraceChannel:
-		// Tower clicked on:
-		if (!bCtrlPressed)
-		{
-			// multi-select mode not activated so unselect all others before selecting the new one
-			TowerFactoryRef->UnselectAll();
-		}
-		TowerFactoryRef->Select((ARandomTDTowerCharacter*)Hit.GetActor());
 		break;
 	default:
 		// If something other than Tower or Grid was clicked on:
-		TowerFactoryRef->UnselectAll();
+		//TowerFactoryRef->UnselectAll();
 		break;
 	}
 }

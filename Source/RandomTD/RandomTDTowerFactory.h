@@ -50,12 +50,4 @@ public:
 	/// @param Grid The location where the tower will be spawned.
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="Tower")
 	void SpawnTower(ARandomTDGridBase* Grid);
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief Unselects all Towers so that none are highlighted & will not respond to "right-clicks"
-	void UnselectAll();
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief Selects a Tower to start listening to "right-clicks"
-	void Select(ARandomTDTowerCharacter* Tower);
 };

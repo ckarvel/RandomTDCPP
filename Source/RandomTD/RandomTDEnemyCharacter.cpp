@@ -22,6 +22,8 @@ ARandomTDEnemyCharacter::ARandomTDEnemyCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
 
+	//GetMesh()->bRenderCustomDepth = true; // used for outlines
+
 	SetCanBeDamaged(true);
 	HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("HealthWidget");
 	HealthWidgetComponent->SetupAttachment(RootComponent);

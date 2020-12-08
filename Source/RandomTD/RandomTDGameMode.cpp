@@ -8,8 +8,8 @@
 // Define static fields
 FOnRoundStart ARandomTDGameMode::RoundStartEvent;
 FOnRoundSecondElapsed ARandomTDGameMode::RoundSecondElapsedEvent;
-const int ARandomTDGameMode::SecondsPerRound = 6; // 60
-const int ARandomTDGameMode::PreRoundSeconds = 3; // 30
+const int ARandomTDGameMode::SecondsPerRound = 60;
+const int ARandomTDGameMode::PreRoundSeconds = 30;
 
 int ARandomTDGameMode::GetSecondsPerRound() { return SecondsPerRound; }
 int ARandomTDGameMode::GetPreRoundSeconds() { return PreRoundSeconds; }
@@ -71,13 +71,6 @@ void ARandomTDGameMode::StartElapsedTimer()
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGameMode::OnRoundChange()
 {
-	// debug code
-	if (CurrentRound == 1)
-	{
-		return;
-	}
-	//debug code end
-
 	CurrentRound++;
 	RoundStartEvent.Broadcast(CurrentRound);
 }

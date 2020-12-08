@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "Internationalization/Internationalization.h"
 #include "GenericPlatform/GenericPlatformMath.h"
+#include "TowerInteractWidget.h"
+#include "RoundInfoWidget.h"
 #include "MainGameUserWidget.generated.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -22,56 +24,14 @@ public:
 	UMainGameUserWidget(const FObjectInitializer& ObjectInitializer);
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
-	void SetCurrentRound(int Value) { CurrentRound = Value; }
+	UFUNCTION(BlueprintCallable, Category = "Base")
+	bool GetTowerUIVisibility() { return TowerVisibility; }
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
-	void SetRoundTime(int Value) { RoundElapsedTime = Value; }
+	UFUNCTION(BlueprintImplementableEvent, Category = "Base")
+	void SetTowerReference(class ARandomTDTowerCharacter* TowerActor);
 
-protected:
-	/////////////////////////////////////////////////////////////////////////////////////
-	/// UI Text Bind functions
-	/////////////////////////////////////////////////////////////////////////////////////
-	UFUNCTION(BlueprintCallable, Category = "Game")
-	FText GetRoundCount() const
-	{
-		return  FText::FromString(FString::FromInt(CurrentRound));
-	}
+	void SetupTowerUI(class ARandomTDTowerCharacter* TowerActor);
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	UFUNCTION(BlueprintCallable, Category = "Game")
-	FText GetElapsedSeconds() const
-	{
-		return FText::FromString(FString::FromInt(RoundElapsedTime));
-	}
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	UFUNCTION(BlueprintCallable, Category = "Game")
-	FText GetSecondsPerRound() const
-	{
-		int Seconds = CurrentRound ? kSecondsPerRound : kPreRoundSeconds;
-		return FText::FromString(FString::FromInt(Seconds));
-	}
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	UFUNCTION(BlueprintCallable, Category = "Game")
-	float GetElapsedPercentage() const
-	{
-		// number to be divided
-		int TotalSeconds = CurrentRound ? kSecondsPerRound : kPreRoundSeconds;
-		if (!TotalSeconds)
-			return 0.0; // just in case...
-
-		float Percent = (float) RoundElapsedTime / (float) TotalSeconds;
-		return Percent;
-	}
-
-	int CurrentRound;
-
-	int RoundElapsedTime;
-
-	int kSecondsPerRound;
-
-	int kPreRoundSeconds;
+	bool TowerVisibility;
 };
