@@ -10,13 +10,21 @@ UTowerInteractWidget::UTowerInteractWidget(const FObjectInitializer& ObjectIniti
 {}
 
 /////////////////////////////////////////////////////////////////////////////////////
-void UTowerInteractWidget::SetSelectedTowerRef(class ARandomTDTowerCharacter* TowerActor)
+void UTowerInteractWidget::SetSelectedTowerRef(ARandomTDTowerCharacter* TowerActor)
 {
 	OnSellEvent.Unbind();
 	SelectedTowerRef = TowerActor;
 	if (!SelectedTowerRef)
 		return;
 	OnSellEvent.BindUObject(SelectedTowerRef, &ARandomTDTowerCharacter::OnSellTower);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+FString UTowerInteractWidget::GetTowerName()
+{
+	if (SelectedTowerRef)
+		return SelectedTowerRef->GetHumanReadableName();
+	return FString();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

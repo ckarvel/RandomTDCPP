@@ -96,8 +96,21 @@ void ARandomTDPlayerController::BeginPlay()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPlayerController::UnselectTowers()
+{
+	for (auto tower : TowersSelectedList)
+	{
+		tower->OnUserUnclicked();
+	}
+	TowersSelectedList.Empty();
+	// turn off
+	MainGameUI->SetupTowerUI(nullptr);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::OnTowerSelected(ARandomTDTowerCharacter* SelectedTower)
 {
+	
 	// check if multi-select is on
 	if (bCtrlPressed)
 	{
@@ -126,7 +139,8 @@ void ARandomTDPlayerController::OnTowerSelected(ARandomTDTowerCharacter* Selecte
 				UE_LOG(LogRandomTD, Error, TEXT("PlayerController::OnTowerSelected Tower NULL?"));
 				continue;
 			}
-			Tower->OnUserUnclicked();
+			if(Tower != SelectedTower)
+				Tower->OnUserUnclicked();
 		}
 		
 		// tell tower it can show its overlay now
@@ -144,8 +158,15 @@ void ARandomTDPlayerController::PlayerTick(float DeltaTime)
 	// keep updating the destination every tick while desired
 	if (bMoveToMouseCursor)
 	{
-		//Cancel other pending actions
-		MoveToMouseCursor();
+		if (bTowerRequested)
+		{
+			// cancel request
+			DestroyProp();
+		}
+		else
+		{
+			MoveToMouseCursor();
+		}
 	}
 
 	if (!bTowerRequested)
@@ -178,7 +199,7 @@ void ARandomTDPlayerController::OnInteractPressed()
 	FHitResult Hit = GetHitOnCustomObjectTypes();
 	if (!Hit.bBlockingHit)
 	{
-		//TowerFactoryRef->UnselectAll();
+		UnselectTowers();
 		return;
 	}
 	ECollisionChannel ObjectType = Hit.Component->GetCollisionObjectType();
@@ -193,18 +214,19 @@ void ARandomTDPlayerController::OnInteractPressed()
 			{
 				TowerFactoryRef->SpawnTower(Grid);
 				Grid->SetInvalid();
-				bTowerRequested = false;
 				DestroyProp();
 			}
 		}
 		else
 		{
-			//TowerFactoryRef->UnselectAll();
+			UnselectTowers();
 		}
+		break;
+	case TowerTraceChannel:
 		break;
 	default:
 		// If something other than Tower or Grid was clicked on:
-		//TowerFactoryRef->UnselectAll();
+		UnselectTowers();
 		break;
 	}
 }
@@ -216,6 +238,7 @@ void ARandomTDPlayerController::OnCreateBasicTowerPressed()
 		return; // ignore request if a request is already active
 	bTowerRequested = true;
 	SpawnMystery(); // call blueprint to spawn specific asset
+	UnselectTowers();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -302,6 +325,7 @@ void ARandomTDPlayerController::MoveCameraRight(float AxisValue)
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::DestroyProp()
 {
+	bTowerRequested = false;
 	MysteryPropRef->Destroy();
 }
 
