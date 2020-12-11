@@ -32,3 +32,12 @@ void UTowerInteractWidget::OnSell()
 {
 	OnSellEvent.ExecuteIfBound();
 }
+
+/////////////////////////////////////////////////////////////////////////////////////
+bool UTowerInteractWidget::HaveValidTowerRef()
+{
+	// just checking if ref is null is not enough...garbage collection delay??
+	if (SelectedTowerRef && !SelectedTowerRef->IsPendingKill())
+		return true;
+	return false;
+}

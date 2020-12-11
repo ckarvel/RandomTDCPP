@@ -26,6 +26,10 @@ public:
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Base")
+	bool HaveValidTowerRef();
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	UFUNCTION(BlueprintCallable, Category = "Base")
 	FString GetTowerName();
 
 	FOnSell OnSellEvent; ///< Delegate called when @ref user wants to sell tower.

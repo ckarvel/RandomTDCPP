@@ -75,13 +75,12 @@ void UBTTask_FindEnemy::FindClosestEnemy(AAIController* TowerController, APawn* 
 		return;
 
 	// enemy found, update tower controller
-	ARandomTDTowerController* TC = Cast<ARandomTDTowerController>(TowerController);
-	if (!TC)
+	if (ARandomTDTowerController* TC = Cast<ARandomTDTowerController>(TowerController))
 	{
-		UE_LOG(LogRandomTD, Error, TEXT("UBTTask_FindEnemy::FindClosestEnemy: Can't cast TowerController!"));
+		TC->OnTargetUpdate(FoundEnemy);
 	}
 	else
 	{
-		TC->OnTargetUpdate(FoundEnemy);
+		UE_LOG(LogRandomTD, Error, TEXT("UBTTask_FindEnemy::FindClosestEnemy: Can't cast TowerController!"));
 	}
 }

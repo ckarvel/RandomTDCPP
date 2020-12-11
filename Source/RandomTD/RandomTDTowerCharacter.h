@@ -25,13 +25,6 @@ protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
-	class UWidgetComponent* TowerWidgetComponent; ///< UI widget component that contains
-																								 ///< @ref TowerInteractWidget
-
-	class UTowerInteractWidget* TowerWidget; ///< Base class for the UI widget that shows
-																					///< the Tower interaction overlay.
-
 public:	
 	/////////////////////////////////////////////////////////////////////////////////////
 	virtual void Tick(float DeltaTime) override;

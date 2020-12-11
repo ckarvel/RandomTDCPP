@@ -26,23 +26,7 @@ void ARandomTDTowerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// get reference to UI tower component
-//	TowerWidget = Cast<UTowerInteractWidget>(TowerWidgetComponent->GetUserWidgetObject());
-//	if (!TowerWidget)
-//	{
-//#ifdef UE_BUILD_DEBUG
-//		UE_LOG(LogRandomTD, Error, TEXT("ARandomTDTowerCharacter::TowerWidget NULL!"));
-//#endif
-//		return;
-//	}
-
 	OnClicked.AddDynamic(this, &ARandomTDTowerCharacter::OnUserClicked);
-
-	// initialize UI tower values
-	// attack speed / defense / etc.
-	
-	// add a dispatcher for updating our UI when health changes (thats why its not static)
-	//TowerWidget->OnSellEvent.BindUObject(this, &ARandomTDTowerCharacter::OnSellTower);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -77,4 +61,3 @@ void ARandomTDTowerCharacter::OnUserUnclicked()
 	bSelected = false; // why?
 	GetMesh()->SetRenderCustomDepth(false);
 }
-
