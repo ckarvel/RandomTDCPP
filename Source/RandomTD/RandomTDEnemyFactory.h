@@ -23,7 +23,7 @@ public:
 protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Bind functions to delegates.
-	/// @remark @ref StartSpawnTimer() is bound to @ref ARandomTDGameMode::RoundStartEvent.
+	/// @remark @ref StartSpawnTimer() is bound to @ref ARandomTDGameMode::LevelStartEvent.
 	/// @remark @ref OnEnemyStateChange() is bound to @ref ARandomTDEnemyCharacter::OnStateChangeEvent.
 	virtual void BeginPlay() override;
 
@@ -36,15 +36,15 @@ protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief At the start of every round, this timer will indefinitely call
 	/// @ref SpawnNewEnemy() once per second.
-	/// @remark Is bound to @ref ARandomTDGameMode::RoundStartEvent.
+	/// @remark Is bound to @ref ARandomTDGameMode::LevelStartEvent.
 	/// @remark Only cleared by @c SpawnNewEnemy().
 	/// @remark Clears @ref EnemiesSpawned counter.
-	void StartSpawnTimer(int CurrentRound);
+	void StartSpawnTimer(int CurrentLevel);
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Calls @ref SpawnEnemy() and clears @ref SpawnEnemyTimerHandle.
 	/// @details Keeps track of how many Enemies are spawned each round. Once that number
-	/// reaches [@ref MaxEnemiesPerRound], the @c SpawnEnemyTimerHandle is cleared.
+	/// reaches [@ref MaxEnemiesPerLevel], the @c SpawnEnemyTimerHandle is cleared.
 	/// @see StartSpawnTimer()
 	void SpawnNewEnemy();
 
@@ -90,5 +90,5 @@ public:
 	//void OnEnemyStateChange(ARandomTDEnemyCharacter* Enemy);
 
 	UPROPERTY(EditAnywhere, Category = "EnemyBase")
-	int MaxEnemiesPerRound; ///< The number of Enemies to spawn each round.
+	int MaxEnemiesPerLevel; ///< The number of Enemies to spawn each round.
 };

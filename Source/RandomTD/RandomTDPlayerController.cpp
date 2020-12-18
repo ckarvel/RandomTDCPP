@@ -10,6 +10,8 @@
 #include "RandomTDGridFactory.h"
 #include "RandomTDTowerFactory.h"
 #include "RandomTDTowerCharacter.h"
+#include "Managers/TowerManager.h"
+#include "Managers/PropManager.h"
 #include "RandomTDPlayerCharacter.h"
 #include "RandomTD.h"
 
@@ -18,10 +20,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDPlayerController::ARandomTDPlayerController()
-	: bMoveToMouseCursor(false)
-	, bTowerRequested(false)
-	, bCtrlPressed(false)
-	, CameraMovementSpeed(300.0)
+	: CameraMovementSpeed(300.0)
 {
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
@@ -31,6 +30,12 @@ ARandomTDPlayerController::ARandomTDPlayerController()
 	// define our custom object types
 	m_CustomObjectTypes.Add(UEngineTypes::ConvertToObjectType(GridTraceChannel));
 	m_CustomObjectTypes.Add(UEngineTypes::ConvertToObjectType(TowerTraceChannel));
+
+	PlayerCamera = CreateDefaultSubobject<UCameraComponent>("PlayerCamera");
+	TowerManager = CreateDefaultSubobject<ATowerManager>("TowerManager");
+	PropManager = CreateDefaultSubobject<APropManager>("PropManager");
+	TowerManager->Init(this);
+	PropManager->Init(this);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -39,27 +44,59 @@ void ARandomTDPlayerController::SetupInputComponent()
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
-	// pawn movement
-	InputComponent->BindAction("SetDestination",
-		IE_Pressed, this, &ARandomTDPlayerController::OnSetDestinationPressed);
-	InputComponent->BindAction("SetDestination",
-		IE_Released, this, &ARandomTDPlayerController::OnSetDestinationReleased);
-
-	// player abilities
-	InputComponent->BindAction("CreateBasicTower",
-		IE_Pressed, this, &ARandomTDPlayerController::OnCreateBasicTowerPressed);
-
 	InputComponent->BindAction("Interact",
 		IE_Pressed, this, &ARandomTDPlayerController::OnInteractPressed);
 	InputComponent->BindAction("Interact",
 		IE_Released, this, &ARandomTDPlayerController::OnInteractReleased);
+	
+	///////////////////////////////////////////////////////////////
+	// delegate requests
+	FInputActionBinding Delegate("SetDestination", IE_Pressed);
+	Delegate.ActionDelegate.GetDelegateForManualSet().BindLambda([this]()
+		{
+			if (ARandomTDPlayerCharacter* Player = Cast<ARandomTDPlayerCharacter>(GetPawn()))
+			{
+				Player->SetMoveToCursor(true);
+			}
+		});
+	///////////////////////////////////////////////////////////////
+	Delegate = FInputActionBinding("SetDestination", IE_Released);
+	Delegate.ActionDelegate.GetDelegateForManualSet().BindLambda([this]()
+		{
+			if (ARandomTDPlayerCharacter* Player = Cast<ARandomTDPlayerCharacter>(GetPawn()))
+			{
+				Player->SetMoveToCursor(false);
+			}
+		});
 
-	InputComponent->BindAction("Multi-Select",
-		IE_Pressed, this, &ARandomTDPlayerController::OnMultiSelectPressed);
-	InputComponent->BindAction("Multi-Select",
-		IE_Released, this, &ARandomTDPlayerController::OnMultiSelectReleased);
+	///////////////////////////////////////////////////////////////
+	Delegate = FInputActionBinding("CreateBasicTower", IE_Pressed);
+	Delegate.ActionDelegate.GetDelegateForManualSet().BindLambda([this]()
+		{
+			if (TowerManager->OnCreateBasicTowerPressed())
+			{
+				PropManager->SpawnMystery(); // call blueprint to spawn specific asset
+			}
+		});
+	InputComponent->AddActionBinding(Delegate);
 
-	// camera movement
+	///////////////////////////////////////////////////////////////
+	Delegate = FInputActionBinding("Multi-Select", IE_Pressed);
+	Delegate.ActionDelegate.GetDelegateForManualSet().BindLambda([this]()
+		{
+			TowerManager->SetMultiSelectMode(true);
+		});
+	InputComponent->AddActionBinding(Delegate);
+
+	///////////////////////////////////////////////////////////////
+	Delegate = FInputActionBinding("Multi-Select", IE_Released);
+	Delegate.ActionDelegate.GetDelegateForManualSet().BindLambda([this]()
+		{
+			TowerManager->SetMultiSelectMode(false);
+		});
+	InputComponent->AddActionBinding(Delegate);
+
+	///////////////////////////////////////////////////////////////
 	InputComponent->BindAxis("MoveForward", this, &ARandomTDPlayerController::MoveCameraForward);
 	InputComponent->BindAxis("MoveRight", this, &ARandomTDPlayerController::MoveCameraRight);
 	// TODO: zoom in/out
@@ -69,13 +106,12 @@ void ARandomTDPlayerController::SetupInputComponent()
 void ARandomTDPlayerController::BeginPlay()
 {
 	Super::BeginPlay(); // without this, beginplay in derived classes wont get called.
-
-	// get ref to our player
-	PlayerRef = (ARandomTDPlayerCharacter*)GetPawn();
-	if (PlayerRef == nullptr)
+	TowerManager->BeginPlay();
+	MyPawn = (ARandomTDPlayerCharacter*)GetPawn();
+	if (MyPawn == nullptr)
 	{
 #ifdef UE_BUILD_DEBUG
-		UE_LOG(LogRandomTD, Error, TEXT("[BeginPlay] PlayerRef is NULL!"));
+		UE_LOG(LogRandomTD, Error, TEXT("[BeginPlay] MyPawn is NULL!"));
 #endif
 		return;
 	}
@@ -83,71 +119,11 @@ void ARandomTDPlayerController::BeginPlay()
 	// set initial camera location
 	auto Location = FVector(-835.0, -10.0, 1610.0);
 	auto Rotation = FRotator(-70, 0, 0); // pitch yaw roll
-	PlayerRef->GetPlayerCamera()->SetWorldLocationAndRotation(Location, Rotation);
-
-	// get reference to factories
-	TowerFactoryRef = (ARandomTDTowerFactory*) UGameplayStatics::GetActorOfClass(
-		GetWorld(), ARandomTDTowerFactory::StaticClass());
-	GridFactoryRef = (ARandomTDGridFactory*)UGameplayStatics::GetActorOfClass(
-		GetWorld(), ARandomTDGridFactory::StaticClass());
+	PlayerCamera->SetWorldLocationAndRotation(Location, Rotation);
 
 	// bind to tower clicked. PC needs to know when towers are selected
-	ARandomTDTowerCharacter::OnTowerClicked.BindUObject(this, &ARandomTDPlayerController::OnTowerSelected);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDPlayerController::UnselectTowers()
-{
-	for (auto tower : TowersSelectedList)
-	{
-		tower->OnUserUnclicked();
-	}
-	TowersSelectedList.Empty();
-	// turn off
-	MainGameUI->SetupTowerUI(nullptr);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDPlayerController::OnTowerSelected(ARandomTDTowerCharacter* SelectedTower)
-{
-	
-	// check if multi-select is on
-	if (bCtrlPressed)
-	{
-		// turn off all overlays
-		for (int i = 0; i < TowersSelectedList.Num(); i++)
-		{
-			ARandomTDTowerCharacter* Tower = TowersSelectedList[i];
-			if (!Tower)
-			{
-				UE_LOG(LogRandomTD, Error, TEXT("PlayerController::OnTowerSelected Tower NULL?"));
-				continue;
-			}
-		}
-
-		// turn off
-		MainGameUI->SetupTowerUI(nullptr);
-	}
-	else
-	{
-		// unselect others
-		for (int i = 0; i < TowersSelectedList.Num(); i++)
-		{
-			ARandomTDTowerCharacter* Tower = TowersSelectedList[i];
-			if (!Tower)
-			{
-				UE_LOG(LogRandomTD, Error, TEXT("PlayerController::OnTowerSelected Tower NULL?"));
-				continue;
-			}
-			if(Tower != SelectedTower)
-				Tower->OnUserUnclicked();
-		}
-		
-		// tell tower it can show its overlay now
-		MainGameUI->SetupTowerUI(SelectedTower);
-	}
-
-	TowersSelectedList.AddUnique(SelectedTower);
+	//TowerFactoryRef->
+	//ARandomTDTowerCharacter::OnTowerClicked.BindUObject(this, &ARandomTDPlayerController::OnTowerSelected);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -156,23 +132,20 @@ void ARandomTDPlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 
 	// keep updating the destination every tick while desired
-	if (bMoveToMouseCursor)
+	if (MyPawn->bMoveToMouseCursor)
 	{
-		if (bTowerRequested)
+		if (!TowerManager->IsTowerRequested())
 		{
 			// cancel request
-			DestroyProp();
+			PropManager->DestroyProp();
 		}
-		else
-		{
-			MoveToMouseCursor();
-		}
+		MyPawn->MoveToMouseCursor();
 	}
 
-	if (!bTowerRequested)
+	if (!TowerManager->IsTowerRequested())
 		return;
 
-		MovePropToCursor();
+	PropManager->MovePropToCursor();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -197,140 +170,62 @@ void ARandomTDPlayerController::OnInteractPressed()
 {
 	// find object that was clicked on
 	FHitResult Hit = GetHitOnCustomObjectTypes();
+	
 	if (!Hit.bBlockingHit)
 	{
-		UnselectTowers();
+		TowerManager->UnselectTowers();
 		return;
 	}
+
 	ECollisionChannel ObjectType = Hit.Component->GetCollisionObjectType();
 	switch (ObjectType)
 	{
 	case GridTraceChannel:
-		// Grid clicked on:
-		if (bTowerRequested)
+		if (TowerManager->SpawnTower(Hit.GetActor()))
 		{
-			ARandomTDGridBase* Grid = (ARandomTDGridBase*)Hit.GetActor();
-			if (Grid->IsValid())
-			{
-				TowerFactoryRef->SpawnTower(Grid);
-				Grid->SetInvalid();
-				DestroyProp();
-			}
+			// User is placing tower on a grid
+			PropManager->DestroyProp();
 		}
 		else
 		{
-			UnselectTowers();
+			// User wants to stop selecting objects
+			TowerManager->UnselectTowers();
 		}
 		break;
 	case TowerTraceChannel:
+		// Tower clicks handled by Tower Actor
 		break;
 	default:
-		// If something other than Tower or Grid was clicked on:
-		UnselectTowers();
+		// User wants to stop selecting objects
+		TowerManager->UnselectTowers();
 		break;
-	}
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDPlayerController::OnCreateBasicTowerPressed()
-{
-	if (bTowerRequested)
-		return; // ignore request if a request is already active
-	bTowerRequested = true;
-	SpawnMystery(); // call blueprint to spawn specific asset
-	UnselectTowers();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDPlayerController::OnMultiSelectPressed()
-{
-	bCtrlPressed = true;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDPlayerController::OnMultiSelectReleased()
-{
-	bCtrlPressed = false;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDPlayerController::MoveToMouseCursor()
-{
-	// Trace to see what is under the mouse cursor
-	FHitResult Hit;
-	GetHitResultUnderCursor(ECC_Visibility, false, Hit);
-
-	if (PlayerRef && Hit.bBlockingHit)
-	{
-		// We hit something, move there
-		FVector DestLocation = Hit.ImpactPoint;
-		float const Distance = FVector::Dist(DestLocation, PlayerRef->GetActorLocation());
-		// We need to issue move command only if far enough
-		// in order for walk animation to play correctly
-		if (Distance > 120.0f)
-		{
-			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
-		}
-	}
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDPlayerController::MovePropToCursor()
-{
-	FHitResult Hit = GetHitOnCustomObjectTypes(true, GridTraceChannel);
-	// TODO: constrain cursor movement within grid so
-	// prop will move even when cursor is outside the grid
-	if (Hit.bBlockingHit) // TODO: if grid hit
-	{
-		MysteryPropRef->SetActorLocation(Hit.ImpactPoint);
 	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::MoveCameraForward(float AxisValue)
 {
-	if (!PlayerRef)
-	{
-#ifdef UE_BUILD_DEBUG
-		UE_LOG(LogRandomTD, Error, TEXT("PlayerController::MoveCameraForward PlayerRef NULL?"));
-#endif
-		return;
-	}
 	// get camera position
-	FVector Location = PlayerRef->GetPlayerCamera()->GetComponentLocation();
+	FVector Location = PlayerCamera->GetComponentLocation();
 	// modify the x axis value
 	Location.X += (CameraMovementSpeed * AxisValue);
 	// set camera position to modified location
-	PlayerRef->GetPlayerCamera()->SetWorldLocation(Location, false, nullptr, ETeleportType::TeleportPhysics);
+	PlayerCamera->SetWorldLocation(Location, false, nullptr, ETeleportType::TeleportPhysics);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::MoveCameraRight(float AxisValue)
 {
-	if (!PlayerRef)
-	{
-#ifdef UE_BUILD_DEBUG
-		UE_LOG(LogRandomTD, Error, TEXT("PlayerController::MoveCameraForward PlayerRef NULL?"));
-#endif
-		return;
-	}
 	// get camera position
-	FVector Location = PlayerRef->GetPlayerCamera()->GetComponentLocation();
+	FVector Location = PlayerCamera->GetComponentLocation();
 	// modify the y axis value
 	Location.Y += (CameraMovementSpeed * AxisValue);
 	// set camera position to modified location
-	PlayerRef->GetPlayerCamera()->SetWorldLocation(Location,false,nullptr, ETeleportType::TeleportPhysics);
+	PlayerCamera->SetWorldLocation(Location,false,nullptr, ETeleportType::TeleportPhysics);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDPlayerController::DestroyProp()
+UMainGameUserWidget* ARandomTDPlayerController::GetUI()
 {
-	bTowerRequested = false;
-	MysteryPropRef->Destroy();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDPlayerController::SetMoveToCursor(bool Value)
-{
-	bMoveToMouseCursor = Value;
+	return MainGameUI;
 }

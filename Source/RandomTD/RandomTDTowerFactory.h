@@ -24,19 +24,6 @@ protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	virtual void BeginPlay() override;
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief Removes tower from our list and validates the associated grid
-	UFUNCTION()
-	void OnSellTower(AActor* Tower);
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief Called by BP_TowerFactory so it can provide us with a reference
-	/// to the newly spawned tower.
-	UFUNCTION(BlueprintCallable, Category = "Tower")
-	void AddNewTowerToList(ARandomTDGridBase* Grid, ARandomTDTowerCharacter* TowerBase);
-
-	TMap<ARandomTDTowerCharacter*, ARandomTDGridBase*> ListOfActiveTowerRefs; ///< List of tower actors in the world.
-
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	virtual void Tick(float DeltaTime) override;
@@ -49,5 +36,5 @@ public:
 	/// towers that can be spawned.
 	/// @param Grid The location where the tower will be spawned.
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="Tower")
-	void SpawnTower(ARandomTDGridBase* Grid);
+	class ARandomTDTowerCharacter* SpawnTower(class ARandomTDGridBase* Grid);
 };

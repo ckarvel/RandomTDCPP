@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RandomTDTowerCharacter.generated.h"
 
-DECLARE_DELEGATE_OneParam(FTowerOnClickedEvent, ARandomTDTowerCharacter*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FTowerOnClickedEvent, ARandomTDTowerCharacter*);
 
 /////////////////////////////////////////////////////////////////////////////////////
 UCLASS()
@@ -40,7 +40,7 @@ public:
 	/// @todo PC is the only one that can know this right?
 	void OnUserUnclicked();
 
-	static FTowerOnClickedEvent OnTowerClicked;
+	FTowerOnClickedEvent OnTowerClicked;
 
 	bool bSelected;
 };

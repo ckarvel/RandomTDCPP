@@ -2,15 +2,11 @@
 
 
 #include "RandomTDTowerCharacter.h"
-#include "Kismet/GameplayStatics.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "Components/WidgetComponent.h"
-#include "UI/TowerInteractWidget.h"
 #include "RandomTD.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 /// define static fields
-FTowerOnClickedEvent ARandomTDTowerCharacter::OnTowerClicked;
+//FTowerOnClickedEvent ARandomTDTowerCharacter::OnTowerClicked;
 
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDTowerCharacter::ARandomTDTowerCharacter()
@@ -52,7 +48,7 @@ void ARandomTDTowerCharacter::OnUserClicked(AActor* TouchedActor, FKey ButtonPre
 {
 	bSelected = true; // why?
 	GetMesh()->SetRenderCustomDepth(true);
-	OnTowerClicked.ExecuteIfBound(this);
+	OnTowerClicked.Broadcast(this);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

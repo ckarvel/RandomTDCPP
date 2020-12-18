@@ -11,7 +11,7 @@
 ARandomTDEnemyFactory::ARandomTDEnemyFactory()
 	: EnemiesSpawned(0)
 	, SpawnLocation(FVector())
-	, MaxEnemiesPerRound(10)
+	, MaxEnemiesPerLevel(10)
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
 }
@@ -22,7 +22,7 @@ void ARandomTDEnemyFactory::BeginPlay()
 	Super::BeginPlay();
 
 	// spawn enemy delegate
-	ARandomTDGameMode::RoundStartEvent.AddUObject(this, &ARandomTDEnemyFactory::StartSpawnTimer);
+	ARandomTDGameMode::GetLevelManager()->LevelStartEvent.AddUObject(this, &ARandomTDEnemyFactory::StartSpawnTimer);
 
 	// [state change == finished path] or [state change == dead] delegate
 	//ARandomTDEnemyCharacter::OnStateChangeEvent.AddUObject(this, &ARandomTDEnemyFactory::OnEnemyStateChange);
@@ -35,7 +35,7 @@ void ARandomTDEnemyFactory::Tick(float DeltaTime)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDEnemyFactory::StartSpawnTimer(int CurrentRound)
+void ARandomTDEnemyFactory::StartSpawnTimer(int CurrentLevel)
 {
 	// reset enemy counter
 	EnemiesSpawned = 0;
@@ -54,7 +54,7 @@ void ARandomTDEnemyFactory::SpawnNewEnemy()
 	SpawnEnemy(ARandomTDPathSpline::GetWaypointAtIndex(0)); // get first location
 	EnemiesSpawned++;
 
-	if (EnemiesSpawned == MaxEnemiesPerRound)
+	if (EnemiesSpawned == MaxEnemiesPerLevel)
 	{
 		// we're done spawning enemies for this round
 		GetWorldTimerManager().ClearTimer(SpawnEnemyTimerHandle);

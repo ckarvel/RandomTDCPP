@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Materials/Material.h"
@@ -13,6 +14,8 @@
 
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDPlayerCharacter::ARandomTDPlayerCharacter()
+	: GoldAmount(0)
+	, bMoveToMouseCursor(false)
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -28,8 +31,6 @@ ARandomTDPlayerCharacter::ARandomTDPlayerCharacter()
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
-	PlayerCamera = CreateDefaultSubobject<UCameraComponent>("PlayerCamera");
-
 	// Create a decal in the world to show the cursor's location
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
@@ -39,11 +40,13 @@ ARandomTDPlayerCharacter::ARandomTDPlayerCharacter()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
-
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPlayerCharacter::Constructor"));
-//#endif
 }
+
+///////////////////////////////////////////////////////////////////////////////////////
+//void ARandomTDPlayerCharacter::Init(ARandomTDPlayerController* Controller)
+//{
+//	MyController = Controller;
+//}
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerCharacter::BeginPlay()
@@ -54,7 +57,7 @@ void ARandomTDPlayerCharacter::BeginPlay()
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerCharacter::Tick(float DeltaSeconds)
 {
-    Super::Tick(DeltaSeconds);
+  Super::Tick(DeltaSeconds);
 
 	if (CursorToWorld != nullptr)
 	{
@@ -66,6 +69,30 @@ void ARandomTDPlayerCharacter::Tick(float DeltaSeconds)
 			FRotator CursorR = CursorFV.Rotation();
 			CursorToWorld->SetWorldLocation(TraceHitResult.Location);
 			CursorToWorld->SetWorldRotation(CursorR);
+		}
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPlayerCharacter::MoveToMouseCursor()
+{
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		// Trace to see what is under the mouse cursor
+		FHitResult Hit;
+		PC->GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+
+		if (Hit.bBlockingHit)
+		{
+			// We hit something, move there
+			FVector DestLocation = Hit.ImpactPoint;
+			float const Distance = FVector::Dist(DestLocation, GetActorLocation());
+			// We need to issue move command only if far enough
+			// in order for walk animation to play correctly
+			if (Distance > 120.0f)
+			{
+				UAIBlueprintHelperLibrary::SimpleMoveToLocation(PC, DestLocation);
+			}
 		}
 	}
 }

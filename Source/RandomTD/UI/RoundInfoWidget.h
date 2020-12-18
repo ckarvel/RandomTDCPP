@@ -16,39 +16,38 @@ class RANDOMTD_API URoundInfoWidget : public UUserWidget
 
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	void Init();
+
+	/////////////////////////////////////////////////////////////////////////////////////
 	URoundInfoWidget(const FObjectInitializer& ObjectInitializer);
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
-	void SetCurrentRound(int Value) { CurrentRound = Value; }
+	void SetCurrentLevel(int Value) { CurrentLevel = Value; }
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @brief
-	void SetRoundTime(int Value) { RoundElapsedTime = Value; }
+	void SetLevelTime(int Value) { LevelElapsedTime = Value; }
 
 protected:
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// UI Text Bind functions
-	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
-		FText GetRoundCount() const
+		FText GetLevelCount() const
 	{
-		return  FText::FromString(FString::FromInt(CurrentRound));
+		return  FText::FromString(FString::FromInt(CurrentLevel));
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
 		FText GetElapsedSeconds() const
 	{
-		return FText::FromString(FString::FromInt(RoundElapsedTime));
+		return FText::FromString(FString::FromInt(LevelElapsedTime));
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
-		FText GetSecondsPerRound() const
+		FText GetSecondsPerLevel() const
 	{
-		int Seconds = CurrentRound ? kSecondsPerRound : kPreRoundSeconds;
+		int Seconds = CurrentLevel ? kSecondsPerLevel : kPreLevelSeconds;
 		return FText::FromString(FString::FromInt(Seconds));
 	}
 
@@ -57,19 +56,19 @@ protected:
 		float GetElapsedPercentage() const
 	{
 		// number to be divided
-		int TotalSeconds = CurrentRound ? kSecondsPerRound : kPreRoundSeconds;
+		int TotalSeconds = CurrentLevel ? kSecondsPerLevel : kPreLevelSeconds;
 		if (!TotalSeconds)
 			return 0.0; // just in case...
 
-		float Percent = (float)RoundElapsedTime / (float)TotalSeconds;
+		float Percent = (float)LevelElapsedTime / (float)TotalSeconds;
 		return Percent;
 	}
 
-	int CurrentRound;
+	int CurrentLevel;
 
-	int RoundElapsedTime;
+	int LevelElapsedTime;
 
-	int kSecondsPerRound;
+	int kSecondsPerLevel;
 
-	int kPreRoundSeconds;
+	int kPreLevelSeconds;
 };
