@@ -5,31 +5,55 @@
 #include "RandomTDGridBase.h"
 #include "RandomTD.h"
 
+#define GridTraceChannel ECC_GameTraceChannel1
+
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDGridFactory::ARandomTDGridFactory()
-	: Grid_X(1)
-	, Grid_Y(1)
+	: Grid_X(18)
+	, Grid_Y(18)
 	, GridSize(128)
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridFactory::Constructor"));
-//#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGridFactory::BeginPlay()
 {
 	Super::BeginPlay();
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDGridFactory::BeginPlay"));
-//#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGridFactory::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDGridFactory::SetGridValidity(ARandomTDGridBase* Grid)
+{
+	FHitResult Hit;
+	FVector TraceStart = Grid->GetActorLocation();
+	FVector TraceEnd = TraceStart - FVector(0, 0, 1500.0);
+	FCollisionQueryParams Params = FCollisionQueryParams();
+	Params.bTraceComplex = true;
+	if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, GridTraceChannel, Params))
+	{
+		if (Hit.GetComponent()->ComponentHasTag("EnemyPath"))
+		{
+			// a tower cannot be placed on this grid
+			Grid->SetInvalid();
+		}
+		else
+		{
+			Grid->SetValid();
+		}
+	}
+	else // shouldn't happen...
+	{
+#ifdef UE_BUILD_DEBUG
+		UE_LOG(LogRandomTD, Warning, TEXT("SetGridValidity::Grid object might not have spawned correctly."));
+#endif
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +77,7 @@ void ARandomTDGridFactory::SetupGridArray(TSubclassOf<ARandomTDGridBase> BP_Grid
 #if WITH_EDITOR
 			NewGrid->SetFolderPath("Grid");
 #endif
-			SetGridValidity(NewGrid, NewLocation);
+			SetGridValidity(NewGrid);
 			GridBaseList.Add(NewGrid);
 		}
 	}

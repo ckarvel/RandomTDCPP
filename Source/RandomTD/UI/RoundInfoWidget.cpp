@@ -17,9 +17,6 @@ void URoundInfoWidget::Init()
 {
 	kSecondsPerLevel = ARandomTDGameMode::GetLevelManager()->GetSecondsPerLevel();
 	kPreLevelSeconds = ARandomTDGameMode::GetLevelManager()->GetPreLevelSeconds();
-	//#ifdef UE_BUILD_DEBUG
-	//	UE_LOG(LogRandomTD, Log, TEXT("UMainGameUserWidget::Constructor"));
-	//#endif
 
 	// this may cause a crash in unreal. this should be set in BeginPlay or something
 	// it hasn't crashed here yet tho... so ill just hold off.

@@ -9,11 +9,25 @@
 UCLASS()
 class ATowerManager: public AActor
 {
-public:
   GENERATED_BODY()
 
-  ///////////////////////////////////////////////////////////////////////////
-  void BeginPlay();
+protected:
+  /////////////////////////////////////////////////////////////////////////////////////
+  /// @brief Starts level timers
+  /// @see StartPreLevelTimer
+  /// @see StartElapsedTimer
+  /////////////////////////////////////////////////////////////////////////////////////
+  virtual void BeginPlay() override;
+
+public:
+  /////////////////////////////////////////////////////////////////////////////////////
+  ATowerManager();
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  void Init(class ARandomTDPlayerController* PC);
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  virtual void Tick(float DeltaTime) override;
 
   ///////////////////////////////////////////////////////////////////////////
   void UnselectTowers();
@@ -39,18 +53,20 @@ public:
   void SetMultiSelectMode(bool Value) { bCtrlPressed = Value; }
 
   ///////////////////////////////////////////////////////////////////////////
-  void Init(class ARandomTDPlayerController* Ref);
-
-  ///////////////////////////////////////////////////////////////////////////
   bool IsTowerRequested() const { return bTowerRequested; }
 
   ///////////////////////////////////////////////////////////////////////////
   bool bCtrlPressed;  ///< User pressed Ctrl (Multi-select)
+
   bool bTowerRequested; ///< User pressed Q
+
   TArray<class ARandomTDTowerCharacter*> SelectedTowers;
+
   TMap<class ARandomTDTowerCharacter*, class ARandomTDGridBase*> PlayerTowerMap; ///< List of tower actors in the world.
+
 private:
   // dunno how to make this const; cannot pass constructor args...
-  class ARandomTDPlayerController* MyControllerRef;
-  class ARandomTDTowerFactory* TowerFactoryRef;
+  class ARandomTDPlayerController* MyController;
+
+  class ARandomTDTowerFactory* TowerFactory;
 };

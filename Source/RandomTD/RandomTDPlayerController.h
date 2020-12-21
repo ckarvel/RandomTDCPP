@@ -88,15 +88,16 @@ protected:
 
 	///////////////////////////////////////////////////////////////////////////
 	class ARandomTDPlayerCharacter* MyPawn;
+	class ACameraActor* PlayerCamera;
 
 	UPROPERTY(EditAnywhere, Category = Camera)
 	float CameraMovementSpeed; ///< How fast the camera pans
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base")
+	UPROPERTY(BlueprintReadWrite, Category = "Base")
 	class UMainGameUserWidget* MainGameUI;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* PlayerCamera;
+	
+	UPROPERTY(EditAnywhere, Category = "Base")
+	TSubclassOf<AActor> PropClass;
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> m_CustomObjectTypes; ///< The object types we created, Grid and Tower
 };

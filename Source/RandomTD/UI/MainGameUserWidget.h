@@ -31,7 +31,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Base")
 	void SetTowerReference(class ARandomTDTowerCharacter* TowerActor);
 
+	/////////////////////////////////////////////////////////////////////////////////////
 	void SetupTowerUI(class ARandomTDTowerCharacter* TowerActor);
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	UFUNCTION(BlueprintImplementableEvent, Category = "Base")
+	void SetupWidget();
 
 	bool TowerVisibility;
 };

@@ -7,22 +7,24 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelStart, int);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelSecondElapsed, int);
 
 UCLASS()
-class ALevelManager: public AActor
+class RANDOMTD_API ALevelManager: public AActor
 {
 public:
 	GENERATED_BODY()
 	/////////////////////////////////////////////////////////////////////////////////////
-	ALevelManager()
-		: SecondsPerLevel(60)
-		, PreLevelSeconds(30)
-	{
-	}
+	ALevelManager();
 
+protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Starts level timers
 	/// @see StartPreLevelTimer
 	/// @see StartElapsedTimer
-	void Begin();
+	/////////////////////////////////////////////////////////////////////////////////////
+	virtual void BeginPlay() override;
+
+public:
+	/////////////////////////////////////////////////////////////////////////////////////
+	virtual void Tick(float DeltaTime) override;
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Starts timer for the initial round before the game actually starts (pre-round).

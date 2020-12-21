@@ -12,9 +12,6 @@ TArray<FVector> ARandomTDPathSpline::ListOfWaypoints;
 ARandomTDPathSpline::ARandomTDPathSpline()
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPathSpline::Constructor"));
-//#endif
 	SplinePath = CreateDefaultSubobject<USplineComponent>("SplinePath");
 	RootComponent = SplinePath;
 }
@@ -23,9 +20,6 @@ ARandomTDPathSpline::ARandomTDPathSpline()
 void ARandomTDPathSpline::BeginPlay()
 {
 	Super::BeginPlay();
-//#ifdef UE_BUILD_DEBUG
-//	UE_LOG(LogRandomTD, Log, TEXT("ARandomTDPathSpline::BeginPlay"));
-//#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

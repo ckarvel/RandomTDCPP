@@ -1,8 +1,23 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
 
 #include "CoreMinimal.h"
+#include "StockManager.generated.h"
 
-class AStockManager : public AActor
+UCLASS()
+class RANDOMTD_API AStockManager : public AActor
 {
+  GENERATED_BODY()
 
+protected:
+  /////////////////////////////////////////////////////////////////////////////////////
+  virtual void BeginPlay() override;
+
+public:
+  /////////////////////////////////////////////////////////////////////////////////////
+  AStockManager();
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  virtual void Tick(float DeltaTime) override;
 };

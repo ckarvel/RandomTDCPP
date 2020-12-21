@@ -51,7 +51,7 @@ void ARandomTDEnemyFactory::StartSpawnTimer(int CurrentLevel)
 void ARandomTDEnemyFactory::SpawnNewEnemy()
 {
 	// call BP to spawn specific enemy asset
-	SpawnEnemy(ARandomTDPathSpline::GetWaypointAtIndex(0)); // get first location
+	ARandomTDEnemyCharacter* Enemy = SpawnEnemy(ARandomTDPathSpline::GetWaypointAtIndex(0)); // get first location
 	EnemiesSpawned++;
 
 	if (EnemiesSpawned == MaxEnemiesPerLevel)

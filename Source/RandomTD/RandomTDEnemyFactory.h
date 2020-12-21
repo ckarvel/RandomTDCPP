@@ -52,7 +52,7 @@ protected:
 	/// @brief Spawns Enemy actor at @c Location.
 	/// @remark This is a Blueprint implementable function (event).
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "EnemyBase")
-	void SpawnEnemy(FVector Location);
+	ARandomTDEnemyCharacter* SpawnEnemy(FVector Location);
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Unselect enemy if any selected

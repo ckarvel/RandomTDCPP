@@ -28,10 +28,17 @@ ARandomTDGameMode::ARandomTDGameMode()
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGameMode::StartPlay()
 {
-	Super::StartPlay();
-	LevelManager = CreateDefaultSubobject<ALevelManager>("LevelManager");
+	LevelManager = GetWorld()->SpawnActor<ALevelManager>(ALevelManager::StaticClass());
 	EnemyFactory = GetWorld()->SpawnActor<ARandomTDEnemyFactory>(EnemyFactoryClass);
 	GridFactory = GetWorld()->SpawnActor<ARandomTDGridFactory>(GridFactoryClass);
 	TowerFactory = GetWorld()->SpawnActor<ARandomTDTowerFactory>(TowerFactoryClass);
-	LevelManager->Begin();
+
+#if WITH_EDITOR
+	LevelManager->SetFolderPath("Manager");
+	EnemyFactory->SetFolderPath("Factory");
+	GridFactory->SetFolderPath("Factory");
+	TowerFactory->SetFolderPath("Factory");
+#endif
+
+	Super::StartPlay(); // spawns player controller and the rest
 }

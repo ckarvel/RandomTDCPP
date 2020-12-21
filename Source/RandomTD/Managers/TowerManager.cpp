@@ -12,10 +12,29 @@
 
 #include "RandomTD/RandomTD.h"
 
-///////////////////////////////////////////////////////////////////////////
-void ATowerManager::Init(ARandomTDPlayerController* Ref)
+///////////////////////////////////////////////////////////////////////////////////////
+ATowerManager::ATowerManager()
+	: bCtrlPressed(false)
 {
-	MyControllerRef = Ref; // should be const ptr.. this class only reads
+	PrimaryActorTick.bCanEverTick = false; // no ticking
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void ATowerManager::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void ATowerManager::Init(ARandomTDPlayerController* PC)
+{
+	MyController = PC;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void ATowerManager::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -26,12 +45,6 @@ bool ATowerManager::OnCreateBasicTowerPressed()
 	bTowerRequested = true;
 	UnselectTowers();
 	return true;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ATowerManager::BeginPlay()
-{
-	bCtrlPressed = false;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +91,7 @@ void ATowerManager::UnselectTowers()
 	}
 	SelectedTowers.Empty();
 	// turn off
-	MyControllerRef->GetUI()->SetupTowerUI(nullptr);
+	MyController->GetUI()->SetupTowerUI(nullptr);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +113,7 @@ void ATowerManager::OnTowerSelected(ARandomTDTowerCharacter* SelectedTower)
 		}
 
 		// turn off
-		MyControllerRef->GetUI()->SetupTowerUI(nullptr);
+		MyController->GetUI()->SetupTowerUI(nullptr);
 	}
 	else
 	{
@@ -118,7 +131,7 @@ void ATowerManager::OnTowerSelected(ARandomTDTowerCharacter* SelectedTower)
 		}
 
 		// tell tower it can show its overlay now
-		MyControllerRef->GetUI()->SetupTowerUI(SelectedTower);
+		MyController->GetUI()->SetupTowerUI(SelectedTower);
 	}
 
 	SelectedTowers.AddUnique(SelectedTower);

@@ -18,17 +18,14 @@ class RANDOMTD_API ARandomTDGridFactory : public AActor
 	
 public:
 	///////////////////////////////////////////////////////////////////////////
-	///@brief Sets default values
 	ARandomTDGridFactory();
 
 protected:
 	///////////////////////////////////////////////////////////////////////////
-	/// @see ARandomTDPlayerController::BeginPlay()
 	virtual void BeginPlay() override;
 
 public:	
 	///////////////////////////////////////////////////////////////////////////
-	/// @brief Not used.
 	virtual void Tick(float DeltaTime) override;
 
 	///////////////////////////////////////////////////////////////////////////
@@ -45,8 +42,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Grid)
 	void SetupGridArray(TSubclassOf<ARandomTDGridBase> BP_GridBaseClass);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = Grid)
-	void SetGridValidity(ARandomTDGridBase* Grid, FVector Location);
+	///////////////////////////////////////////////////////////////////////////
+	void SetGridValidity(ARandomTDGridBase* Grid);
 
 public:
 	UPROPERTY(Category = GridSetup, EditAnywhere)

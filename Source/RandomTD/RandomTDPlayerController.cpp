@@ -3,6 +3,7 @@
 #include "RandomTDPlayerController.h"
 #include "Engine/World.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/MainGameUserWidget.h"
@@ -30,12 +31,6 @@ ARandomTDPlayerController::ARandomTDPlayerController()
 	// define our custom object types
 	m_CustomObjectTypes.Add(UEngineTypes::ConvertToObjectType(GridTraceChannel));
 	m_CustomObjectTypes.Add(UEngineTypes::ConvertToObjectType(TowerTraceChannel));
-
-	PlayerCamera = CreateDefaultSubobject<UCameraComponent>("PlayerCamera");
-	TowerManager = CreateDefaultSubobject<ATowerManager>("TowerManager");
-	PropManager = CreateDefaultSubobject<APropManager>("PropManager");
-	TowerManager->Init(this);
-	PropManager->Init(this);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -59,6 +54,8 @@ void ARandomTDPlayerController::SetupInputComponent()
 				Player->SetMoveToCursor(true);
 			}
 		});
+	InputComponent->AddActionBinding(Delegate);
+
 	///////////////////////////////////////////////////////////////
 	Delegate = FInputActionBinding("SetDestination", IE_Released);
 	Delegate.ActionDelegate.GetDelegateForManualSet().BindLambda([this]()
@@ -68,6 +65,7 @@ void ARandomTDPlayerController::SetupInputComponent()
 				Player->SetMoveToCursor(false);
 			}
 		});
+	InputComponent->AddActionBinding(Delegate);
 
 	///////////////////////////////////////////////////////////////
 	Delegate = FInputActionBinding("CreateBasicTower", IE_Pressed);
@@ -105,8 +103,12 @@ void ARandomTDPlayerController::SetupInputComponent()
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::BeginPlay()
 {
-	Super::BeginPlay(); // without this, beginplay in derived classes wont get called.
-	TowerManager->BeginPlay();
+	Super::BeginPlay(); // without this, begin play in derived classes wont get called.
+
+	// ui
+	GetUI()->SetupWidget();
+
+	// pawn
 	MyPawn = (ARandomTDPlayerCharacter*)GetPawn();
 	if (MyPawn == nullptr)
 	{
@@ -116,10 +118,23 @@ void ARandomTDPlayerController::BeginPlay()
 		return;
 	}
 
-	// set initial camera location
+	// factories
+	PlayerCamera = GetWorld()->SpawnActor<ACameraActor>(ACameraActor::StaticClass());
+	TowerManager = GetWorld()->SpawnActor<ATowerManager>(ATowerManager::StaticClass());
+	PropManager = GetWorld()->SpawnActor<APropManager>(APropManager::StaticClass());
+	TowerManager->Init(this);
+	PropManager->Init(this, PropClass);
+#if WITH_EDITOR
+	TowerManager->SetFolderPath("Manager");
+	PropManager->SetFolderPath("Manager");
+#endif
+
+	// camera
 	auto Location = FVector(-835.0, -10.0, 1610.0);
 	auto Rotation = FRotator(-70, 0, 0); // pitch yaw roll
-	PlayerCamera->SetWorldLocationAndRotation(Location, Rotation);
+	PlayerCamera->SetActorLocationAndRotation(Location, Rotation);
+	PlayerCamera->GetCameraComponent()->bConstrainAspectRatio = false;
+	SetViewTargetWithBlend(PlayerCamera);
 
 	// bind to tower clicked. PC needs to know when towers are selected
 	//TowerFactoryRef->
@@ -134,9 +149,10 @@ void ARandomTDPlayerController::PlayerTick(float DeltaTime)
 	// keep updating the destination every tick while desired
 	if (MyPawn->bMoveToMouseCursor)
 	{
-		if (!TowerManager->IsTowerRequested())
+		if (TowerManager->IsTowerRequested())
 		{
 			// cancel request
+			TowerManager->bTowerRequested = false;
 			PropManager->DestroyProp();
 		}
 		MyPawn->MoveToMouseCursor();
@@ -206,22 +222,22 @@ void ARandomTDPlayerController::OnInteractPressed()
 void ARandomTDPlayerController::MoveCameraForward(float AxisValue)
 {
 	// get camera position
-	FVector Location = PlayerCamera->GetComponentLocation();
+	FVector Location = PlayerCamera->GetActorLocation();
 	// modify the x axis value
 	Location.X += (CameraMovementSpeed * AxisValue);
 	// set camera position to modified location
-	PlayerCamera->SetWorldLocation(Location, false, nullptr, ETeleportType::TeleportPhysics);
+	PlayerCamera->SetActorLocation(Location, false, nullptr, ETeleportType::TeleportPhysics);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerController::MoveCameraRight(float AxisValue)
 {
 	// get camera position
-	FVector Location = PlayerCamera->GetComponentLocation();
+	FVector Location = PlayerCamera->GetActorLocation();
 	// modify the y axis value
 	Location.Y += (CameraMovementSpeed * AxisValue);
 	// set camera position to modified location
-	PlayerCamera->SetWorldLocation(Location,false,nullptr, ETeleportType::TeleportPhysics);
+	PlayerCamera->SetActorLocation(Location,false,nullptr, ETeleportType::TeleportPhysics);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
