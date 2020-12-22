@@ -22,4 +22,23 @@ void URoundInfoWidget::Init()
 	// it hasn't crashed here yet tho... so ill just hold off.
 	ARandomTDGameMode::GetLevelManager()->LevelStartEvent.AddUObject(this, &URoundInfoWidget::SetCurrentLevel);
 	ARandomTDGameMode::GetLevelManager()->LevelSecondElapsedEvent.AddUObject(this, &URoundInfoWidget::SetLevelTime);
+	ARandomTDGameMode::GetStockManager()->PriceChangeEvent.AddUObject(this, &URoundInfoWidget::SetStockPrices);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+float URoundInfoWidget::GetElapsedPercentage() const
+{
+  // number to be divided
+  int TotalSeconds = CurrentLevel ? kSecondsPerLevel : kPreLevelSeconds;
+  if (!TotalSeconds)
+    return 0.0; // just in case...
+
+  float Percent = (float)LevelElapsedTime / (float)TotalSeconds;
+  return Percent;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void URoundInfoWidget::SetStockPrices(TArray<int> Prices)
+{
+	StockPrices = Prices;
 }

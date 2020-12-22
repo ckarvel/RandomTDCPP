@@ -19,22 +19,28 @@ void APropManager::BeginPlay()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void APropManager::Init(ARandomTDPlayerController* PC, TSubclassOf<AActor>& Class)
+void APropManager::Tick(float DeltaTime)
+{
+  Super::Tick(DeltaTime);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void APropManager::Init(ARandomTDPlayerController* PC)
 {
 	MyController = PC;
-	PropClass = Class;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void APropManager::SpawnMystery()
 {
-	MysteryPropRef = GetWorld()->SpawnActor<AActor>(PropClass);
+  MysteryActor = GetWorld()->SpawnActor<AActor>(MysteryClass);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void APropManager::Tick(float DeltaTime)
+void APropManager::DestroyProp()
 {
-	Super::Tick(DeltaTime);
+  if (MysteryActor)
+    MysteryActor->Destroy();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -48,13 +54,6 @@ void APropManager::MovePropToCursor()
 	// prop will move even when cursor is outside the grid
 	if (Hit.bBlockingHit) // TODO: if grid hit
 	{
-		MysteryPropRef->SetActorLocation(Hit.ImpactPoint);
+		MysteryActor->SetActorLocation(Hit.ImpactPoint);
 	}
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void APropManager::DestroyProp()
-{
-	if (MysteryPropRef)
-		MysteryPropRef->Destroy();
 }

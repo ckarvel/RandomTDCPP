@@ -15,12 +15,15 @@ class RANDOMTD_API URoundInfoWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+  /////////////////////////////////////////////////////////////////////////////////////
+  URoundInfoWidget(const FObjectInitializer& ObjectInitializer);
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	void Init();
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	URoundInfoWidget(const FObjectInitializer& ObjectInitializer);
+	void SetStockPrices(TArray<int> Prices);
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	void SetCurrentLevel(int Value) { CurrentLevel = Value; }
@@ -28,7 +31,6 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	void SetLevelTime(int Value) { LevelElapsedTime = Value; }
 
-protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
 		FText GetLevelCount() const
@@ -53,22 +55,17 @@ protected:
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
-		float GetElapsedPercentage() const
-	{
-		// number to be divided
-		int TotalSeconds = CurrentLevel ? kSecondsPerLevel : kPreLevelSeconds;
-		if (!TotalSeconds)
-			return 0.0; // just in case...
+	float GetElapsedPercentage() const;
 
-		float Percent = (float)LevelElapsedTime / (float)TotalSeconds;
-		return Percent;
-	}
+protected:
+  int CurrentLevel;
 
-	int CurrentLevel;
+  int LevelElapsedTime;
 
-	int LevelElapsedTime;
+  int kSecondsPerLevel;
 
-	int kSecondsPerLevel;
+  int kPreLevelSeconds;
 
-	int kPreLevelSeconds;
+	UPROPERTY(BlueprintReadWrite, Category = "Base")
+	TArray<int> StockPrices;
 };

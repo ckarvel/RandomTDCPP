@@ -15,19 +15,32 @@ protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	virtual void BeginPlay() override;
 
+  /////////////////////////////////////////////////////////////////////////////////////
+  virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere, Category = "Base")
+	TSubclassOf<AActor> MysteryClass;
+
+  UPROPERTY(EditAnywhere, Category = "Base")
+  TArray<TSubclassOf<AActor>> StockClasses;
+
+  AActor* MysteryActor; ///< Reference is set by BP. This allows us to easily change prop asset
+                       ///< for cosmetic purposes in the future.
+
+	TArray<AActor*> StockActors;
+
+	class ARandomTDPlayerController* MyController;
+
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	APropManager();
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	void Init(class ARandomTDPlayerController* PC, TSubclassOf<AActor>& Class);
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	virtual void Tick(float DeltaTime) override;
+	void Init(class ARandomTDPlayerController* PC);
 
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Remove mystery prop from the world
-	UFUNCTION(BlueprintCallable, Category = "TowerActions")
+	UFUNCTION(BlueprintCallable, Category = "Base")
 	void DestroyProp();
 
 	///////////////////////////////////////////////////////////////////////////
@@ -38,13 +51,4 @@ public:
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Navigate the mystery prop to current cursor location
 	void MovePropToCursor();
-
-	///////////////////////////////////////////////////////////////////////////
-	UPROPERTY(BlueprintReadWrite, Category = "Tower")
-	class AActor* MysteryPropRef; ///< Reference is set by BP. This allows us to easily change prop asset
-																		///< for cosmetic purposes in the future.
-
-	class ARandomTDPlayerController* MyController;
-
-	TSubclassOf<AActor> PropClass;
 };

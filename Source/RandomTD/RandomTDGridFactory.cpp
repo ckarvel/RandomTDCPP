@@ -32,11 +32,12 @@ void ARandomTDGridFactory::Tick(float DeltaTime)
 void ARandomTDGridFactory::SetGridValidity(ARandomTDGridBase* Grid)
 {
 	FHitResult Hit;
-	FVector TraceStart = Grid->GetActorLocation();
-	FVector TraceEnd = TraceStart - FVector(0, 0, 1500.0);
-	FCollisionQueryParams Params = FCollisionQueryParams();
-	Params.bTraceComplex = true;
-	if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, GridTraceChannel, Params))
+	FVector TraceStart = Grid->GetActorLocation() + FVector(0, 0, 0);
+	FVector TraceEnd = TraceStart - FVector(0, 0, 20);
+	FCollisionObjectQueryParams ObQParams = FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllStaticObjects);
+	FCollisionQueryParams QParams = FCollisionQueryParams();
+	QParams.bTraceComplex = true;
+	if (GetWorld()->LineTraceSingleByObjectType(Hit, TraceStart, TraceEnd, ObQParams, QParams))
 	{
 		if (Hit.GetComponent()->ComponentHasTag("EnemyPath"))
 		{

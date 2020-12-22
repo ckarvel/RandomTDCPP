@@ -31,6 +31,9 @@ ARandomTDPlayerController::ARandomTDPlayerController()
 	// define our custom object types
 	m_CustomObjectTypes.Add(UEngineTypes::ConvertToObjectType(GridTraceChannel));
 	m_CustomObjectTypes.Add(UEngineTypes::ConvertToObjectType(TowerTraceChannel));
+
+	PropManagerClass = APropManager::StaticClass();
+  TowerManagerClass = ATowerManager::StaticClass();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -41,8 +44,8 @@ void ARandomTDPlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("Interact",
 		IE_Pressed, this, &ARandomTDPlayerController::OnInteractPressed);
-	InputComponent->BindAction("Interact",
-		IE_Released, this, &ARandomTDPlayerController::OnInteractReleased);
+	//InputComponent->BindAction("Interact",
+	//	IE_Released, this, &ARandomTDPlayerController::OnInteractReleased);
 	
 	///////////////////////////////////////////////////////////////
 	// delegate requests
@@ -118,12 +121,14 @@ void ARandomTDPlayerController::BeginPlay()
 		return;
 	}
 
-	// factories
+	// managers
 	PlayerCamera = GetWorld()->SpawnActor<ACameraActor>(ACameraActor::StaticClass());
-	TowerManager = GetWorld()->SpawnActor<ATowerManager>(ATowerManager::StaticClass());
-	PropManager = GetWorld()->SpawnActor<APropManager>(APropManager::StaticClass());
+	PropManager = GetWorld()->SpawnActor<APropManager>(PropManagerClass);
+	TowerManager = GetWorld()->SpawnActor<ATowerManager>(TowerManagerClass);
+	
 	TowerManager->Init(this);
-	PropManager->Init(this, PropClass);
+	PropManager->Init(this);
+
 #if WITH_EDITOR
 	TowerManager->SetFolderPath("Manager");
 	PropManager->SetFolderPath("Manager");

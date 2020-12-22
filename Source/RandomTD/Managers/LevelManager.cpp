@@ -5,7 +5,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 ALevelManager::ALevelManager()
 : SecondsPerLevel(60)
-, PreLevelSeconds(30)
+, PreLevelSeconds(5)
 {
 	PrimaryActorTick.bCanEverTick = false; // no ticking
 }

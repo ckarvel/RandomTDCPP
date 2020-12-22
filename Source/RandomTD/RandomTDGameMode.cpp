@@ -29,12 +29,14 @@ ARandomTDGameMode::ARandomTDGameMode()
 void ARandomTDGameMode::StartPlay()
 {
 	LevelManager = GetWorld()->SpawnActor<ALevelManager>(ALevelManager::StaticClass());
+	StockManager = GetWorld()->SpawnActor<AStockManager>(AStockManager::StaticClass());
 	EnemyFactory = GetWorld()->SpawnActor<ARandomTDEnemyFactory>(EnemyFactoryClass);
 	GridFactory = GetWorld()->SpawnActor<ARandomTDGridFactory>(GridFactoryClass);
 	TowerFactory = GetWorld()->SpawnActor<ARandomTDTowerFactory>(TowerFactoryClass);
 
 #if WITH_EDITOR
 	LevelManager->SetFolderPath("Manager");
+	StockManager->SetFolderPath("Manager");
 	EnemyFactory->SetFolderPath("Factory");
 	GridFactory->SetFolderPath("Factory");
 	TowerFactory->SetFolderPath("Factory");

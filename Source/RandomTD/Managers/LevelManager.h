@@ -22,10 +22,17 @@ protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	virtual void BeginPlay() override;
 
-public:
-	/////////////////////////////////////////////////////////////////////////////////////
-	virtual void Tick(float DeltaTime) override;
+  /////////////////////////////////////////////////////////////////////////////////////
+  virtual void Tick(float DeltaTime) override;
 
+  int CurrentLevel; ///< The current round in the game.
+
+  FTimerHandle LevelCountTimerHandle; ///< Timer handle used for managing rounds
+
+  FTimerHandle LevelElapsedTimerHandle; ///< Timer handle used for round time
+                                        ///< notification.
+
+public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	/// @brief Starts timer for the initial round before the game actually starts (pre-round).
 	/// @remark Reference stored @ref LevelCountTimerHandle
@@ -59,20 +66,12 @@ public:
 	/// @brief Returns the length of time for the pre-round in seconds.
 	int GetPreLevelSeconds() { return PreLevelSeconds; }
 
-	FOnLevelStart LevelStartEvent; ///< Delegate that broadcasts every round change
-
-	FOnLevelSecondElapsed LevelSecondElapsedEvent; ///< Delegate that broadcasts every
-																												///< second during the round
-
 	int SecondsPerLevel; ///< Defines round time length in seconds.
 
 	int PreLevelSeconds; ///< Defines pre-round time length in seconds.
 
-protected:
-	int CurrentLevel; ///< The current round in the game.
+  FOnLevelStart LevelStartEvent; ///< Delegate that broadcasts every round change
 
-	FTimerHandle LevelCountTimerHandle; ///< Timer handle used for managing rounds
-
-	FTimerHandle LevelElapsedTimerHandle; ///< Timer handle used for round time
-																				///< notification.
+  FOnLevelSecondElapsed LevelSecondElapsedEvent; ///< Delegate that broadcasts every
+                                                        ///< second during the round
 };
