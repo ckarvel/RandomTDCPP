@@ -33,21 +33,21 @@ public:
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
-		FText GetLevelCount() const
+	FText GetLevelCount() const
 	{
 		return  FText::FromString(FString::FromInt(CurrentLevel));
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
-		FText GetElapsedSeconds() const
+	FText GetElapsedSeconds() const
 	{
 		return FText::FromString(FString::FromInt(LevelElapsedTime));
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
-		FText GetSecondsPerLevel() const
+	FText GetSecondsPerLevel() const
 	{
 		int Seconds = CurrentLevel ? kSecondsPerLevel : kPreLevelSeconds;
 		return FText::FromString(FString::FromInt(Seconds));
@@ -56,6 +56,27 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	float GetElapsedPercentage() const;
+
+	/////////////////////////////////////////////////////////////////////////////////////
+  UFUNCTION(BlueprintCallable, Category = "Game")
+  FText GetStockPriceA() const
+  {
+    return FText::FromString(FString::FromInt(StockPrices[0]));
+  }
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	UFUNCTION(BlueprintCallable, Category = "Game")
+  FText GetStockPriceB() const
+  {
+    return FText::FromString(FString::FromInt(StockPrices[1]));
+  }
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	UFUNCTION(BlueprintCallable, Category = "Game")
+  FText GetStockPriceC() const
+  {
+    return FText::FromString(FString::FromInt(StockPrices[2]));
+  }
 
 protected:
   int CurrentLevel;
@@ -66,6 +87,5 @@ protected:
 
   int kPreLevelSeconds;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Base")
 	TArray<int> StockPrices;
 };

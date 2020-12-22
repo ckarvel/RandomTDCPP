@@ -11,6 +11,7 @@ URoundInfoWidget::URoundInfoWidget(const FObjectInitializer& ObjectInitializer)
 	, CurrentLevel(0)
 	, LevelElapsedTime(0.0)
 {
+	StockPrices.AddZeroed(3);
 }
 
 void URoundInfoWidget::Init()
