@@ -61,6 +61,7 @@ bool ATowerManager::SpawnTower(AActor* Actor)
 			ARandomTDTowerCharacter* Tower = ARandomTDGameMode::GetTowerFactory()->SpawnTower(Grid);
 #if WITH_EDITOR
 			Tower->SetFolderPath("Tower");
+			Tower->GetController()->SetFolderPath("Controller");
 #endif
 			PlayerTowerMap.Add(Tower, Grid);
 
@@ -87,7 +88,7 @@ void ATowerManager::UnselectTowers()
 {
 	for (auto tower : SelectedTowers)
 	{
-		tower->OnUserUnclicked();
+		tower->OnEndUserClick();
 	}
 	SelectedTowers.Empty();
 	// turn off
@@ -127,7 +128,7 @@ void ATowerManager::OnTowerSelected(ARandomTDTowerCharacter* SelectedTower)
 				continue;
 			}
 			if (Tower != SelectedTower)
-				Tower->OnUserUnclicked();
+				Tower->OnEndUserClick();
 		}
 
 		// tell tower it can show its overlay now

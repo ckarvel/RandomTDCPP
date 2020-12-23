@@ -93,6 +93,7 @@ void ARandomTDEnemyFactory::AddNewEnemyToList(ARandomTDEnemyCharacter* BP_Enemy)
 {
 #if WITH_EDITOR
 	BP_Enemy->SetFolderPath("Enemy");
+	BP_Enemy->GetController()->SetFolderPath("Controller");
 #endif
 	ListOfEnemies.Add(BP_Enemy);
 

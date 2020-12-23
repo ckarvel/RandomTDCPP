@@ -32,15 +32,25 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	UFUNCTION()
-	void OnUserClicked(AActor* TouchedActor, FKey ButtonPressed);
+  /////////////////////////////////////////////////////////////////////////////////////
+	/// @remark For this is work, actor must "block visibility" collision
+  UFUNCTION()
+	void OnStartUserHover(UPrimitiveComponent* Component);
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  UFUNCTION()
+  void OnEndUserHover(UPrimitiveComponent* Component);
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/// @todo PC is the only one that can know this right?
-	void OnUserUnclicked();
+	UFUNCTION()
+	void OnStartUserClick(AActor* TouchedActor, FKey ButtonPressed);
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	/// @brief Custom end click
+	/// @details End click happens when user clicks on another tower
+	void OnEndUserClick();
 
 	FTowerOnClickedEvent OnTowerClicked;
 
-	bool bSelected;
+	bool bSelected; ///< Handles case: OnStartUserClick and EndUserHover called
 };

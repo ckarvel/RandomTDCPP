@@ -11,7 +11,10 @@
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDTowerCharacter::ARandomTDTowerCharacter()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	bUseControllerRotationYaw = true;
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	SetCanBeDamaged(false);
 	GetMesh()->SetRenderCustomDepth(false);
@@ -22,7 +25,9 @@ void ARandomTDTowerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OnClicked.AddDynamic(this, &ARandomTDTowerCharacter::OnUserClicked);
+	OnClicked.AddDynamic(this, &ARandomTDTowerCharacter::OnStartUserClick);
+	GetMesh()->OnBeginCursorOver.AddDynamic(this, &ARandomTDTowerCharacter::OnStartUserHover);
+	GetMesh()->OnEndCursorOver.AddDynamic(this, &ARandomTDTowerCharacter::OnEndUserHover);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -38,22 +43,37 @@ void ARandomTDTowerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDTowerCharacter::OnStartUserHover(UPrimitiveComponent* Component)
+{
+	GetMesh()->SetRenderCustomDepth(true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDTowerCharacter::OnEndUserHover(UPrimitiveComponent* Component)
+{
+	// if not selected, unhighlight
+	// todo: this may change if hover highlight is different from selection
+	if(!bSelected)
+		GetMesh()->SetRenderCustomDepth(false);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDTowerCharacter::OnSellTower()
 {
 	Destroy();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDTowerCharacter::OnUserClicked(AActor* TouchedActor, FKey ButtonPressed)
+void ARandomTDTowerCharacter::OnStartUserClick(AActor* TouchedActor, FKey ButtonPressed)
 {
-	bSelected = true; // why?
+	bSelected = true;
 	GetMesh()->SetRenderCustomDepth(true);
 	OnTowerClicked.Broadcast(this);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDTowerCharacter::OnUserUnclicked()
+void ARandomTDTowerCharacter::OnEndUserClick()
 {
-	bSelected = false; // why?
+	bSelected = false;
 	GetMesh()->SetRenderCustomDepth(false);
 }
