@@ -7,8 +7,6 @@
 #include "Math/Color.h"
 #include "RandomTD.h"
 
-#define GridTraceChannel ECC_GameTraceChannel1
-
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDGridBase::ARandomTDGridBase()
 	: bIsValidGrid(true)

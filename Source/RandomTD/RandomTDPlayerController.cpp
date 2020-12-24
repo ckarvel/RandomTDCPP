@@ -16,9 +16,6 @@
 #include "RandomTDPlayerCharacter.h"
 #include "RandomTD.h"
 
-#define GridTraceChannel ECC_GameTraceChannel1
-#define TowerTraceChannel ECC_GameTraceChannel2
-
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDPlayerController::ARandomTDPlayerController()
 	: CameraMovementSpeed(300.0)
@@ -163,8 +160,8 @@ void ARandomTDPlayerController::PlayerTick(float DeltaTime)
 		MyPawn->MoveToMouseCursor();
 	}
 
-	if (!TowerManager->IsTowerRequested())
-		return;
+	//if (!TowerManager->IsTowerRequested())
+	//	return;
 
 	PropManager->MovePropToCursor();
 }
@@ -198,29 +195,33 @@ void ARandomTDPlayerController::OnInteractPressed()
 		return;
 	}
 
-	ECollisionChannel ObjectType = Hit.Component->GetCollisionObjectType();
-	switch (ObjectType)
-	{
-	case GridTraceChannel:
-		if (TowerManager->SpawnTower(Hit.GetActor()))
-		{
-			// User is placing tower on a grid
-			PropManager->DestroyProp();
-		}
-		else
-		{
-			// User wants to stop selecting objects
-			TowerManager->UnselectTowers();
-		}
-		break;
-	case TowerTraceChannel:
-		// Tower clicks handled by Tower Actor
-		break;
-	default:
-		// User wants to stop selecting objects
-		TowerManager->UnselectTowers();
-		break;
-	}
+	OnInteractEvent.Broadcast(&Hit);
+
+	//ECollisionChannel ObjectType = Hit.Component->GetCollisionObjectType();
+
+	//// broadcast with object type...
+	//switch (ObjectType)
+	//{
+	//case GridTraceChannel:
+	//	if (TowerManager->SpawnTower(Hit.GetActor()))
+	//	{
+	//		// User is placing tower on a grid
+	//		PropManager->DestroyProp();
+	//	}
+	//	else
+	//	{
+	//		// User wants to stop selecting objects
+	//		TowerManager->UnselectTowers();
+	//	}
+	//	break;
+	//case TowerTraceChannel:
+	//	// Tower clicks handled by Tower Actor
+	//	break;
+	//default:
+	//	// User wants to stop selecting objects
+	//	TowerManager->UnselectTowers();
+	//	break;
+	//}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

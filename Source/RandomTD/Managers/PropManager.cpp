@@ -2,9 +2,10 @@
 
 #include "PropManager.h"
 #include "RandomTD/RandomTDPlayerController.h" // who else includes pc?
-
-#define GridTraceChannel ECC_GameTraceChannel1
-#define TowerTraceChannel ECC_GameTraceChannel2
+#include "RandomTD/UI/MainGameUserWidget.h"
+#include "RandomTD/UI/PropSelectWidget.h"
+#include "RandomTD/RandomTDGridBase.h"
+#include "RandomTD/RandomTD.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 APropManager::APropManager()
@@ -16,6 +17,8 @@ APropManager::APropManager()
 void APropManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// WARNING: Do not try to call Controller from here. Safe after Init() is called
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -28,25 +31,64 @@ void APropManager::Tick(float DeltaTime)
 void APropManager::Init(ARandomTDPlayerController* PC)
 {
 	MyController = PC;
+	MyController->GetUI()->GetPropUI()->OnPropSelectEvent.BindUObject(this, &APropManager::SpawnStock);
+	MyController->OnInteractEvent.AddUObject(this, &APropManager::OnUserInteract);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void APropManager::OnUserInteract(FHitResult* Hit)
+{
+  // if prop doesn't exist
+  // or if grid was not clicked, exit
+  if (!ActiveActor || !Hit->bBlockingHit)
+    return;
+
+  // we only care if a grid was interacted with
+  ECollisionChannel ObjectType = Hit->Component->GetCollisionObjectType();
+  if (ObjectType != GridTraceChannel)
+    return;
+
+  // if grid not valid, exit
+  ARandomTDGridBase* Grid = Cast<ARandomTDGridBase>(Hit->GetActor());
+  if (!Grid->IsValid())
+    return;
+
+  // if our prop is mystery, destroy
+  if (ActiveActor->StaticClass() == MysteryClass)
+  {
+    DestroyProp();
+  }
+  else  // if our prop is a stock, place
+  {
+    ActiveActor->SetActorLocation(Grid->GetActorLocation());
+    StockActors.Add(ActiveActor);
+    ActiveActor = nullptr;
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void APropManager::SpawnStock(int Index)
+{
+	ActiveActor = GetWorld()->SpawnActor<AActor>(StockClasses[Index]);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void APropManager::SpawnMystery()
 {
-  MysteryActor = GetWorld()->SpawnActor<AActor>(MysteryClass);
+  ActiveActor = GetWorld()->SpawnActor<AActor>(MysteryClass);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void APropManager::DestroyProp()
 {
-  if (MysteryActor)
-    MysteryActor->Destroy();
+  if (ActiveActor)
+    ActiveActor->Destroy();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void APropManager::MovePropToCursor()
 {
-	if (MyController == nullptr)
+	if (MyController == nullptr || ActiveActor == nullptr)
 		return;
 
 	FHitResult Hit = MyController->GetHitOnCustomObjectTypes(true, GridTraceChannel);
@@ -54,6 +96,6 @@ void APropManager::MovePropToCursor()
 	// prop will move even when cursor is outside the grid
 	if (Hit.bBlockingHit) // TODO: if grid hit
 	{
-		MysteryActor->SetActorLocation(Hit.ImpactPoint);
+		ActiveActor->SetActorLocation(Hit.ImpactPoint);
 	}
 }

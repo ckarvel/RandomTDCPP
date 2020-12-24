@@ -6,12 +6,12 @@
 #include "GameFramework/PlayerController.h"
 #include "RandomTDPlayerController.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FInteractEvent, FHitResult*);
+
 /// @class ARandomTDPlayerController
 /// @brief The PlayerController for Random TD
 /// 
 /// Handles player input
-///
-
 UCLASS()
 class ARandomTDPlayerController : public APlayerController
 {
@@ -102,4 +102,6 @@ public:
   
   UPROPERTY(EditAnywhere, Category = "Base")
   TSubclassOf<AActor> TowerManagerClass;
+
+  FInteractEvent OnInteractEvent;
 };

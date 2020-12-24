@@ -14,6 +14,7 @@ URoundInfoWidget::URoundInfoWidget(const FObjectInitializer& ObjectInitializer)
 	StockPrices.AddZeroed(3);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////
 void URoundInfoWidget::Init()
 {
 	kSecondsPerLevel = ARandomTDGameMode::GetLevelManager()->GetSecondsPerLevel();

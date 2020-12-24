@@ -23,18 +23,51 @@ ATowerManager::ATowerManager()
 void ATowerManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// WARNING: Do not try to call Controller from here. Safe after Init() is called
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ATowerManager::Init(ARandomTDPlayerController* PC)
 {
 	MyController = PC;
+	MyController->OnInteractEvent.AddUObject(this, &ATowerManager::OnUserInteract);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ATowerManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void ATowerManager::OnUserInteract(FHitResult* Hit)
+{
+  //ECollisionChannel ObjectType = Hit.Component->GetCollisionObjectType();
+
+  //// broadcast with object type...
+  //switch (ObjectType)
+  //{
+  //case GridTraceChannel:
+  //  if (TowerManager->SpawnTower(Hit.GetActor()))
+  //  {
+  //    // User is placing tower on a grid
+  //    PropManager->DestroyProp();
+  //  }
+  //  else
+  //  {
+  //    // User wants to stop selecting objects
+  //    TowerManager->UnselectTowers();
+  //  }
+  //  break;
+  //case TowerTraceChannel:
+  //  // Tower clicks handled by Tower Actor
+  //  break;
+  //default:
+  //  // User wants to stop selecting objects
+  //  TowerManager->UnselectTowers();
+  //  break;
+  //}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

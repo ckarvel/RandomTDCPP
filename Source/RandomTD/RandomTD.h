@@ -6,3 +6,6 @@
 #include "Logging/MessageLog.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogRandomTD, Log, All);
+
+#define GridTraceChannel ECC_GameTraceChannel1
+#define TowerTraceChannel ECC_GameTraceChannel2

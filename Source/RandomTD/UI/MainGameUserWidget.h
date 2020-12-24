@@ -38,5 +38,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Base")
 	void SetupWidget();
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	UFUNCTION(BlueprintImplementableEvent, Category = "Base")
+	class UPropSelectWidget* GetPropUI();
+
 	bool TowerVisibility;
 };

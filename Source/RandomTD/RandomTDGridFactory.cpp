@@ -5,8 +5,6 @@
 #include "RandomTDGridBase.h"
 #include "RandomTD.h"
 
-#define GridTraceChannel ECC_GameTraceChannel1
-
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDGridFactory::ARandomTDGridFactory()
 	: Grid_X(18)

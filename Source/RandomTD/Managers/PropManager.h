@@ -24,7 +24,7 @@ protected:
   UPROPERTY(EditAnywhere, Category = "Base")
   TArray<TSubclassOf<AActor>> StockClasses;
 
-  AActor* MysteryActor; ///< Reference is set by BP. This allows us to easily change prop asset
+  AActor* ActiveActor; ///< Reference is set by BP. This allows us to easily change prop asset
                        ///< for cosmetic purposes in the future.
 
 	TArray<AActor*> StockActors;
@@ -51,4 +51,11 @@ public:
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Navigate the mystery prop to current cursor location
 	void MovePropToCursor();
+
+	///////////////////////////////////////////////////////////////////////////
+	UFUNCTION(BlueprintCallable, Category = "Base")
+	void SpawnStock(int Index);
+
+	///////////////////////////////////////////////////////////////////////////
+	void OnUserInteract(struct FHitResult* Hit);
 };
