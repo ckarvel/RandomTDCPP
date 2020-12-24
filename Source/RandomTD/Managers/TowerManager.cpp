@@ -43,31 +43,24 @@ void ATowerManager::Tick(float DeltaTime)
 /////////////////////////////////////////////////////////////////////////////////////
 void ATowerManager::OnUserInteract(FHitResult* Hit)
 {
-  //ECollisionChannel ObjectType = Hit.Component->GetCollisionObjectType();
+  if (!bTowerRequested || !Hit->bBlockingHit)
+	{
+		UnselectTowers();
+    return;
+	}
+	// user wants to spawn a tower at this location. Verify that:
+	// 1. location is a grid
+	// 2. grid is valid
 
-  //// broadcast with object type...
-  //switch (ObjectType)
-  //{
-  //case GridTraceChannel:
-  //  if (TowerManager->SpawnTower(Hit.GetActor()))
-  //  {
-  //    // User is placing tower on a grid
-  //    PropManager->DestroyProp();
-  //  }
-  //  else
-  //  {
-  //    // User wants to stop selecting objects
-  //    TowerManager->UnselectTowers();
-  //  }
-  //  break;
-  //case TowerTraceChannel:
-  //  // Tower clicks handled by Tower Actor
-  //  break;
-  //default:
-  //  // User wants to stop selecting objects
-  //  TowerManager->UnselectTowers();
-  //  break;
-  //}
+	// 1
+  ECollisionChannel ObjectType = Hit->Component->GetCollisionObjectType();	
+	if (ObjectType != GridTraceChannel)
+		return; // a tower request is active so no need to worry about unselecting towers, just exit
+
+	// 2
+  ARandomTDGridBase* Grid = Cast<ARandomTDGridBase>(Hit->GetActor());
+  if (Grid->IsValid())
+    SpawnTower(Grid);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

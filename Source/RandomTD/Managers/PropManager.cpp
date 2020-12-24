@@ -54,7 +54,7 @@ void APropManager::OnUserInteract(FHitResult* Hit)
     return;
 
   // if our prop is mystery, destroy
-  if (ActiveActor->StaticClass() == MysteryClass)
+  if (ActiveActor->ActorHasTag("Mystery"))
   {
     DestroyProp();
   }
@@ -70,12 +70,14 @@ void APropManager::OnUserInteract(FHitResult* Hit)
 void APropManager::SpawnStock(int Index)
 {
 	ActiveActor = GetWorld()->SpawnActor<AActor>(StockClasses[Index]);
+  ActiveActor->Tags.Add("Stock");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void APropManager::SpawnMystery()
 {
   ActiveActor = GetWorld()->SpawnActor<AActor>(MysteryClass);
+  ActiveActor->Tags.Add("Mystery");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
