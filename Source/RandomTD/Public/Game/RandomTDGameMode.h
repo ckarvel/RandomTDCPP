@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Managers/LevelManager.h"
+//#include "Managers/LevelManager.h"
 #include "Managers/StockManager.h"
 #include "Factories/EnemyFactory.h"
 #include "Factories/GridFactory.h"
@@ -27,9 +27,6 @@ public:
 	virtual void StartPlay() override;
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	static ALevelManager* GetLevelManager() { return LevelManager; }
-
-	/////////////////////////////////////////////////////////////////////////////////////
 	static AStockManager* GetStockManager() { return StockManager; }
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -50,8 +47,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, NoClear, BlueprintReadOnly, Category = Factories)
 	TSubclassOf<ARandomTDTowerFactory> TowerFactoryClass;
-
-	static ALevelManager* LevelManager;
 
 	static AStockManager* StockManager;
 

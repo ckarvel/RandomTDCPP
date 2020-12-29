@@ -2,49 +2,47 @@
 
 #include "Managers/LevelManager.h"
 
-///////////////////////////////////////////////////////////////////////////////////////
-ALevelManager::ALevelManager()
-: SecondsPerLevel(60)
-, PreLevelSeconds(2)
+/////////////////////////////////////////////////////////////////////////////////////
+ULevelManager::ULevelManager(const FObjectInitializer& ObjectInitializer)
+  : Super(ObjectInitializer)
+  , SecondsPerLevel(60)
+  , PreLevelSeconds(2)
 {
-	PrimaryActorTick.bCanEverTick = false; // no ticking
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ALevelManager::BeginPlay()
+void ULevelManager::StartTimers()
 {
-	Super::BeginPlay();
-
-	StartPreLevelTimer(); // timer for the first round
-	StartElapsedTimer(); // timer to tell UI round time once a second
+  StartPreLevelTimer(); // timer for the first round
+  StartElapsedTimer(); // timer to tell UI round time once a second
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ALevelManager::Tick(float DeltaTime)
+void ULevelManager::SetTimerManager(FTimerManager* TimerManager)
 {
-	Super::Tick(DeltaTime);
+	OwningTimerManager = TimerManager;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-void ALevelManager::StartPreLevelTimer()
+void ULevelManager::StartPreLevelTimer()
 {
 	// set a timer until the real game starts
 	// the initial delay is the pre round
-	GetWorldTimerManager().SetTimer(LevelCountTimerHandle,
+	OwningTimerManager->SetTimer(LevelCountTimerHandle,
 		this,
-		&ALevelManager::StartLevelTimer,
+		&ULevelManager::StartLevelTimer,
 		PreLevelSeconds, // if equal to 1, initial delay < 0
 		false, // run once
 		PreLevelSeconds); // initial delay (used as countdown for preround)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ALevelManager::StartLevelTimer()
+void ULevelManager::StartLevelTimer()
 {
-	// start the real game timer
-	GetWorldTimerManager().SetTimer(LevelCountTimerHandle,
+	//// start the real game timer
+	OwningTimerManager->SetTimer(LevelCountTimerHandle,
 		this,
-		&ALevelManager::OnLevelChange,
+		&ULevelManager::OnLevelChange,
 		SecondsPerLevel,
 		true,
 		0.0f); // initial delay used for smooth transition from prerounds
@@ -54,28 +52,28 @@ void ALevelManager::StartLevelTimer()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ALevelManager::StartElapsedTimer()
+void ULevelManager::StartElapsedTimer()
 {
-	GetWorldTimerManager().SetTimer(LevelElapsedTimerHandle,
-		this,
-		&ALevelManager::OnLevelSecondElapsed,
-		1.0f,
-		true,
-		0.0f);
+  OwningTimerManager->SetTimer(LevelElapsedTimerHandle,
+    this,
+    &ULevelManager::OnLevelSecondElapsed,
+    1.0f,
+    true,
+    0.0f);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ALevelManager::OnLevelChange()
+void ULevelManager::OnLevelChange()
 {
 	CurrentLevel++;
 	LevelStartEvent.Broadcast(CurrentLevel);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ALevelManager::OnLevelSecondElapsed()
+void ULevelManager::OnLevelSecondElapsed()
 {
 	// query the round count timer for how long until round changes
-	float TimeElapsed = GetWorldTimerManager().GetTimerElapsed(LevelCountTimerHandle);
+	float TimeElapsed = OwningTimerManager->GetTimerElapsed(LevelCountTimerHandle);
 	int Seconds = FGenericPlatformMath::RoundToInt(TimeElapsed);
 
 	LevelSecondElapsedEvent.Broadcast(Seconds);

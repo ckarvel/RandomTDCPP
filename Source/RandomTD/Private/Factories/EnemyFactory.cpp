@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Factories/EnemyFactory.h"
+#include "FunctionLibrary/GameStateLibrary.h"
 #include "Controllers/EnemyController.h"
 #include "Characters/EnemyCharacter.h"
 #include "WorldActors/PathSpline.h"
@@ -22,7 +23,8 @@ void ARandomTDEnemyFactory::BeginPlay()
 	Super::BeginPlay();
 
 	// spawn enemy delegate
-	ARandomTDGameMode::GetLevelManager()->LevelStartEvent.AddUObject(this, &ARandomTDEnemyFactory::StartSpawnTimer);
+	auto* GI = GetGameInstance();
+	UGameStateLibrary::BindToLevelStart(GI, this, &ARandomTDEnemyFactory::StartSpawnTimer);
 
 	// [state change == finished path] or [state change == dead] delegate
 	//ARandomTDEnemyCharacter::OnStateChangeEvent.AddUObject(this, &ARandomTDEnemyFactory::OnEnemyStateChange);

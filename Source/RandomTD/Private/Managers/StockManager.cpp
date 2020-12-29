@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Managers/StockManager.h"
+#include "FunctionLibrary/GameStateLibrary.h"
 #include "Game/RandomTDGameMode.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RandomTD/RandomTD.h"
@@ -19,7 +20,8 @@ void AStockManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ARandomTDGameMode::GetLevelManager()->LevelStartEvent.AddUObject(this, &AStockManager::GenerateStockPrices);
+	auto* GI = GetGameInstance();
+	UGameStateLibrary::BindToLevelStart(GI, this, &AStockManager::GenerateStockPrices);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
