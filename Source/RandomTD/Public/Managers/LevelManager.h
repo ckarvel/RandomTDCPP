@@ -1,3 +1,5 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -6,8 +8,9 @@
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelStart, int);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelSecondElapsed, int);
 
+/////////////////////////////////////////////////////////////////////////////////////
 UCLASS()
-class ULevelManager: public UObject
+class RANDOMTD_API ULevelManager: public UObject
 {
   GENERATED_UCLASS_BODY()
 
@@ -16,7 +19,6 @@ private:
   /// @brief Starts level timers
   /// @see StartPreLevelTimer
   /// @see StartElapsedTimer
-  /////////////////////////////////////////////////////////////////////////////////////
   void StartTimers();
 
   /////////////////////////////////////////////////////////////////////////////////////

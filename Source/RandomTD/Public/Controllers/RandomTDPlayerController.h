@@ -8,6 +8,13 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FInteractEvent, FHitResult*);
 
+class ACameraActor;
+class UMainGameUserWidget;
+class UPropManager;
+class UTDCameraManager;
+class UTowerManager;
+class ARandomTDPlayerCharacter;
+
 /// @class ARandomTDPlayerController
 /// @brief The PlayerController for Random TD
 /// 
@@ -18,24 +25,6 @@ class ARandomTDPlayerController : public APlayerController
 	GENERATED_BODY()
 
 private:
-  ///////////////////////////////////////////////////////////////////////////
-  /// @brief Pans the camera forward or backwards based on AxisValue
-  /// 
-  /// Called every tick
-  /// @param AxisValue 1 Forward
-  /// -1 Backwards
-  /// 0 No movement
-  void MoveCameraForward(float AxisValue);
-
-  ///////////////////////////////////////////////////////////////////////////
-  /// @brief Pans the camera right or left based on AxisValue
-  /// 
-  /// Called every tick
-  /// @param AxisValue 1 Right
-  /// -1 Left
-  /// 0 No movement
-  void MoveCameraRight(float AxisValue);
-
   ///////////////////////////////////////////////////////////////////////////
   /// @brief Called when player presses the left mouse button
   /// 
@@ -48,15 +37,10 @@ private:
   /// @todo Is this the right function for drag-selection?
   //void OnInteractReleased();
 
-  class ARandomTDPlayerCharacter* MyPawn;
-
-  class ACameraActor* PlayerCamera;
-
-	class ATowerManager* TowerManager;
-
-	class APropManager* PropManager;
-
-  TArray<TEnumAsByte<EObjectTypeQuery>> m_CustomObjectTypes; ///< Grid and Tower
+  UPropManager* MyPropManager;
+  UTowerManager* MyTowerManager;
+  UTDCameraManager* MyCameraManager;
+  ARandomTDPlayerCharacter* MyPawn;
 
 protected:
   ///////////////////////////////////////////////////////////////////////////
@@ -72,11 +56,8 @@ protected:
   /// @param DeltaTime How much time has passed since the last tick
   virtual void PlayerTick(float DeltaTime) override;
 
-  UPROPERTY(EditAnywhere, Category = Camera)
-  float CameraMovementSpeed; ///< How fast the camera pans
-
   UPROPERTY(BlueprintReadWrite, Category = "Base")
-  class UMainGameUserWidget* MainGameUI;
+  UMainGameUserWidget* MainGameUI;
 
 public:
 	///////////////////////////////////////////////////////////////////////////
@@ -87,21 +68,8 @@ public:
   /// @brief  Setup bind actions and axis mappings.
   virtual void SetupInputComponent() override;
 
-	///////////////////////////////////////////////////////////////////////////
-	/// @brief Gets Mouse cursor hit on custom object types, Grid and Tower
-	/// @param UseChannel If True, Only get the Mouse cursor hit on object type of Channel
-	/// @param Channel Object type to get hit result on
-	/// @return Hit Result from cursor
-	FHitResult GetHitOnCustomObjectTypes(bool UseChannel = false, ECollisionChannel Channel = ECC_WorldStatic);
-
   ///////////////////////////////////////////////////////////////////////////
-	class UMainGameUserWidget* GetUI();
-	
-	UPROPERTY(EditAnywhere, Category = "Base")
-	TSubclassOf<AActor> PropManagerClass;
-  
-  UPROPERTY(EditAnywhere, Category = "Base")
-  TSubclassOf<AActor> TowerManagerClass;
+	UMainGameUserWidget* GetUI();
 
   FInteractEvent OnInteractEvent;
 };

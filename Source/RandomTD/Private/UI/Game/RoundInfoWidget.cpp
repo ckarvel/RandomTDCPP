@@ -24,7 +24,7 @@ void URoundInfoWidget::Init()
 
 	UGameStateLibrary::BindToLevelStart(GI, this, &URoundInfoWidget::SetCurrentLevel);
 	UGameStateLibrary::BindToSecondElapsed(GI, this, &URoundInfoWidget::SetLevelTime);
-	//ARandomTDGameMode::GetLevelManager()::GetStockManager()->PriceChangeEvent.AddUObject(this, &URoundInfoWidget::SetStockPrices);
+	UGameStateLibrary::BindToPriceChange(GI, this, &URoundInfoWidget::SetStockPrices);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

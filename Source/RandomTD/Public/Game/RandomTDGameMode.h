@@ -27,9 +27,6 @@ public:
 	virtual void StartPlay() override;
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	static AStockManager* GetStockManager() { return StockManager; }
-
-	/////////////////////////////////////////////////////////////////////////////////////
 	static ARandomTDEnemyFactory* GetEnemyFactory() { return EnemyFactory; }
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -47,8 +44,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, NoClear, BlueprintReadOnly, Category = Factories)
 	TSubclassOf<ARandomTDTowerFactory> TowerFactoryClass;
-
-	static AStockManager* StockManager;
 
 	static ARandomTDEnemyFactory* EnemyFactory;
 

@@ -5,30 +5,35 @@
 #include "CoreMinimal.h"
 #include "TowerManager.generated.h"
 
+class ARandomTDPlayerController;
+class ARandomTDTowerFactory;
+
 // not having uclass and generated body and generated header causes crash on start
 UCLASS()
-class ATowerManager: public AActor
+class UTowerManager: public UObject
 {
-  GENERATED_BODY()
+  GENERATED_UCLASS_BODY()
+private:
+  ///////////////////////////////////////////////////////////////////////////
+  void MultiSelectPressed();
 
-protected:
-  /////////////////////////////////////////////////////////////////////////////////////
-  /// @brief Starts level timers
-  /// @see StartPreLevelTimer
-  /// @see StartElapsedTimer
-  /////////////////////////////////////////////////////////////////////////////////////
-  virtual void BeginPlay() override;
+  ///////////////////////////////////////////////////////////////////////////
+  void MultiSelectReleased();
 
 public:
   /////////////////////////////////////////////////////////////////////////////////////
-  ATowerManager();
+  UTowerManager();
 
   /////////////////////////////////////////////////////////////////////////////////////
-  void Init(class ARandomTDPlayerController* PC);
+  void Init(ARandomTDPlayerController* PC);
+
+  ///////////////////////////////////////////////////////////////////////////
+  void SetupInputComponent(UInputComponent* InputComponent);
 
   /////////////////////////////////////////////////////////////////////////////////////
-  virtual void Tick(float DeltaTime) override;
+  void Update();
 
+  /////////////////////////////////////////////////////////////////////////////////////
   void OnUserInteract(struct FHitResult* Hit);
 
   ///////////////////////////////////////////////////////////////////////////
@@ -52,9 +57,6 @@ public:
   bool SpawnTower(AActor* Actor);
 
   ///////////////////////////////////////////////////////////////////////////
-  void SetMultiSelectMode(bool Value) { bCtrlPressed = Value; }
-
-  ///////////////////////////////////////////////////////////////////////////
   bool IsTowerRequested() const { return bTowerRequested; }
 
   bool bCtrlPressed;  ///< User pressed Ctrl (Multi-select)
@@ -67,7 +69,7 @@ public:
 
 private:
   // dunno how to make this const; cannot pass constructor args...
-  class ARandomTDPlayerController* MyController;
+  ARandomTDPlayerController* MyController;
 
-  class ARandomTDTowerFactory* TowerFactory;
+  ARandomTDTowerFactory* TowerFactory;
 };

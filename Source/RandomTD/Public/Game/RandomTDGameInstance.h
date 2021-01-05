@@ -7,18 +7,26 @@
 #include "RandomTDGameInstance.generated.h"
 
 class ULevelManager;
+class UStockManager;
 
 UCLASS()
 class RANDOMTD_API URandomTDGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 protected:
+	/////////////////////////////////////////////////////////////////////////////////////
 	virtual void OnStart();
 
 	ULevelManager* LevelManager;
+	UStockManager* StockManager;
 
 public:
-		virtual void Init();
+	/////////////////////////////////////////////////////////////////////////////////////
+	virtual void Init();
 	
-		inline ULevelManager& GetLevelManager() const { return *LevelManager; }
+	/////////////////////////////////////////////////////////////////////////////////////
+	inline ULevelManager& GetLevelManager() const { return *LevelManager; }
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	inline UStockManager& GetStockManager() const { return *StockManager; }
 };

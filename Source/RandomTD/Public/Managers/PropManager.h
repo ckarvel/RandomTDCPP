@@ -5,19 +5,13 @@
 #include "CoreMinimal.h"
 #include "PropManager.generated.h"
 
-// the generated.h file can't be included if you don't include the UCLASS and generated body
+/////////////////////////////////////////////////////////////////////////////////////
 UCLASS()
-class APropManager : public AActor
+class UPropManager : public UObject
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
 
 protected:
-	/////////////////////////////////////////////////////////////////////////////////////
-	virtual void BeginPlay() override;
-
-  /////////////////////////////////////////////////////////////////////////////////////
-  virtual void Tick(float DeltaTime) override;
-
 	UPROPERTY(EditAnywhere, Category = "Base")
 	TSubclassOf<AActor> MysteryClass;
 
@@ -26,17 +20,17 @@ protected:
 
   AActor* ActiveActor; ///< Reference is set by BP. This allows us to easily change prop asset
                        ///< for cosmetic purposes in the future.
-
-	TArray<AActor*> StockActors;
-
 	class ARandomTDPlayerController* MyController;
 
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
-	APropManager();
+	UPropManager();
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	void Init(class ARandomTDPlayerController* PC);
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	void Update();
 
 	///////////////////////////////////////////////////////////////////////////
 	/// @brief Remove mystery prop from the world

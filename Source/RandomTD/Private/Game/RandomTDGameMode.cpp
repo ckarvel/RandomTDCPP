@@ -5,12 +5,8 @@
 #include "RandomTD/RandomTD.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
-AStockManager* ARandomTDGameMode::StockManager;
-
 ARandomTDEnemyFactory* ARandomTDGameMode::EnemyFactory;
-
 ARandomTDGridFactory* ARandomTDGameMode::GridFactory;
-
 ARandomTDTowerFactory* ARandomTDGameMode::TowerFactory;
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -25,13 +21,11 @@ ARandomTDGameMode::ARandomTDGameMode()
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDGameMode::StartPlay()
 {
-	StockManager = GetWorld()->SpawnActor<AStockManager>(AStockManager::StaticClass());
 	EnemyFactory = GetWorld()->SpawnActor<ARandomTDEnemyFactory>(EnemyFactoryClass);
 	GridFactory = GetWorld()->SpawnActor<ARandomTDGridFactory>(GridFactoryClass);
 	TowerFactory = GetWorld()->SpawnActor<ARandomTDTowerFactory>(TowerFactoryClass);
 
 #if WITH_EDITOR
-	StockManager->SetFolderPath("Manager");
 	EnemyFactory->SetFolderPath("Factory");
 	GridFactory->SetFolderPath("Factory");
 	TowerFactory->SetFolderPath("Factory");

@@ -1,37 +1,27 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Managers/StockManager.h"
+#include "Game/RandomTDGameInstance.h"
 #include "FunctionLibrary/GameStateLibrary.h"
-#include "Game/RandomTDGameMode.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "RandomTD/RandomTD.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
-AStockManager::AStockManager()
-	: MinPrice(50)
-	, MaxPrice(100)
+UStockManager::UStockManager(const FObjectInitializer& ObjectInitializer)
+	  : Super(ObjectInitializer)
+		, MinPrice(50)
+	  , MaxPrice(100)
 {
-	PrimaryActorTick.bCanEverTick = false; // no ticking
-	StockPrices.AddZeroed(3);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+void UStockManager::SetGameInstance(URandomTDGameInstance* _GI)
+{
+	GI = _GI;
+	UGameStateLibrary::BindToLevelStart(GI, this, &UStockManager::GenerateStockPrices);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void AStockManager::BeginPlay()
-{
-	Super::BeginPlay();
-
-	auto* GI = GetGameInstance();
-	UGameStateLibrary::BindToLevelStart(GI, this, &AStockManager::GenerateStockPrices);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void AStockManager::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void AStockManager::GenerateStockPrices(int Level)
+void UStockManager::GenerateStockPrices(int Level)
 {
 	for (int i = 0; i < StockPrices.Num(); i++)
 	{

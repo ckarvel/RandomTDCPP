@@ -35,3 +35,23 @@ int UGameStateLibrary::GetPreLevelSeconds(UGameInstance* GameInstance)
   }
   return -1;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////
+FHitResult UGameStateLibrary::GetHitOnCustomObjectTypes(APlayerController* PC, bool UseChannel, ECollisionChannel Channel)
+{
+  FHitResult Hit;
+  if (UseChannel)
+  {
+    TArray<TEnumAsByte<EObjectTypeQuery>> Objects;
+    Objects.Add(UEngineTypes::ConvertToObjectType(Channel));
+    PC->GetHitResultUnderCursorForObjects(Objects, false, Hit);
+  }
+  else
+  {
+    TArray<TEnumAsByte<EObjectTypeQuery>> _CustomObjectTypes;
+    _CustomObjectTypes.Add(UEngineTypes::ConvertToObjectType(GridTraceChannel));
+    _CustomObjectTypes.Add(UEngineTypes::ConvertToObjectType(TowerTraceChannel));
+    PC->GetHitResultUnderCursorForObjects(_CustomObjectTypes, false, Hit);
+  }
+  return Hit;
+}

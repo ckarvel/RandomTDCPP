@@ -61,21 +61,24 @@ public:
   UFUNCTION(BlueprintCallable, Category = "Game")
   FText GetStockPriceA() const
   {
-    return FText::FromString(FString::FromInt(StockPrices[0]));
+    //return FText::FromString(FString::FromInt(StockPrices[0]));
+		return FText::FromString("hello");
   }
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
   FText GetStockPriceB() const
   {
-    return FText::FromString(FString::FromInt(StockPrices[1]));
+    //return FText::FromString(FString::FromInt(StockPrices[1]));
+		return FText::FromString("hello");
   }
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Game")
   FText GetStockPriceC() const
   {
-    return FText::FromString(FString::FromInt(StockPrices[2]));
+    //return FText::FromString(FString::FromInt(StockPrices[2]));
+		return FText::FromString("hello");
   }
 
 protected:

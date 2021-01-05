@@ -42,12 +42,6 @@ ARandomTDPlayerCharacter::ARandomTDPlayerCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////
-//void ARandomTDPlayerCharacter::Init(ARandomTDPlayerController* Controller)
-//{
-//	MyController = Controller;
-//}
-
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerCharacter::BeginPlay()
 {

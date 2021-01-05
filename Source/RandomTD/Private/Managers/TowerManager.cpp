@@ -13,35 +13,46 @@
 #include "RandomTD/RandomTD.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
-ATowerManager::ATowerManager()
-	: bCtrlPressed(false)
+UTowerManager::UTowerManager(const FObjectInitializer& ObjectInitializer)
+  : Super(ObjectInitializer)
+	, bCtrlPressed(false)
 {
-	PrimaryActorTick.bCanEverTick = false; // no ticking
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ATowerManager::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// WARNING: Do not try to call Controller from here. Safe after Init() is called
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ATowerManager::Init(ARandomTDPlayerController* PC)
+void UTowerManager::Init(ARandomTDPlayerController* PC)
 {
 	MyController = PC;
-	MyController->OnInteractEvent.AddUObject(this, &ATowerManager::OnUserInteract);
+	MyController->OnInteractEvent.AddUObject(this, &UTowerManager::OnUserInteract);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ATowerManager::Tick(float DeltaTime)
+void UTowerManager::Update()
 {
-	Super::Tick(DeltaTime);
+	
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ATowerManager::OnUserInteract(FHitResult* Hit)
+void UTowerManager::SetupInputComponent(UInputComponent* InputComponent)
+{
+  InputComponent->BindAction("Multi-Select", IE_Pressed, this, &UTowerManager::MultiSelectPressed);
+	InputComponent->BindAction("Multi-Select", IE_Released, this, &UTowerManager::MultiSelectReleased);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void UTowerManager::MultiSelectPressed()
+{
+	bCtrlPressed = true;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void UTowerManager::MultiSelectReleased()
+{
+	bCtrlPressed = false;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+void UTowerManager::OnUserInteract(FHitResult* Hit)
 {
   if (!bTowerRequested || !Hit->bBlockingHit)
 	{
@@ -64,7 +75,7 @@ void ATowerManager::OnUserInteract(FHitResult* Hit)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-bool ATowerManager::OnCreateBasicTowerPressed()
+bool UTowerManager::OnCreateBasicTowerPressed()
 {
 	if (bTowerRequested)
 		return false; // ignore request if a request is already active
@@ -74,7 +85,7 @@ bool ATowerManager::OnCreateBasicTowerPressed()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-bool ATowerManager::SpawnTower(AActor* Actor)
+bool UTowerManager::SpawnTower(AActor* Actor)
 {
 	if (!bTowerRequested)
 		return false;
@@ -92,7 +103,7 @@ bool ATowerManager::SpawnTower(AActor* Actor)
 			PlayerTowerMap.Add(Tower, Grid);
 
 			// notify us when tower is removed
-			Tower->OnDestroyed.AddDynamic(this, &ATowerManager::OnSellTower);
+			Tower->OnDestroyed.AddDynamic(this, &UTowerManager::OnSellTower);
 			// set this grid to occupied
 			Grid->SetInvalid();
 			bTowerRequested = false;
@@ -103,14 +114,14 @@ bool ATowerManager::SpawnTower(AActor* Actor)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ATowerManager::OnSellTower(AActor* Tower)
+void UTowerManager::OnSellTower(AActor* Tower)
 {
 	ARandomTDGridBase* Grid = PlayerTowerMap.FindAndRemoveChecked(Cast<ARandomTDTowerCharacter>(Tower));
 	Grid->SetValid();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ATowerManager::UnselectTowers()
+void UTowerManager::UnselectTowers()
 {
 	for (auto tower : SelectedTowers)
 	{
@@ -122,7 +133,7 @@ void ATowerManager::UnselectTowers()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ATowerManager::OnTowerSelected(ARandomTDTowerCharacter* SelectedTower)
+void UTowerManager::OnTowerSelected(ARandomTDTowerCharacter* SelectedTower)
 {
 
 	// check if multi-select is on

@@ -7,30 +7,31 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnStockPriceChange, TArray<int>);
 
+class URandomTDGameInstance;
+
+/////////////////////////////////////////////////////////////////////////////////////
 UCLASS()
-class RANDOMTD_API AStockManager : public AActor
+class RANDOMTD_API UStockManager : public UObject
 {
-  GENERATED_BODY()
+  GENERATED_UCLASS_BODY()
 
-protected:
+private:
   /////////////////////////////////////////////////////////////////////////////////////
-  virtual void BeginPlay() override;
+  void SetGameInstance(URandomTDGameInstance* GI);
 
-  int MinPrice;
-  int MaxPrice;
+  URandomTDGameInstance* GI;
+  int MinPrice; ///< Minimum price to sell stock
+  int MaxPrice; ///< Maximum price to sell stock
+  TArray<int> StockPrices;
+
+  friend class URandomTDGameInstance;
 
 public:
   /////////////////////////////////////////////////////////////////////////////////////
-  AStockManager();
-
-  /////////////////////////////////////////////////////////////////////////////////////
-  virtual void Tick(float DeltaTime) override;
+  UStockManager();
 
   /////////////////////////////////////////////////////////////////////////////////////
   void GenerateStockPrices(int Level);
-
-  /////////////////////////////////////////////////////////////////////////////////////
-  TArray<int> StockPrices;
 
   FOnStockPriceChange PriceChangeEvent;
 };

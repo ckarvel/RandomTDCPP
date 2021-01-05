@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Managers/PropManager.h"
+#include "FunctionLibrary/GameStateLibrary.h"
 #include "Controllers/RandomTDPlayerController.h" // who else includes pc?
 #include "UI/Game/MainGameUserWidget.h"
 #include "UI/Stock/PropSelectWidget.h"
@@ -8,35 +9,28 @@
 #include "RandomTD/RandomTD.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
-APropManager::APropManager()
+UPropManager::UPropManager(const FObjectInitializer& ObjectInitializer)
+  : Super(ObjectInitializer)
 {
-	PrimaryActorTick.bCanEverTick = false; // no ticking
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void APropManager::BeginPlay()
+void UPropManager::Update()
 {
-	Super::BeginPlay();
-
-	// WARNING: Do not try to call Controller from here. Safe after Init() is called
+  if(ActiveActor)
+    MovePropToCursor();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void APropManager::Tick(float DeltaTime)
-{
-  Super::Tick(DeltaTime);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void APropManager::Init(ARandomTDPlayerController* PC)
+void UPropManager::Init(ARandomTDPlayerController* PC)
 {
 	MyController = PC;
-	MyController->GetUI()->GetPropUI()->OnPropSelectEvent.BindUObject(this, &APropManager::SpawnStock);
-	MyController->OnInteractEvent.AddUObject(this, &APropManager::OnUserInteract);
+	MyController->GetUI()->GetPropUI()->OnPropSelectEvent.BindUObject(this, &UPropManager::SpawnStock);
+	MyController->OnInteractEvent.AddUObject(this, &UPropManager::OnUserInteract);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void APropManager::OnUserInteract(FHitResult* Hit)
+void UPropManager::OnUserInteract(FHitResult* Hit)
 {
   // if prop doesn't exist
   // or if grid was not clicked, exit
@@ -61,39 +55,39 @@ void APropManager::OnUserInteract(FHitResult* Hit)
   else  // if our prop is a stock, place
   {
     ActiveActor->SetActorLocation(Grid->GetActorLocation());
-    StockActors.Add(ActiveActor);
+    //StockActors.Add(ActiveActor);
     ActiveActor = nullptr;
   }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void APropManager::SpawnStock(int Index)
+void UPropManager::SpawnStock(int Index)
 {
-	ActiveActor = GetWorld()->SpawnActor<AActor>(StockClasses[Index]);
+	ActiveActor = MyController->GetWorld()->SpawnActor<AActor>(StockClasses[Index]);
   ActiveActor->Tags.Add("Stock");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void APropManager::SpawnMystery()
+void UPropManager::SpawnMystery()
 {
-  ActiveActor = GetWorld()->SpawnActor<AActor>(MysteryClass);
+  ActiveActor = MyController->GetWorld()->SpawnActor<AActor>(MysteryClass);
   ActiveActor->Tags.Add("Mystery");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void APropManager::DestroyProp()
+void UPropManager::DestroyProp()
 {
   if (ActiveActor)
     ActiveActor->Destroy();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void APropManager::MovePropToCursor()
+void UPropManager::MovePropToCursor()
 {
 	if (MyController == nullptr || ActiveActor == nullptr)
 		return;
 
-	FHitResult Hit = MyController->GetHitOnCustomObjectTypes(true, GridTraceChannel);
+	FHitResult Hit = UGameStateLibrary::GetHitOnCustomObjectTypes(MyController, true, GridTraceChannel);
 	// TODO: constrain cursor movement within grid so
 	// prop will move even when cursor is outside the grid
 	if (Hit.bBlockingHit) // TODO: if grid hit
