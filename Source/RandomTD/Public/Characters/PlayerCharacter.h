@@ -6,10 +6,39 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+class UDecalComponent;
+
 UCLASS(Blueprintable)
 class ARandomTDPlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
+private:
+  /////////////////////////////////////////////////////////////////////////////////////
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+  UDecalComponent* CursorToWorld;
+
+protected:
+  ///////////////////////////////////////////////////////////////////////////
+  /// @brief Navigate player to the current cursor location
+  void MoveToMouseCursor();
+
+  /////////////////////////////////////////////////////////////////////////////
+  ///// @brief Called when right mouse button is pressed
+  ///// 
+  ///// Starts the character movement updates in Tick()
+  void StartMoving() { bMoveToMouseCursor = true; }
+
+  /////////////////////////////////////////////////////////////////////////////
+  ///// @brief Called when right mouse button is released
+  ///// 
+  ///// Ends the character movement updates in Tick()
+  ///// This is good for performance because character movement is only
+  ///// being updated when the player clicks the right mouse button, instead
+  ///// of unnecessarily updating pawn movement when the pawn is not moving!
+  void StopMoving() { bMoveToMouseCursor = false; }
+
+  int GoldAmount;
+  bool bMoveToMouseCursor; ///< True to move character to cursor
 
 public:
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -23,43 +52,9 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	virtual void BeginPlay() override;
 
+  ///////////////////////////////////////////////////////////////////////////
+  void SetupInputComponent(UInputComponent* InputComponent);
+
 	/////////////////////////////////////////////////////////////////////////////////////
-	FORCEINLINE class UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
-
-	///////////////////////////////////////////////////////////////////////////
-	/// @brief Navigate player to the current cursor location
-	void MoveToMouseCursor();
-
-	/////////////////////////////////////////////////////////////////////////////
-	///// @brief Called when right mouse button is pressed
-	///// 
-	///// Starts the character movement updates in Tick()
-	///// 
-	///// @remark This is implemented by blueprint
-	//UFUNCTION(BlueprintImplementableEvent, Category = "CharacterMovement")
-	//void OnSetDestinationPressed();
-
-	/////////////////////////////////////////////////////////////////////////////
-	///// @brief Called when right mouse button is released
-	///// 
-	///// Ends the character movement updates in Tick()
-	///// This is good for performance because character movement is only
-	///// being updated when the player clicks the right mouse button, instead
-	///// of unnecessarily updating pawn movement when the pawn is not moving!
-	///// 
-	///// @remark This is implemented by blueprint
-	//UFUNCTION(BlueprintImplementableEvent, Category = "CharacterMovement")
-	//void OnSetDestinationReleased();
-	
-	///////////////////////////////////////////////////////////////////////////
-	void SetMoveToCursor(bool Value) { bMoveToMouseCursor = Value; }
-
-	int GoldAmount;
-
-	bool bMoveToMouseCursor; ///< True to move character to cursor
-
-private:
-	/////////////////////////////////////////////////////////////////////////////////////
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UDecalComponent* CursorToWorld;
+	FORCEINLINE UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
 };

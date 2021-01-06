@@ -32,6 +32,7 @@ void UTDCameraManager::SetupInputComponent(UInputComponent* InputComponent)
 {
   InputComponent->BindAxis("MoveForward", this, &UTDCameraManager::MoveCameraForward);
   InputComponent->BindAxis("MoveRight", this, &UTDCameraManager::MoveCameraRight);
+  // todo zoom
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

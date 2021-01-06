@@ -36,51 +36,12 @@ void ARandomTDPlayerController::SetupInputComponent()
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("Interact",
-		IE_Pressed, this, &ARandomTDPlayerController::OnInteractPressed);
-	//InputComponent->BindAction("Interact",
-	//	IE_Released, this, &ARandomTDPlayerController::OnInteractReleased);
+	InputComponent->BindAction("Interact", IE_Pressed, this, &ARandomTDPlayerController::OnInteractPressed);
+	//InputComponent->BindAction("Interact", IE_Released, this, &ARandomTDPlayerController::OnInteractReleased);
 	
-	///////////////////////////////////////////////////////////////
-	// delegate requests
-	FInputActionBinding Delegate("SetDestination", IE_Pressed);
-	Delegate.ActionDelegate.GetDelegateForManualSet().BindLambda([this]()
-		{
-			if (ARandomTDPlayerCharacter* Player = Cast<ARandomTDPlayerCharacter>(GetPawn()))
-			{
-				Player->SetMoveToCursor(true);
-			}
-		});
-	InputComponent->AddActionBinding(Delegate);
-
-	///////////////////////////////////////////////////////////////
-	Delegate = FInputActionBinding("SetDestination", IE_Released);
-	Delegate.ActionDelegate.GetDelegateForManualSet().BindLambda([this]()
-		{
-			if (ARandomTDPlayerCharacter* Player = Cast<ARandomTDPlayerCharacter>(GetPawn()))
-			{
-				Player->SetMoveToCursor(false);
-			}
-		});
-	InputComponent->AddActionBinding(Delegate);
-
-	///////////////////////////////////////////////////////////////
-	Delegate = FInputActionBinding("CreateBasicTower", IE_Pressed);
-	Delegate.ActionDelegate.GetDelegateForManualSet().BindLambda([this]()
-		{
-			if (MyTowerManager->OnCreateBasicTowerPressed())
-			{
-				MyPropManager->SpawnMystery(); // call blueprint to spawn specific asset
-			}
-		});
-	InputComponent->AddActionBinding(Delegate);
-
+	MyPropManager->SetupInputComponent(InputComponent);
 	MyTowerManager->SetupInputComponent(InputComponent);
 	MyCameraManager->SetupInputComponent(InputComponent);
-
-	///////////////////////////////////////////////////////////////
-
-	// TODO: zoom in/out
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +49,6 @@ void ARandomTDPlayerController::BeginPlay()
 {
 	Super::BeginPlay(); // without this, begin play in derived classes wont get called.
 
-	// ui
 	GetUI()->SetupWidget();
 
   // pawn

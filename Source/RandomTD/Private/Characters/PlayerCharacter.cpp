@@ -68,6 +68,13 @@ void ARandomTDPlayerCharacter::Tick(float DeltaSeconds)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
+void ARandomTDPlayerCharacter::SetupInputComponent(UInputComponent* InputComponent)
+{
+  InputComponent->BindAction("SetDestination", IE_Pressed, this, &ARandomTDPlayerCharacter::StartMoving);
+	InputComponent->BindAction("SetDestination", IE_Released, this, &ARandomTDPlayerCharacter::StopMoving);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerCharacter::MoveToMouseCursor()
 {
 	if (APlayerController* PC = Cast<APlayerController>(GetController()))

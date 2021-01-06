@@ -30,6 +30,12 @@ void UPropManager::Init(ARandomTDPlayerController* PC)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
+void UPropManager::SetupInputComponent(UInputComponent* InputComponent)
+{
+  InputComponent->BindAction("CreateBasicTower", IE_Pressed, this, &UPropManager::SpawnMystery);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
 void UPropManager::OnUserInteract(FHitResult* Hit)
 {
   // if prop doesn't exist
