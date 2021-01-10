@@ -8,13 +8,13 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FInteractEvent, FHitResult*);
 
-class ACameraActor;
 class UMainGameUserWidget;
-class UPropManager;
 class UTDCameraManager;
 class UTowerManager;
 class ARandomTDPlayerCharacter;
+class UInventoryComponent;
 
+///////////////////////////////////////////////////////////////////////////
 /// @class ARandomTDPlayerController
 /// @brief The PlayerController for Random TD
 /// 
@@ -37,11 +37,6 @@ private:
   /// @todo Is this the right function for drag-selection?
   //void OnInteractReleased();
 
-  UPropManager* MyPropManager;
-  UTowerManager* MyTowerManager;
-  UTDCameraManager* MyCameraManager;
-  ARandomTDPlayerCharacter* MyPawn;
-
 protected:
   ///////////////////////////////////////////////////////////////////////////
   /// @brief Called when game starts or when spawned.
@@ -58,6 +53,12 @@ protected:
 
   UPROPERTY(BlueprintReadWrite, Category = "Base")
   UMainGameUserWidget* MainGameUI;
+  UPROPERTY(BlueprintReadWrite, Category = "Base")
+  UTowerManager* MyTowerManager;
+  UPROPERTY(BlueprintReadWrite, Category = "Base")
+  UTDCameraManager* MyCameraManager;
+  UPROPERTY(BlueprintReadWrite, Category = "Base")
+  ARandomTDPlayerCharacter* MyPawn;
 
 public:
 	///////////////////////////////////////////////////////////////////////////

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StockManager.generated.h"
+#include "PriceManager.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnStockPriceChange, TArray<int>);
 
@@ -11,7 +11,7 @@ class URandomTDGameInstance;
 
 /////////////////////////////////////////////////////////////////////////////////////
 UCLASS()
-class RANDOMTD_API UStockManager : public UObject
+class RANDOMTD_API UPriceManager : public UObject
 {
   GENERATED_UCLASS_BODY()
 
@@ -28,7 +28,7 @@ private:
 
 public:
   /////////////////////////////////////////////////////////////////////////////////////
-  UStockManager();
+  UPriceManager();
 
   /////////////////////////////////////////////////////////////////////////////////////
   void GenerateStockPrices(int Level);

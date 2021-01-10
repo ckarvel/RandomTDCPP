@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Managers/PropManager.h"
+#include "Managers/ItemManager.h"
 #include "FunctionLibrary/GameStateLibrary.h"
 #include "Controllers/RandomTDPlayerController.h" // who else includes pc?
 #include "UI/Game/MainGameUserWidget.h"
@@ -9,34 +9,33 @@
 #include "RandomTD/RandomTD.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
-UPropManager::UPropManager(const FObjectInitializer& ObjectInitializer)
+UItemManager::UItemManager(const FObjectInitializer& ObjectInitializer)
   : Super(ObjectInitializer)
 {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void UPropManager::Update()
+void UItemManager::Update()
 {
-  if(ActiveActor)
     MovePropToCursor();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void UPropManager::Init(ARandomTDPlayerController* PC)
+void UItemManager::Init(ARandomTDPlayerController* PC)
 {
 	MyController = PC;
-	MyController->GetUI()->GetPropUI()->OnPropSelectEvent.BindUObject(this, &UPropManager::SpawnStock);
-	MyController->OnInteractEvent.AddUObject(this, &UPropManager::OnUserInteract);
+	MyController->GetUI()->GetPropUI()->OnPropSelectEvent.BindUObject(this, &UItemManager::SpawnStock);
+	MyController->OnInteractEvent.AddUObject(this, &UItemManager::OnUserInteract);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void UPropManager::SetupInputComponent(UInputComponent* InputComponent)
+void UItemManager::SetupInputComponent(UInputComponent* InputComponent)
 {
-  InputComponent->BindAction("CreateBasicTower", IE_Pressed, this, &UPropManager::SpawnMystery);
+  InputComponent->BindAction("CreateBasicTower", IE_Pressed, this, &UItemManager::SpawnMystery);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void UPropManager::OnUserInteract(FHitResult* Hit)
+void UItemManager::OnUserInteract(FHitResult* Hit)
 {
   // if prop doesn't exist
   // or if grid was not clicked, exit
@@ -54,41 +53,41 @@ void UPropManager::OnUserInteract(FHitResult* Hit)
     return;
 
   // if our prop is mystery, destroy
-  if (ActiveActor->ActorHasTag("Mystery"))
-  {
-    DestroyProp();
-  }
-  else  // if our prop is a stock, place
-  {
-    ActiveActor->SetActorLocation(Grid->GetActorLocation());
-    //StockActors.Add(ActiveActor);
-    ActiveActor = nullptr;
-  }
+  //if (ActiveActor->ActorHasTag("Mystery"))
+  //{
+  DestroyProp();
+  //}
+  //else  // if our prop is a stock, place
+  //{
+  //  ActiveActor->SetActorLocation(Grid->GetActorLocation());
+  //  //StockActors.Add(ActiveActor);
+  //  ActiveActor = nullptr;
+  //}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void UPropManager::SpawnStock(int Index)
+void UItemManager::SpawnStock(int Index)
 {
-	ActiveActor = MyController->GetWorld()->SpawnActor<AActor>(StockClasses[Index]);
-  ActiveActor->Tags.Add("Stock");
+	//ActiveActor = MyController->GetWorld()->SpawnActor<AActor>(StockClasses[Index]);
+ // ActiveActor->Tags.Add("Stock");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void UPropManager::SpawnMystery()
+void UItemManager::SpawnMystery()
 {
+// todo: figure out how to get mystery class! we changed this manager to uobject from actor remember
   ActiveActor = MyController->GetWorld()->SpawnActor<AActor>(MysteryClass);
-  ActiveActor->Tags.Add("Mystery");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void UPropManager::DestroyProp()
+void UItemManager::DestroyProp()
 {
   if (ActiveActor)
     ActiveActor->Destroy();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void UPropManager::MovePropToCursor()
+void UItemManager::MovePropToCursor()
 {
 	if (MyController == nullptr || ActiveActor == nullptr)
 		return;

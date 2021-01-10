@@ -9,7 +9,7 @@
 /////////////////////////////////////////////////////////////////////////////////////
 UTDCameraManager::UTDCameraManager(const FObjectInitializer& ObjectInitializer)
   : Super(ObjectInitializer)
-  , CameraMovementSpeed(300.0)
+  , CameraMovementSpeed(25.0)
 {
 }
 

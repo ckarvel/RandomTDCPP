@@ -2,6 +2,7 @@
 
 #include "Game/RandomTDGameMode.h"
 #include "Controllers/RandomTDPlayerController.h"
+#include "Managers/PlayerStateManager.h"
 #include "RandomTD/RandomTD.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -13,6 +14,7 @@ ARandomTDTowerFactory* ARandomTDGameMode::TowerFactory;
 ARandomTDGameMode::ARandomTDGameMode()
 {
 	PlayerControllerClass = ARandomTDPlayerController::StaticClass();
+	PlayerStateClass = APlayerStateManager::StaticClass();
 	EnemyFactoryClass = ARandomTDEnemyFactory::StaticClass();
 	GridFactoryClass = ARandomTDGridFactory::StaticClass();
 	TowerFactoryClass = ARandomTDTowerFactory::StaticClass();

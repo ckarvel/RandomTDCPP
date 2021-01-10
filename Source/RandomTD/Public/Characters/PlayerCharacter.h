@@ -7,6 +7,7 @@
 #include "PlayerCharacter.generated.h"
 
 class UDecalComponent;
+class UInputComponent;
 
 UCLASS(Blueprintable)
 class ARandomTDPlayerCharacter : public ACharacter
@@ -53,7 +54,7 @@ public:
 	virtual void BeginPlay() override;
 
   ///////////////////////////////////////////////////////////////////////////
-  void SetupInputComponent(UInputComponent* InputComponent);
+  void SetupInputComponent(UInputComponent* PlayerInputComponent);
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	FORCEINLINE UDecalComponent* GetCursorToWorld() { return CursorToWorld; }

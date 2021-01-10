@@ -9,56 +9,15 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "Engine/DataTable.h"
 #include "Game/RandomTDGameInstance.h"
 #include "Managers/LevelManager.h"
-#include "Managers/StockManager.h"
+#include "Managers/PriceManager.h"
 #include "GameStateLibrary.generated.h"
 
 #define GridTraceChannel ECC_GameTraceChannel1
 #define TowerTraceChannel ECC_GameTraceChannel2
 
-UENUM(BlueprintType)
-enum class EItemType : uint8
-{
-  MELON   UMETA(DisplayName = "Melon"),
-  POTATO  UMETA(DisplayName = "Potato"),
-  PUMPKIN UMETA(DisplayName = "Pumpkin"),
-  BASIC   UMETA(DisplayName = "Basic"),
-  EXPERT  UMETA(DisplayName = "Expert")
-};
-
-USTRUCT(BlueprintType)
-struct FItemLibrary : public FTableRowBase
-{
-  GENERATED_BODY()
-
-  UPROPERTY(EditAnywhere, BlueprintReadOnly)
-  EItemType EItem;
-
-  UPROPERTY(EditAnywhere, BlueprintReadOnly)
-  FName ItemName;
-
-  UPROPERTY(EditAnywhere, BlueprintReadOnly)
-  TAssetPtr<UTexture2D> ItemIcon;
-
-  UPROPERTY(EditAnywhere, BlueprintReadOnly)
-  TAssetPtr<UStaticMesh> ItemMesh;
-  
-};
-
-USTRUCT(BlueprintType)
-struct FItemInventory : public FTableRowBase
-{
-  GENERATED_BODY()
-
-  UPROPERTY(EditAnywhere, BlueprintReadOnly)
-  EItemType EItem;
-
-  UPROPERTY(EditAnywhere, BlueprintReadOnly)
-  uint8 Amount;
-};
-
+/////////////////////////////////////////////////////////////////////////////////////
 UCLASS(meta = (ScriptName = "GameStateLibrary"))
 class RANDOMTD_API UGameStateLibrary : public UBlueprintFunctionLibrary
 {
@@ -122,6 +81,6 @@ void UGameStateLibrary::BindToPriceChange(UGameInstance* GameInstance, UserClass
 {
   if (URandomTDGameInstance* GI = Cast<URandomTDGameInstance>(GameInstance))
   {
-    GI->GetStockManager().PriceChangeEvent.AddUObject(Object, MyFunc);
+    GI->GetPriceManager().PriceChangeEvent.AddUObject(Object, MyFunc);
   }
 }

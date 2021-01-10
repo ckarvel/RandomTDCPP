@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Managers/StockManager.h"
+#include "Managers/PriceManager.h"
 #include "Game/RandomTDGameInstance.h"
 #include "FunctionLibrary/GameStateLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
-UStockManager::UStockManager(const FObjectInitializer& ObjectInitializer)
+UPriceManager::UPriceManager(const FObjectInitializer& ObjectInitializer)
 	  : Super(ObjectInitializer)
 		, MinPrice(50)
 	  , MaxPrice(100)
@@ -14,14 +14,14 @@ UStockManager::UStockManager(const FObjectInitializer& ObjectInitializer)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-void UStockManager::SetGameInstance(URandomTDGameInstance* _GI)
+void UPriceManager::SetGameInstance(URandomTDGameInstance* _GI)
 {
 	GI = _GI;
-	UGameStateLibrary::BindToLevelStart(GI, this, &UStockManager::GenerateStockPrices);
+	UGameStateLibrary::BindToLevelStart(GI, this, &UPriceManager::GenerateStockPrices);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void UStockManager::GenerateStockPrices(int Level)
+void UPriceManager::GenerateStockPrices(int Level)
 {
 	for (int i = 0; i < StockPrices.Num(); i++)
 	{

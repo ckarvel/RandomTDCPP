@@ -13,7 +13,7 @@
 #include "Characters/TowerCharacter.h"
 #include "Managers/TDCameraManager.h"
 #include "Managers/TowerManager.h"
-#include "Managers/PropManager.h"
+#include "Components/InventoryComponent.h"
 #include "Characters/PlayerCharacter.h"
 #include "RandomTD/RandomTD.h"
 
@@ -26,7 +26,6 @@ ARandomTDPlayerController::ARandomTDPlayerController()
 	bEnableMouseOverEvents = true;
 
 	MyCameraManager = NewObject<UTDCameraManager>(UTDCameraManager::StaticClass());
-	MyPropManager = NewObject<UPropManager>(UPropManager::StaticClass());
 	MyTowerManager = NewObject<UTowerManager>(UTowerManager::StaticClass());
 }
 
@@ -38,8 +37,6 @@ void ARandomTDPlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("Interact", IE_Pressed, this, &ARandomTDPlayerController::OnInteractPressed);
 	//InputComponent->BindAction("Interact", IE_Released, this, &ARandomTDPlayerController::OnInteractReleased);
-	
-	MyPropManager->SetupInputComponent(InputComponent);
 	MyTowerManager->SetupInputComponent(InputComponent);
 	MyCameraManager->SetupInputComponent(InputComponent);
 }
@@ -61,9 +58,9 @@ void ARandomTDPlayerController::BeginPlay()
     return;
   }
 
+	MyPawn->SetupInputComponent(InputComponent);
 	// managers
 	MyCameraManager->Init(this);
-	MyPropManager->Init(this);
   MyTowerManager->Init(this);
 
 	// bind to tower clicked. PC needs to know when towers are selected
@@ -75,21 +72,19 @@ void ARandomTDPlayerController::BeginPlay()
 void ARandomTDPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-
-	MyPropManager->Update();
 	MyTowerManager->Update();
 
 	// keep updating the destination every tick while desired
-	if (MyPawn->bMoveToMouseCursor)
-	{
-		if (MyTowerManager->IsTowerRequested())
-		{
-			// cancel request
-			MyTowerManager->bTowerRequested = false;
-			MyPropManager->DestroyProp();
-		}
-		MyPawn->MoveToMouseCursor();
-	}
+	//if (MyPawn->bMoveToMouseCursor)
+	//{
+	//	if (MyTowerManager->IsTowerRequested())
+	//	{
+	//		// cancel request
+	//		MyTowerManager->bTowerRequested = false;
+	//		MyItemManager->DestroyProp();
+	//	}
+	//	MyPawn->MoveToMouseCursor();
+	//}
 
 	//if (!TowerManager->IsTowerRequested())
 	//	return;
@@ -118,7 +113,7 @@ void ARandomTDPlayerController::OnInteractPressed()
 	//	if (TowerManager->SpawnTower(Hit.GetActor()))
 	//	{
 	//		// User is placing tower on a grid
-	//		PropManager->DestroyProp();
+	//		ItemManager->DestroyProp();
 	//	}
 	//	else
 	//	{

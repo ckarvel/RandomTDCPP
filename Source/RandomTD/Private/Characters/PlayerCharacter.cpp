@@ -53,6 +53,11 @@ void ARandomTDPlayerCharacter::Tick(float DeltaSeconds)
 {
   Super::Tick(DeltaSeconds);
 
+  if (bMoveToMouseCursor)
+  {
+    MoveToMouseCursor();
+  }
+
 	if (CursorToWorld != nullptr)
 	{
 		if (APlayerController* PC = Cast<APlayerController>(GetController()))
@@ -68,7 +73,7 @@ void ARandomTDPlayerCharacter::Tick(float DeltaSeconds)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDPlayerCharacter::SetupInputComponent(UInputComponent* InputComponent)
+void ARandomTDPlayerCharacter::SetupInputComponent(UInputComponent* PlayerInputComponent)
 {
   InputComponent->BindAction("SetDestination", IE_Pressed, this, &ARandomTDPlayerCharacter::StartMoving);
 	InputComponent->BindAction("SetDestination", IE_Released, this, &ARandomTDPlayerCharacter::StopMoving);
