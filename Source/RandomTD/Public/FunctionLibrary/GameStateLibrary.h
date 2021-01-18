@@ -10,12 +10,16 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Game/RandomTDGameInstance.h"
-#include "Managers/LevelManager.h"
-#include "Managers/PriceManager.h"
 #include "GameStateLibrary.generated.h"
 
 #define GridTraceChannel ECC_GameTraceChannel1
 #define TowerTraceChannel ECC_GameTraceChannel2
+
+class UItemMgmtComponent;
+class ULevelMgmtComponent;
+class UPriceMgmtComponent;
+class UInventoryMgmtComponent;
+class APlayerController;
 
 /////////////////////////////////////////////////////////////////////////////////////
 UCLASS(meta = (ScriptName = "GameStateLibrary"))
@@ -23,8 +27,22 @@ class RANDOMTD_API UGameStateLibrary : public UBlueprintFunctionLibrary
 {
 public:
 	GENERATED_UCLASS_BODY()
+
   /////////////////////////////////////////////////////////////////////////////////////
-	static int GetCurrentLevel(UGameInstance* GameInstance);
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Item Manager", ScriptName = "GetItemManager", Category = "Utilities|Item"))
+  static UItemMgmtComponent* GetItemManager(UGameInstance* GameInstance);
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Level Manager", ScriptName = "GetLevelManager", Category = "Utilities|Level"))
+  static ULevelMgmtComponent* GetLevelManager(UGameInstance* GameInstance);
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Price Manager", ScriptName = "GetPriceManager", Category = "Utilities|Price"))
+  static UPriceMgmtComponent* GetPriceManager(UGameInstance* GameInstance);
+  
+  /////////////////////////////////////////////////////////////////////////////////////
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Inventory Manager", ScriptName = "GetInventoryManager", Category = "Utilities|Inventory"))
+  static UInventoryMgmtComponent* GetInventoryManager(APlayerState* PC);
 
   /////////////////////////////////////////////////////////////////////////////////////
 	static int GetSecondsPerLevel(UGameInstance* GameInstance);
@@ -32,17 +50,17 @@ public:
   /////////////////////////////////////////////////////////////////////////////////////
 	static int GetPreLevelSeconds(UGameInstance* GameInstance);
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	template<typename UserClass>
-	static void BindToLevelStart(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(int));
+	///////////////////////////////////////////////////////////////////////////////////////
+	//template<typename UserClass>
+	//static void BindToLevelStart(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(int));
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	template<typename UserClass>
-	static void BindToSecondElapsed(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(int));
+	///////////////////////////////////////////////////////////////////////////////////////
+	//template<typename UserClass>
+	//static void BindToSecondElapsed(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(int));
 
-  /////////////////////////////////////////////////////////////////////////////////////
-  template<typename UserClass>
-  static void BindToPriceChange(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(TArray<int>));
+ // /////////////////////////////////////////////////////////////////////////////////////
+ // template<typename UserClass>
+ // static void BindToPriceChange(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(TArray<int>));
 
   ///////////////////////////////////////////////////////////////////////////
   /// @brief Gets Mouse cursor hit on custom object types, Grid and Tower
@@ -56,31 +74,31 @@ public:
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
-template<typename UserClass>
-void UGameStateLibrary::BindToLevelStart(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(int))
-{
-  if (URandomTDGameInstance* GI = Cast<URandomTDGameInstance>(GameInstance))
-  {
-    GI->GetLevelManager().LevelStartEvent.AddUObject(Object, MyFunc);
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-template<typename UserClass>
-void UGameStateLibrary::BindToSecondElapsed(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(int))
-{
-  if (URandomTDGameInstance* GI = Cast<URandomTDGameInstance>(GameInstance))
-  {
-    GI->GetLevelManager().LevelSecondElapsedEvent.AddUObject(Object, MyFunc);
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-template<typename UserClass>
-void UGameStateLibrary::BindToPriceChange(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(TArray<int>))
-{
-  if (URandomTDGameInstance* GI = Cast<URandomTDGameInstance>(GameInstance))
-  {
-    GI->GetPriceManager().PriceChangeEvent.AddUObject(Object, MyFunc);
-  }
-}
+//template<typename UserClass>
+//void UGameStateLibrary::BindToLevelStart(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(int))
+//{
+//  if (URandomTDGameInstance* GI = Cast<URandomTDGameInstance>(GameInstance))
+//  {
+//    GI->GetLevelManager().LevelStartEvent.AddUObject(Object, MyFunc);
+//  }
+//}
+//
+///////////////////////////////////////////////////////////////////////////////////////
+//template<typename UserClass>
+//void UGameStateLibrary::BindToSecondElapsed(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(int))
+//{
+//  if (URandomTDGameInstance* GI = Cast<URandomTDGameInstance>(GameInstance))
+//  {
+//    GI->GetLevelManager().LevelSecondElapsedEvent.AddUObject(Object, MyFunc);
+//  }
+//}
+//
+///////////////////////////////////////////////////////////////////////////////////////
+//template<typename UserClass>
+//void UGameStateLibrary::BindToPriceChange(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(TArray<int>))
+//{
+//  if (URandomTDGameInstance* GI = Cast<URandomTDGameInstance>(GameInstance))
+//  {
+//    GI->GetPriceManager().PriceChangeEvent.AddUObject(Object, MyFunc);
+//  }
+//}

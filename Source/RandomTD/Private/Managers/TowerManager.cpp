@@ -129,7 +129,7 @@ void UTowerManager::UnselectTowers()
 	}
 	SelectedTowers.Empty();
 	// turn off
-	MyController->GetUI()->SetupTowerUI(nullptr);
+	//MyController->GetUI()->SetupTowerUI(nullptr);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -151,7 +151,7 @@ void UTowerManager::OnTowerSelected(ARandomTDTowerCharacter* SelectedTower)
 		}
 
 		// turn off
-		MyController->GetUI()->SetupTowerUI(nullptr);
+		//MyController->GetUI()->SetupTowerUI(nullptr);
 	}
 	else
 	{
@@ -169,7 +169,7 @@ void UTowerManager::OnTowerSelected(ARandomTDTowerCharacter* SelectedTower)
 		}
 
 		// tell tower it can show its overlay now
-		MyController->GetUI()->SetupTowerUI(SelectedTower);
+		//MyController->GetUI()->SetupTowerUI(SelectedTower);
 	}
 
 	SelectedTowers.AddUnique(SelectedTower);

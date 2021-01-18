@@ -2,9 +2,16 @@
 
 
 #include "Managers/PlayerStateManager.h"
-#include "Components/InventoryComponent.h"
+#include "Components/InventoryMgmtComponent.h"
 
+///////////////////////////////////////////////////////////////////////////
 APlayerStateManager::APlayerStateManager()
 {
-  InventoryManager = CreateDefaultSubobject<UInventoryComponent>("InventoryManager");
+  InventoryManager = NewObject<UInventoryMgmtComponent>(UInventoryMgmtComponent::StaticClass());
+}
+
+///////////////////////////////////////////////////////////////////////////
+UInventoryMgmtComponent* APlayerStateManager::GetInventoryManager()
+{
+  return InventoryManager;
 }

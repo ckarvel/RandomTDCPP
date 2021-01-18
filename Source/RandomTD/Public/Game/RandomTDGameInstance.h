@@ -6,9 +6,11 @@
 #include "Engine/GameInstance.h"
 #include "RandomTDGameInstance.generated.h"
 
-class ULevelManager;
-class UPriceManager;
+class UItemMgmtComponent;
+class ULevelMgmtComponent;
+class UPriceMgmtComponent;
 
+/////////////////////////////////////////////////////////////////////////////////////
 UCLASS()
 class RANDOMTD_API URandomTDGameInstance : public UGameInstance
 {
@@ -17,16 +19,24 @@ protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	virtual void OnStart();
 
-	ULevelManager* LevelManager;
-	UPriceManager* PriceManager;
-
-public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	virtual void Init();
-	
-	/////////////////////////////////////////////////////////////////////////////////////
-	inline ULevelManager& GetLevelManager() const { return *LevelManager; }
+
+	UPROPERTY(EditAnywhere, Category = "Base")
+	UItemMgmtComponent* ItemManager;
+
+  UPROPERTY(EditAnywhere, Category = "Base")
+  ULevelMgmtComponent* LevelManager;
+
+	UPROPERTY(EditAnywhere, Category = "Base")
+	UPriceMgmtComponent* PriceManager;
+
+public:
+	UItemMgmtComponent* GetItemManager();
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	inline UPriceManager& GetPriceManager() const { return *PriceManager; }
+	ULevelMgmtComponent* GetLevelManager();
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	UPriceMgmtComponent* GetPriceManager();
 };

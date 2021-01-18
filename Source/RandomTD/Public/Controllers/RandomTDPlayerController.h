@@ -12,7 +12,7 @@ class UMainGameUserWidget;
 class UTDCameraManager;
 class UTowerManager;
 class ARandomTDPlayerCharacter;
-class UInventoryComponent;
+class UInventoryMgmtComponent;
 
 ///////////////////////////////////////////////////////////////////////////
 /// @class ARandomTDPlayerController
@@ -52,8 +52,6 @@ protected:
   virtual void PlayerTick(float DeltaTime) override;
 
   UPROPERTY(BlueprintReadWrite, Category = "Base")
-  UMainGameUserWidget* MainGameUI;
-  UPROPERTY(BlueprintReadWrite, Category = "Base")
   UTowerManager* MyTowerManager;
   UPROPERTY(BlueprintReadWrite, Category = "Base")
   UTDCameraManager* MyCameraManager;
@@ -68,9 +66,6 @@ public:
   ///////////////////////////////////////////////////////////////////////////
   /// @brief  Setup bind actions and axis mappings.
   virtual void SetupInputComponent() override;
-
-  ///////////////////////////////////////////////////////////////////////////
-	UMainGameUserWidget* GetUI();
 
   FInteractEvent OnInteractEvent;
 };

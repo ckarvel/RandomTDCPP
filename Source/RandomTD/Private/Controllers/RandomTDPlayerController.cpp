@@ -6,14 +6,13 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "UI/Game/MainGameUserWidget.h"
 #include "WorldActors/GridBase.h"
 #include "Factories/GridFactory.h"
 #include "Factories/TowerFactory.h"
 #include "Characters/TowerCharacter.h"
 #include "Managers/TDCameraManager.h"
 #include "Managers/TowerManager.h"
-#include "Components/InventoryComponent.h"
+#include "Components/InventoryMgmtComponent.h"
 #include "Characters/PlayerCharacter.h"
 #include "RandomTD/RandomTD.h"
 
@@ -24,9 +23,6 @@ ARandomTDPlayerController::ARandomTDPlayerController()
 	DefaultMouseCursor = EMouseCursor::Default;
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
-
-	MyCameraManager = NewObject<UTDCameraManager>(UTDCameraManager::StaticClass());
-	MyTowerManager = NewObject<UTowerManager>(UTowerManager::StaticClass());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -37,6 +33,8 @@ void ARandomTDPlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("Interact", IE_Pressed, this, &ARandomTDPlayerController::OnInteractPressed);
 	//InputComponent->BindAction("Interact", IE_Released, this, &ARandomTDPlayerController::OnInteractReleased);
+	MyCameraManager = NewObject<UTDCameraManager>(UTDCameraManager::StaticClass());
+	MyTowerManager = NewObject<UTowerManager>(UTowerManager::StaticClass());
 	MyTowerManager->SetupInputComponent(InputComponent);
 	MyCameraManager->SetupInputComponent(InputComponent);
 }
@@ -45,8 +43,6 @@ void ARandomTDPlayerController::SetupInputComponent()
 void ARandomTDPlayerController::BeginPlay()
 {
 	Super::BeginPlay(); // without this, begin play in derived classes wont get called.
-
-	GetUI()->SetupWidget();
 
   // pawn
   MyPawn = (ARandomTDPlayerCharacter*)GetPawn();
@@ -95,7 +91,6 @@ void ARandomTDPlayerController::OnInteractPressed()
 {
 	// find object that was clicked on
 	FHitResult Hit = UGameStateLibrary::GetHitOnCustomObjectTypes(this);
-	
 	if (!Hit.bBlockingHit)
 	{
 		MyTowerManager->UnselectTowers();
@@ -129,10 +124,4 @@ void ARandomTDPlayerController::OnInteractPressed()
 	//	TowerManager->UnselectTowers();
 	//	break;
 	//}
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-UMainGameUserWidget* ARandomTDPlayerController::GetUI()
-{
-	return MainGameUI;
 }

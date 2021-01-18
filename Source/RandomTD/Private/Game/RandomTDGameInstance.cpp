@@ -2,23 +2,40 @@
 
 
 #include "Game/RandomTDGameInstance.h"
-#include "Managers/LevelManager.h"
-#include "Managers/PriceManager.h"
+#include "Components/ItemMgmtComponent.h"
+#include "Components/LevelMgmtComponent.h"
+#include "Components/PriceMgmtComponent.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 void URandomTDGameInstance::Init()
 {
   Super::Init();
 
-  LevelManager = NewObject<ULevelManager>(ULevelManager::StaticClass());
-  PriceManager = NewObject<UPriceManager>(UPriceManager::StaticClass());
+  ItemManager = NewObject<UItemMgmtComponent>(UItemMgmtComponent::StaticClass());
+  LevelManager = NewObject<ULevelMgmtComponent>(ULevelMgmtComponent::StaticClass());
+  PriceManager = NewObject<UPriceMgmtComponent>(UPriceMgmtComponent::StaticClass());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void URandomTDGameInstance::OnStart()
 {
   Super::OnStart();
-  LevelManager->SetTimerManager(&GetTimerManager());
-  LevelManager->StartTimers();
-  PriceManager->SetGameInstance(this);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+UItemMgmtComponent* URandomTDGameInstance::GetItemManager()
+{
+  return ItemManager;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+ULevelMgmtComponent* URandomTDGameInstance::GetLevelManager()
+{
+  return LevelManager;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+UPriceMgmtComponent* URandomTDGameInstance::GetPriceManager()
+{
+  return PriceManager;
 }

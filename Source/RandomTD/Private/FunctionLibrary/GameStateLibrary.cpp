@@ -1,39 +1,14 @@
 #include "FunctionLibrary/GameStateLibrary.h"
+#include "Game/RandomTDGameInstance.h"
+#include "Managers/PlayerStateManager.h"
+#include "Components/ItemMgmtComponent.h"
+#include "Components/PriceMgmtComponent.h"
+#include "Components/InventoryMgmtComponent.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 UGameStateLibrary::UGameStateLibrary(const FObjectInitializer& ObjectInitializer)
   : Super(ObjectInitializer)
 {
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-int UGameStateLibrary::GetCurrentLevel(UGameInstance* GameInstance)
-{
-  if (URandomTDGameInstance* GI = Cast<URandomTDGameInstance>(GameInstance))
-  {
-    return GI->GetLevelManager().GetCurrentLevel();
-  }
-  return -1;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-int UGameStateLibrary::GetSecondsPerLevel(UGameInstance* GameInstance)
-{
-  if (URandomTDGameInstance* GI = Cast<URandomTDGameInstance>(GameInstance))
-  {
-    return GI->GetLevelManager().GetSecondsPerLevel();
-  }
-  return -1;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-int UGameStateLibrary::GetPreLevelSeconds(UGameInstance* GameInstance)
-{
-  if (URandomTDGameInstance* GI = Cast<URandomTDGameInstance>(GameInstance))
-  {
-    return GI->GetLevelManager().GetPreLevelSeconds();
-  }
-  return -1;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -54,4 +29,44 @@ FHitResult UGameStateLibrary::GetHitOnCustomObjectTypes(APlayerController* PC, b
     PC->GetHitResultUnderCursorForObjects(_CustomObjectTypes, false, Hit);
   }
   return Hit;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+UItemMgmtComponent* UGameStateLibrary::GetItemManager(UGameInstance* GameInstance)
+{
+  if (URandomTDGameInstance* TDGameInstance = Cast<URandomTDGameInstance>(GameInstance))
+  {
+    return TDGameInstance->GetItemManager();
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+ULevelMgmtComponent* UGameStateLibrary::GetLevelManager(UGameInstance* GameInstance)
+{
+  if (URandomTDGameInstance* TDGameInstance = Cast<URandomTDGameInstance>(GameInstance))
+  {
+    return TDGameInstance->GetLevelManager();
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+UPriceMgmtComponent* UGameStateLibrary::GetPriceManager(UGameInstance* GameInstance)
+{
+  if (URandomTDGameInstance* TDGameInstance = Cast<URandomTDGameInstance>(GameInstance))
+  {
+    return TDGameInstance->GetPriceManager();
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+UInventoryMgmtComponent* UGameStateLibrary::GetInventoryManager(APlayerState* PS)
+{
+  if (APlayerStateManager* TDPS = Cast<APlayerStateManager>(PS))
+  {
+    return TDPS->GetInventoryManager();
+  }
+  return nullptr;
 }

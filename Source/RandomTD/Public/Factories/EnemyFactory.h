@@ -39,6 +39,7 @@ protected:
 	/// @remark Is bound to @ref ARandomTDGameMode::LevelStartEvent.
 	/// @remark Only cleared by @c SpawnNewEnemy().
 	/// @remark Clears @ref EnemiesSpawned counter.
+	UFUNCTION()
 	void StartSpawnTimer(int CurrentLevel);
 
 	/////////////////////////////////////////////////////////////////////////////////////

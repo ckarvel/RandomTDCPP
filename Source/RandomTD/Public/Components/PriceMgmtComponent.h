@@ -3,17 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PriceManager.generated.h"
+#include "Components/ActorComponent.h"
+#include "PriceMgmtComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnStockPriceChange, TArray<int>);
 
 class URandomTDGameInstance;
 
 /////////////////////////////////////////////////////////////////////////////////////
-UCLASS()
-class RANDOMTD_API UPriceManager : public UObject
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class RANDOMTD_API UPriceMgmtComponent : public UActorComponent
 {
-  GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 private:
   /////////////////////////////////////////////////////////////////////////////////////
@@ -26,9 +27,16 @@ private:
 
   friend class URandomTDGameInstance;
 
+protected:
+	/////////////////////////////////////////////////////////////////////////////////////
+	virtual void BeginPlay() override;
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 public:
   /////////////////////////////////////////////////////////////////////////////////////
-  UPriceManager();
+  UPriceMgmtComponent();
 
   /////////////////////////////////////////////////////////////////////////////////////
   void GenerateStockPrices(int Level);

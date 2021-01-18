@@ -4,10 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
-#include "FunctionLibrary/GameStateLibrary.h"
 #include "PlayerStateManager.generated.h"
 
-class UInventoryComponent;
+class UInventoryMgmtComponent;
 
 ///////////////////////////////////////////////////////////////////////////
 /// @class APlayerStateManager
@@ -16,9 +15,14 @@ UCLASS()
 class RANDOMTD_API APlayerStateManager : public APlayerState
 {
 	GENERATED_BODY()
-public:
-  APlayerStateManager();
-  
+protected:
   UPROPERTY(EditAnywhere, Category = "Base")
-  UInventoryComponent* InventoryManager;
+  UInventoryMgmtComponent* InventoryManager;
+
+public:
+  ///////////////////////////////////////////////////////////////////////////
+  APlayerStateManager();
+
+  ///////////////////////////////////////////////////////////////////////////
+  UInventoryMgmtComponent* GetInventoryManager();
 };

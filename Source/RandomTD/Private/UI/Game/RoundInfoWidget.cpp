@@ -18,25 +18,27 @@ URoundInfoWidget::URoundInfoWidget(const FObjectInitializer& ObjectInitializer)
 /////////////////////////////////////////////////////////////////////////////////////
 void URoundInfoWidget::Init()
 {
-	auto* GI = GetGameInstance();
-	kSecondsPerLevel = UGameStateLibrary::GetSecondsPerLevel(GI);
-	kPreLevelSeconds = UGameStateLibrary::GetPreLevelSeconds(GI);
+	//auto* GI = GetGameInstance();
+	//GetGameInstance()
+	//LevelManager = GetLevelManager(GetGameInstance())->GetSecondsPerLevel()
+	//kSecondsPerLevel = UGameStateLibrary::GetSecondsPerLevel(GI);
+	//kPreLevelSeconds = UGameStateLibrary::GetPreLevelSeconds(GI);
 
-	UGameStateLibrary::BindToLevelStart(GI, this, &URoundInfoWidget::SetCurrentLevel);
-	UGameStateLibrary::BindToSecondElapsed(GI, this, &URoundInfoWidget::SetLevelTime);
-	UGameStateLibrary::BindToPriceChange(GI, this, &URoundInfoWidget::SetStockPrices);
+	//UGameStateLibrary::BindToLevelStart(GI, this, &URoundInfoWidget::SetCurrentLevel);
+	//UGameStateLibrary::BindToSecondElapsed(GI, this, &URoundInfoWidget::SetLevelTime);
+	//UGameStateLibrary::BindToPriceChange(GI, this, &URoundInfoWidget::SetStockPrices);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 float URoundInfoWidget::GetElapsedPercentage() const
 {
   // number to be divided
-  int TotalSeconds = CurrentLevel ? kSecondsPerLevel : kPreLevelSeconds;
-  if (!TotalSeconds)
-    return 0.0; // just in case...
+  //int TotalSeconds = CurrentLevel ? kSecondsPerLevel : kPreLevelSeconds;
+  //if (!TotalSeconds)
+  //  return 0.0; // just in case...
 
-  float Percent = (float)LevelElapsedTime / (float)TotalSeconds;
-  return Percent;
+  //float Percent = (float)LevelElapsedTime / (float)TotalSeconds;
+  return 0.0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
