@@ -44,61 +44,10 @@ public:
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Inventory Manager", ScriptName = "GetInventoryManager", Category = "Utilities|Inventory"))
   static UInventoryMgmtComponent* GetInventoryManager(APlayerState* PC);
 
-  /////////////////////////////////////////////////////////////////////////////////////
-	static int GetSecondsPerLevel(UGameInstance* GameInstance);
-
-  /////////////////////////////////////////////////////////////////////////////////////
-	static int GetPreLevelSeconds(UGameInstance* GameInstance);
-
-	///////////////////////////////////////////////////////////////////////////////////////
-	//template<typename UserClass>
-	//static void BindToLevelStart(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(int));
-
-	///////////////////////////////////////////////////////////////////////////////////////
-	//template<typename UserClass>
-	//static void BindToSecondElapsed(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(int));
-
- // /////////////////////////////////////////////////////////////////////////////////////
- // template<typename UserClass>
- // static void BindToPriceChange(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(TArray<int>));
-
   ///////////////////////////////////////////////////////////////////////////
   /// @brief Gets Mouse cursor hit on custom object types, Grid and Tower
   /// @param UseChannel If True, Only get the Mouse cursor hit on object type of Channel
   /// @param Channel Object type to get hit result on
   /// @return Hit Result from cursor
   static FHitResult GetHitOnCustomObjectTypes(APlayerController* PC, bool UseChannel = false, ECollisionChannel Channel = ECC_WorldStatic);
-
-	//static int GetPrice();
-	//static GetEnumList(enum);
 };
-
-/////////////////////////////////////////////////////////////////////////////////////
-//template<typename UserClass>
-//void UGameStateLibrary::BindToLevelStart(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(int))
-//{
-//  if (URandomTDGameInstance* GI = Cast<URandomTDGameInstance>(GameInstance))
-//  {
-//    GI->GetLevelManager().LevelStartEvent.AddUObject(Object, MyFunc);
-//  }
-//}
-//
-///////////////////////////////////////////////////////////////////////////////////////
-//template<typename UserClass>
-//void UGameStateLibrary::BindToSecondElapsed(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(int))
-//{
-//  if (URandomTDGameInstance* GI = Cast<URandomTDGameInstance>(GameInstance))
-//  {
-//    GI->GetLevelManager().LevelSecondElapsedEvent.AddUObject(Object, MyFunc);
-//  }
-//}
-//
-///////////////////////////////////////////////////////////////////////////////////////
-//template<typename UserClass>
-//void UGameStateLibrary::BindToPriceChange(UGameInstance* GameInstance, UserClass* Object, void (UserClass::* MyFunc)(TArray<int>))
-//{
-//  if (URandomTDGameInstance* GI = Cast<URandomTDGameInstance>(GameInstance))
-//  {
-//    GI->GetPriceManager().PriceChangeEvent.AddUObject(Object, MyFunc);
-//  }
-//}

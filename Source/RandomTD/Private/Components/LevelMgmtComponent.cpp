@@ -3,22 +3,24 @@
 
 #include "Components/LevelMgmtComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "RandomTD/RandomTD.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
-ULevelMgmtComponent::ULevelMgmtComponent()
-  : SecondsPerLevel(60)
-  , PreLevelSeconds(2)
+ULevelMgmtComponent::ULevelMgmtComponent(const FObjectInitializer& ObjectInitializer)
+  : Super(ObjectInitializer)
+  , SecondsPerLevel(10.0)
+  , PreLevelSeconds(5.0)
 {
-	PrimaryComponentTick.bCanEverTick = false;
+  bWantsInitializeComponent = true;
+  PrimaryComponentTick.bCanEverTick = false;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void ULevelMgmtComponent::BeginPlay()
+void ULevelMgmtComponent::InitializeComponent()
 {
-	Super::BeginPlay();
+  Super::InitializeComponent();
 
   StartPreLevelTimer(); // timer for the first round
-  StartElapsedTimer(); // timer to tell UI round time once a second
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -34,33 +36,21 @@ void ULevelMgmtComponent::StartPreLevelTimer()
   // the initial delay is the pre round
   LevelCountTimerHandle = UKismetSystemLibrary::K2_SetTimer(this,
     "StartLevelTimer",
-    PreLevelSeconds, // if 1, initial delay < 0
-    false, // run once
-    PreLevelSeconds);  // initial delay (actual countdown)
+    PreLevelSeconds,
+    false); // run once
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ULevelMgmtComponent::StartLevelTimer()
 {
+  // we'll only hit this once when we transition from prelevel
+  OnLevelChange();
+
   // start the real game timer
   LevelCountTimerHandle = UKismetSystemLibrary::K2_SetTimer(this,
     "OnLevelChange",
     SecondsPerLevel,
-    true, // loop
-    0.0f); // initial delay used for smooth transition
-
-  // reset elapsed timer
-  StartElapsedTimer();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ULevelMgmtComponent::StartElapsedTimer()
-{
-  LevelElapsedTimerHandle = UKismetSystemLibrary::K2_SetTimer(this,
-    "OnLevelSecondElapsed",
-    1.0f,
-    true,
-    0.0f);
+    true); // loop
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -68,14 +58,4 @@ void ULevelMgmtComponent::OnLevelChange()
 {
   CurrentLevel++;
   LevelStartEvent.Broadcast(CurrentLevel);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ULevelMgmtComponent::OnLevelSecondElapsed()
-{
-  // query the round count timer for how long until round changes
-  float TimeElapsed = UKismetSystemLibrary::K2_GetTimerElapsedTimeHandle(this, LevelCountTimerHandle);
-  int Seconds = FGenericPlatformMath::RoundToInt(TimeElapsed);
-
-  LevelSecondElapsedEvent.Broadcast(Seconds);
 }

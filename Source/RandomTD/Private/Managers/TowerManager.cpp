@@ -2,8 +2,6 @@
 
 #include "Managers/TowerManager.h"
 #include "Kismet/GameplayStatics.h"
-
-#include "UI/Game/MainGameUserWidget.h"
 #include "Controllers/RandomTDPlayerController.h" // who else includes pc?
 #include "Game/RandomTDGameMode.h"
 

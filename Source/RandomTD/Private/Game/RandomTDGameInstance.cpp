@@ -20,6 +20,8 @@ void URandomTDGameInstance::Init()
 void URandomTDGameInstance::OnStart()
 {
   Super::OnStart();
+
+  LevelManager->RegisterComponentWithWorld(GetWorld());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
