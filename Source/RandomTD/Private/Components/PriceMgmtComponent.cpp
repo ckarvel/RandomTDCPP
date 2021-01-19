@@ -3,7 +3,6 @@
 
 #include "Components/PriceMgmtComponent.h"
 #include "Components/LevelMgmtComponent.h"
-#include "Components/ItemMgmtComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
