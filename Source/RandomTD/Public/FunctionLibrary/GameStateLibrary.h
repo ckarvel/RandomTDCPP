@@ -42,7 +42,7 @@ public:
   
   /////////////////////////////////////////////////////////////////////////////////////
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Inventory Manager", ScriptName = "GetInventoryManager", Category = "Utilities|Inventory"))
-  static UInventoryMgmtComponent* GetInventoryManager(APlayerState* PC);
+  static UInventoryMgmtComponent* GetInventoryManager(APlayerState* PlayerState);
 
   ///////////////////////////////////////////////////////////////////////////
   /// @brief Gets Mouse cursor hit on custom object types, Grid and Tower

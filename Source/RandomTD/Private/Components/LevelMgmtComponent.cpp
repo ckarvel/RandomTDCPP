@@ -8,8 +8,8 @@
 /////////////////////////////////////////////////////////////////////////////////////
 ULevelMgmtComponent::ULevelMgmtComponent(const FObjectInitializer& ObjectInitializer)
   : Super(ObjectInitializer)
-  , SecondsPerLevel(10.0)
-  , PreLevelSeconds(5.0)
+  , SecondsPerLevel(60.0)
+  , PreLevelSeconds(3.0)
 {
   bWantsInitializeComponent = true;
   PrimaryComponentTick.bCanEverTick = false;

@@ -7,13 +7,20 @@
 #include "Components/PriceMgmtComponent.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
+URandomTDGameInstance::URandomTDGameInstance(const FObjectInitializer& ObjectInitializer)
+  : Super(ObjectInitializer)
+{
+  PriceManagerClass = UPriceMgmtComponent::StaticClass();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
 void URandomTDGameInstance::Init()
 {
   Super::Init();
 
   ItemManager = NewObject<UItemMgmtComponent>(UItemMgmtComponent::StaticClass());
   LevelManager = NewObject<ULevelMgmtComponent>(ULevelMgmtComponent::StaticClass());
-  PriceManager = NewObject<UPriceMgmtComponent>(UPriceMgmtComponent::StaticClass());
+  PriceManager = NewObject<UPriceMgmtComponent>(this, PriceManagerClass);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -22,6 +29,8 @@ void URandomTDGameInstance::OnStart()
   Super::OnStart();
 
   LevelManager->RegisterComponentWithWorld(GetWorld());
+  PriceManager->RegisterComponentWithWorld(GetWorld());
+  PriceManager->BeginPlay();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

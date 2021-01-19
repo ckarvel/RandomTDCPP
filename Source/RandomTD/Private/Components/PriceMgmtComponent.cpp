@@ -2,15 +2,17 @@
 
 
 #include "Components/PriceMgmtComponent.h"
-#include "Game/RandomTDGameInstance.h"
 #include "Components/LevelMgmtComponent.h"
+#include "Components/ItemMgmtComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
-///////////////////////////////////////////////////////////////////////////////////////
-UPriceMgmtComponent::UPriceMgmtComponent()
-  : MinPrice(50)
-  , MaxPrice(100)
+/////////////////////////////////////////////////////////////////////////////////////
+UPriceMgmtComponent::UPriceMgmtComponent(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+	, MinPrice(50)
+	, MaxPrice(100)
 {
+	bWantsInitializeComponent = true;
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
@@ -27,13 +29,10 @@ void UPriceMgmtComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void UPriceMgmtComponent::GenerateStockPrices(int Level)
+void UPriceMgmtComponent::GeneratePrices()
 {
-  for (int i = 0; i < StockPrices.Num(); i++)
-  {
-    int Price = UKismetMathLibrary::RandomIntegerInRange(MinPrice, MaxPrice);
-    StockPrices[i] = Price;
-  }
-
-  PriceChangeEvent.Broadcast(StockPrices);
+	for (auto& Item : PriceMap)
+	{
+		Item.Value = UKismetMathLibrary::RandomIntegerInRange(MinPrice, MaxPrice);
+	}
 }

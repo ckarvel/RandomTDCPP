@@ -11,7 +11,7 @@ class UInventoryMgmtComponent;
 ///////////////////////////////////////////////////////////////////////////
 /// @class APlayerStateManager
 /// @brief Manages player state: health, inventory, score, etc.
-UCLASS()
+UCLASS(BlueprintType)
 class RANDOMTD_API APlayerStateManager : public APlayerState
 {
 	GENERATED_BODY()

@@ -62,9 +62,9 @@ UPriceMgmtComponent* UGameStateLibrary::GetPriceManager(UGameInstance* GameInsta
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-UInventoryMgmtComponent* UGameStateLibrary::GetInventoryManager(APlayerState* PS)
+UInventoryMgmtComponent* UGameStateLibrary::GetInventoryManager(APlayerState* PlayerState)
 {
-  if (APlayerStateManager* TDPS = Cast<APlayerStateManager>(PS))
+  if (APlayerStateManager* TDPS = Cast<APlayerStateManager>(PlayerState))
   {
     return TDPS->GetInventoryManager();
   }

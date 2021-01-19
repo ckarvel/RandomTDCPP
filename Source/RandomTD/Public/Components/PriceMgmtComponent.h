@@ -4,42 +4,31 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/ItemMgmtComponent.h"
 #include "PriceMgmtComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnStockPriceChange, TArray<int>);
-
-class URandomTDGameInstance;
-
 /////////////////////////////////////////////////////////////////////////////////////
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class RANDOMTD_API UPriceMgmtComponent : public UActorComponent
 {
-	GENERATED_BODY()
-
-private:
-  /////////////////////////////////////////////////////////////////////////////////////
-  void SetGameInstance(URandomTDGameInstance* GI);
-
-  URandomTDGameInstance* GI;
-  int MinPrice; ///< Minimum price to sell stock
-  int MaxPrice; ///< Maximum price to sell stock
-  TArray<int> StockPrices;
-
-  friend class URandomTDGameInstance;
+  GENERATED_UCLASS_BODY()
 
 protected:
-	/////////////////////////////////////////////////////////////////////////////////////
-	virtual void BeginPlay() override;
-
   /////////////////////////////////////////////////////////////////////////////////////
   virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
   /////////////////////////////////////////////////////////////////////////////////////
-  UPriceMgmtComponent();
+  virtual void BeginPlay() override;
 
   /////////////////////////////////////////////////////////////////////////////////////
-  void GenerateStockPrices(int Level);
+  UFUNCTION(BlueprintCallable)
+  void GeneratePrices();
 
-  FOnStockPriceChange PriceChangeEvent;
+  UPROPERTY(BlueprintReadWrite)
+  TMap<EItemType, float> PriceMap;
+  UPROPERTY(BlueprintReadWrite)
+  int MinPrice;
+  UPROPERTY(BlueprintReadWrite)
+  int MaxPrice;
 };
