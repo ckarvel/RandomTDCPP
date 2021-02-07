@@ -18,38 +18,6 @@ UTowerManager::UTowerManager(const FObjectInitializer& ObjectInitializer)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-void UTowerManager::Init(ARandomTDPlayerController* PC)
-{
-	MyController = PC;
-	MyController->OnInteractEvent.AddUObject(this, &UTowerManager::OnUserInteract);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void UTowerManager::Update()
-{
-	
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void UTowerManager::SetupInputComponent(UInputComponent* InputComponent)
-{
-  InputComponent->BindAction("Multi-Select", IE_Pressed, this, &UTowerManager::MultiSelectPressed);
-	InputComponent->BindAction("Multi-Select", IE_Released, this, &UTowerManager::MultiSelectReleased);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void UTowerManager::MultiSelectPressed()
-{
-	bCtrlPressed = true;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void UTowerManager::MultiSelectReleased()
-{
-	bCtrlPressed = false;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
 void UTowerManager::OnUserInteract(FHitResult* Hit)
 {
   if (!bTowerRequested || !Hit->bBlockingHit)

@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
@@ -6,47 +5,57 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Engine/DataTable.h"
-#include "ItemMgmtComponent.generated.h"
+#include "TowerMgmtComponent.generated.h"
 
- /////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
 UENUM(BlueprintType)
-enum class EItemType : uint8
+enum class ETowerType : uint8
 {
-  MELON   UMETA(DisplayName = "Melon"),
-  POTATO  UMETA(DisplayName = "Potato"),
-  PUMPKIN UMETA(DisplayName = "Pumpkin")
+  BASIC   UMETA(DisplayName = "Basic Tower"),
+  EXPERT  UMETA(DisplayName = "Expert Tower")
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
 USTRUCT(BlueprintType)
-struct FItemLibrary : public FTableRowBase
+struct FTowerTypeData : public FTableRowBase
 {
   GENERATED_BODY()
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    EItemType EItem;
+  UPROPERTY(EditAnywhere, BlueprintReadOnly)
+  ETowerType EType;
 
   UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FName ItemName;
+  float SpawnChance; // 0.0 to 1.0
 
   UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TAssetPtr<UTexture2D> ItemIcon;
+  int SellPrice;
+};
+
+/////////////////////////////////////////////////////////////////////////////////////
+USTRUCT(BlueprintType)
+struct FTowerLibrary : public FTableRowBase
+{
+  GENERATED_BODY()
 
   UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TAssetPtr<UStaticMesh> ItemMesh;
+  ETowerType EType;
 
+  UPROPERTY(EditAnywhere, BlueprintReadOnly)
+  FName TowerName;
+
+  UPROPERTY(EditAnywhere, BlueprintReadOnly)
+  TSubclassOf<AActor> TowerClass;
 };
 
 ///////////////////////////////////////////////////////////////////////////
-// Acts also as ToolManager 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class RANDOMTD_API UItemMgmtComponent : public UActorComponent
+UCLASS( Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class RANDOMTD_API UTowerMgmtComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	///////////////////////////////////////////////////////////////////////////
-	UItemMgmtComponent();
+	UTowerMgmtComponent();
 
 protected:
 	///////////////////////////////////////////////////////////////////////////
@@ -57,5 +66,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
   ///////////////////////////////////////////////////////////////////////////
-  void SelectTool(EItemType Type);
+  UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Tower)
+  void SpawnRandomTower();
 };

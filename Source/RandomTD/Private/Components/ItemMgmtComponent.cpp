@@ -8,8 +8,8 @@
 ///////////////////////////////////////////////////////////////////////////
 UItemMgmtComponent::UItemMgmtComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
+	// Set this component to be initialized when the game starts, and to be ticked every frame.
+  // You can turn these features off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
@@ -35,10 +35,6 @@ void UItemMgmtComponent::SelectTool(EItemType Type)
   case EItemType::POTATO:
     break;
   case EItemType::PUMPKIN:
-    break;
-  case EItemType::BASIC:
-    break;
-  case EItemType::EXPERT:
     break;
   default:
 #ifdef UE_BUILD_DEBUG

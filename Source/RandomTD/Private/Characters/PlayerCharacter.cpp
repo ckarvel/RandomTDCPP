@@ -1,21 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Characters/PlayerCharacter.h"
-#include "UObject/ConstructorHelpers.h"
-#include "Camera/CameraComponent.h"
-#include "Components/DecalComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/DecalComponent.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
-#include "Materials/Material.h"
 #include "Engine/World.h"
 #include "RandomTD/RandomTD.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 ARandomTDPlayerCharacter::ARandomTDPlayerCharacter()
-	: GoldAmount(0)
-	, bMoveToMouseCursor(false)
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -30,6 +26,15 @@ ARandomTDPlayerCharacter::ARandomTDPlayerCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+
+	InitialCamLocation.SetLocation(FVector(-565.0, -10.0, 1610.0));
+	InitialCamLocation.SetRotation(FQuat(FRotator(-70, 0, 0))); // pitch yaw roll
+
+	PlayerCamera = CreateDefaultSubobject<UCameraComponent>("PlayerCamera");
+	PlayerCamera->bConstrainAspectRatio = false;
+	PlayerCamera->SetUsingAbsoluteLocation(true);
+	PlayerCamera->SetUsingAbsoluteRotation(true);
+	PlayerCamera->SetupAttachment(RootComponent);
 
 	// Create a decal in the world to show the cursor's location
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
@@ -46,17 +51,21 @@ ARandomTDPlayerCharacter::ARandomTDPlayerCharacter()
 void ARandomTDPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PlayerCamera->SetRelativeLocation(InitialCamLocation.GetLocation());
+	PlayerCamera->SetRelativeRotation(InitialCamLocation.GetRotation());
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+UCameraComponent* ARandomTDPlayerCharacter::GetPlayerCamera()
+{
+	return PlayerCamera;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 void ARandomTDPlayerCharacter::Tick(float DeltaSeconds)
 {
   Super::Tick(DeltaSeconds);
-
-  if (bMoveToMouseCursor)
-  {
-    MoveToMouseCursor();
-  }
 
 	if (CursorToWorld != nullptr)
 	{
@@ -70,13 +79,6 @@ void ARandomTDPlayerCharacter::Tick(float DeltaSeconds)
 			CursorToWorld->SetWorldRotation(CursorR);
 		}
 	}
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-void ARandomTDPlayerCharacter::SetupInputComponent(UInputComponent* PlayerInputComponent)
-{
-  InputComponent->BindAction("SetDestination", IE_Pressed, this, &ARandomTDPlayerCharacter::StartMoving);
-	InputComponent->BindAction("SetDestination", IE_Released, this, &ARandomTDPlayerCharacter::StopMoving);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
