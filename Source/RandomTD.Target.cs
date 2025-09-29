@@ -8,7 +8,9 @@ public class RandomTDTarget : TargetRules
 	public RandomTDTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.Add("RandomTD");
+        DefaultBuildSettings = BuildSettingsVersion.V5;
+        IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_5;
+        CppStandard = CppStandardVersion.Cpp20;
+        ExtraModuleNames.Add("RandomTD");
 	}
 }
